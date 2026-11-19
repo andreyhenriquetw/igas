@@ -62,6 +62,8 @@ export async function POST(request: Request) {
             status: parsed.data.status as EntryStatus,
             guestName: parsed.data.guestName,
             guestContact: parsed.data.guestContact,
+            guestCpf: parsed.data.guestCpf || null,
+            guestAddress: parsed.data.guestAddress || null,
             modeId: parsed.data.modeId,
             startsAt,
             endsAt,

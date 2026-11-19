@@ -17,6 +17,8 @@ export type CalendarEntryDto = {
   status: EntryStatus;
   guestName: string | null;
   guestContact: string | null;
+  guestCpf: string | null;
+  guestAddress: string | null;
   modeId: string | null;
   startsAt: string;
   endsAt: string;

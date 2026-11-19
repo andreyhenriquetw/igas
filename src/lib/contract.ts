@@ -18,6 +18,8 @@ export function buildContractText(entry: CalendarEntryDto): string {
     "1. DAS PARTES",
     `CONTRATANTE: ${entry.guestName ?? "[nome do contratante]"}`,
     `Contato: ${entry.guestContact || "[telefone ou e-mail]"}`,
+    `CPF: ${entry.guestCpf || "[CPF do contratante]"}`,
+    `Endereço: ${entry.guestAddress || "[endereço completo do contratante]"}`,
     "CONTRATADA: [nome ou razão social, CPF/CNPJ e endereço do estabelecimento]",
     "",
     "2. DO OBJETO",

@@ -55,6 +55,8 @@ model CalendarEntry {
   status         EntryStatus    @default(PENDING)
   guestName      String?
   guestContact   String?
+  guestCpf       String?        @db.VarChar(14)
+  guestAddress   String?        @db.VarChar(300)
   modeId         String?
   startsAt       DateTime       @db.Timestamptz(3)
   endsAt         DateTime       @db.Timestamptz(3)

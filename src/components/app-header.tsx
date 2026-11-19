@@ -19,7 +19,7 @@ export function AppHeader({ user, current }: Props) {
             <Image className="brand-logo-light" src="/igaspreto.png" width={44} height={44} alt="" />
             <Image className="brand-logo-dark" src="/igas-logo-transparent.png" width={44} height={44} alt="" />
           </span>
-          <span>Balneário Ígas</span>
+          <span className="brand-name">Balneário Ígas</span>
         </Link>
         <nav className="desktop-nav" aria-label="Navegação principal">
           <Link className={current === "calendar" ? "nav-link active" : "nav-link"} href="/">

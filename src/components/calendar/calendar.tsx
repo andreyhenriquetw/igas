@@ -16,7 +16,6 @@ import {
   List,
   Pencil,
   Plus,
-  RefreshCw,
   Save,
   ShieldAlert,
   X,
@@ -49,6 +48,8 @@ type Draft = {
   kind: "BOOKING" | "BLOCK";
   guestName: string;
   guestContact: string;
+  guestCpf: string;
+  guestAddress: string;
   modeId: string;
   startsAt: string;
   endsAt: string;
@@ -71,6 +72,15 @@ function keyDate(key: string) {
   return new Date(`${key}T12:00:00.000Z`);
 }
 
+function formatCpf(value: string) {
+  return value
+    .replace(/\D/g, "")
+    .slice(0, 11)
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
+
 function changeMonth(key: string, months: number) {
   const date = new Date(`${key.slice(0, 7)}-01T12:00:00.000Z`);
   date.setUTCMonth(date.getUTCMonth() + months);
@@ -90,6 +100,8 @@ function newDraft(
     kind,
     guestName: "",
     guestContact: "",
+    guestCpf: "",
+    guestAddress: "",
     modeId: mode?.id ?? "",
     startsAt: formatLocalDateTime(startsAt, "yyyy-MM-dd'T'HH:mm"),
     endsAt: formatLocalDateTime(endsAt, "yyyy-MM-dd'T'HH:mm"),
@@ -259,6 +271,8 @@ export function Calendar({ initialEntries, modes }: Props) {
       kind: entry.kind,
       guestName: entry.guestName ?? "",
       guestContact: entry.guestContact ?? "",
+      guestCpf: entry.guestCpf ?? "",
+      guestAddress: entry.guestAddress ?? "",
       modeId: entry.modeId ?? "",
       startsAt: formatLocalDateTime(entry.startsAt, "yyyy-MM-dd'T'HH:mm"),
       endsAt: formatLocalDateTime(entry.endsAt, "yyyy-MM-dd'T'HH:mm"),
@@ -443,7 +457,14 @@ export function Calendar({ initialEntries, modes }: Props) {
     ));
     const availabilityVisible = day >= periodStart && day <= periodEnd && (view === "week" || inMonth);
     return (
-      <div className={`day-cell ${inMonth ? "" : "outside-month"} ${day === today ? "today" : ""} ${occupied ? "occupied" : ""}`} key={day}>
+      <div
+        className={`day-cell ${inMonth ? "" : "outside-month"} ${day === today ? "today" : ""} ${occupied ? "occupied" : ""}`}
+        key={day}
+        onClick={(event) => {
+          if (event.target instanceof Element && event.target.closest("button")) return;
+          openNew(day);
+        }}
+      >
         <div className="day-heading">
           <button className="day-number" type="button" onClick={() => openNew(day)} aria-label={`Criar reserva em ${day}`}>
             {formatInTimeZone(keyDate(day), TIME_ZONE, "d")}
@@ -470,6 +491,9 @@ export function Calendar({ initialEntries, modes }: Props) {
               <span className="entry-dot" />
               <span className="entry-time">{formatLocalDateTime(entry.startsAt, "HH:mm")}</span>
               <span className="entry-name">{entry.kind === "BLOCK" ? "Bloqueio" : entry.guestName}</span>
+              {entry.kind === "BOOKING" && entry.status === "CONFIRMED" && entry.guestName?.trim() && (
+                <span className="entry-mobile-name">{entry.guestName.trim().split(/\s+/)[0]}</span>
+              )}
               {entry.kind === "BOOKING" && hasPaidAtLeastHalf(entry.totalAmount ?? 0, entry.paidAmount ?? 0) && (
                 <Check size={11} className="entry-paid-icon" aria-label="Pagou pelo menos 50%" />
               )}
@@ -497,22 +521,6 @@ export function Calendar({ initialEntries, modes }: Props) {
 
   return (
     <main className="app-main">
-      <section className="page-intro">
-        <div>
-          <p className="eyebrow">VISÃO GERAL</p>
-          <h1>Sua agenda</h1>
-          <p className="muted">Acompanhe reservas, pagamentos e disponibilidade.</p>
-        </div>
-        <div className="intro-actions">
-          <button className="button button-secondary" type="button" onClick={() => openNew(today, "BLOCK")}>
-            <ShieldAlert size={17} /> Bloquear data
-          </button>
-          <button className="button button-primary" type="button" onClick={() => openNew()}>
-            <Plus size={18} /> Nova reserva
-          </button>
-        </div>
-      </section>
-
       {message && <div className="toast success-toast" role="status"><CheckCircle2 size={17} />{message}</div>}
       {syncError && <div className="sync-warning" role="alert"><AlertCircle size={17} />{syncError}<button type="button" onClick={() => void refresh()}>Tentar novamente</button></div>}
 
@@ -520,7 +528,6 @@ export function Calendar({ initialEntries, modes }: Props) {
         <div className="stat-card"><span>Reservas ativas</span><strong>{activeBookings.length}</strong><CalendarDays size={18} /></div>
         <div className="stat-card"><span>Pendentes</span><strong>{pendingCount}</strong><Clock3 size={18} /></div>
         <div className="stat-card"><span>Datas bloqueadas</span><strong>{blockCount}</strong><ShieldAlert size={18} /></div>
-        <div className="sync-indicator"><RefreshCw size={14} /> Atualiza automaticamente</div>
       </section>
 
       <section className="calendar-panel">
@@ -636,6 +643,8 @@ export function Calendar({ initialEntries, modes }: Props) {
                 <div className="detail-grid">
                   <div><small>Modalidade</small><strong>{selected.mode?.name ?? "—"}</strong></div>
                   <div><small>Contato</small><strong>{selected.guestContact || "Não informado"}</strong></div>
+                  <div><small>CPF</small><strong>{selected.guestCpf || "Não informado"}</strong></div>
+                  <div className="detail-full"><small>Endereço</small><strong>{selected.guestAddress || "Não informado"}</strong></div>
                   <div><small>Valor total</small><strong>{money.format(selected.totalAmount ?? 0)}</strong></div>
                   <div><small>Valor pago</small><strong>{money.format(selected.paidAmount ?? 0)}</strong></div>
                   <div><small>Saldo restante</small><strong>{money.format((selected.totalAmount ?? 0) - (selected.paidAmount ?? 0))}</strong></div>
@@ -735,11 +744,33 @@ export function Calendar({ initialEntries, modes }: Props) {
                   <>
                     <label className="field">
                       <span>Nome do hóspede</span>
-                      <input autoFocus name="guestName" value={draft.guestName} onChange={(event) => setDraft({ ...draft, guestName: event.target.value })} maxLength={120} required />
+                      <input name="guestName" value={draft.guestName} onChange={(event) => setDraft({ ...draft, guestName: event.target.value })} maxLength={120} required />
                     </label>
                     <label className="field">
                       <span>Contato <small>(telefone ou e-mail)</small></span>
                       <input name="guestContact" value={draft.guestContact} onChange={(event) => setDraft({ ...draft, guestContact: event.target.value })} maxLength={160} />
+                    </label>
+                    <label className="field">
+                      <span>CPF <small>(opcional)</small></span>
+                      <input
+                        name="guestCpf"
+                        inputMode="numeric"
+                        value={draft.guestCpf}
+                        onChange={(event) => setDraft({ ...draft, guestCpf: formatCpf(event.target.value) })}
+                        maxLength={14}
+                        placeholder="000.000.000-00"
+                      />
+                    </label>
+                    <label className="field">
+                      <span>Endereço <small>(opcional)</small></span>
+                      <textarea
+                        name="guestAddress"
+                        autoComplete="street-address"
+                        value={draft.guestAddress}
+                        onChange={(event) => setDraft({ ...draft, guestAddress: event.target.value })}
+                        maxLength={300}
+                        placeholder="Rua, número, bairro, cidade e CEP"
+                      />
                     </label>
                     <label className="field">
                       <span>Modalidade</span>

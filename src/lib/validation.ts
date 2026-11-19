@@ -18,6 +18,16 @@ const bookingSchema = z
     kind: z.literal("BOOKING"),
     guestName: z.string().trim().min(1, "Informe o nome do hóspede.").max(120),
     guestContact: z.string().trim().max(160).optional().default(""),
+    guestCpf: z
+      .string()
+      .trim()
+      .max(14)
+      .refine((value) => !value || /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(value), {
+        message: "Informe o CPF no formato 000.000.000-00.",
+      })
+      .optional()
+      .default(""),
+    guestAddress: z.string().trim().max(300).optional().default(""),
     modeId: z.string().min(1, "Selecione uma modalidade."),
     ...period,
     totalAmount: z.coerce.number().finite().positive("O valor total deve ser maior que zero."),

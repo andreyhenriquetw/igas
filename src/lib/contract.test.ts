@@ -9,6 +9,8 @@ const entry: CalendarEntryDto = {
   status: "CONFIRMED",
   guestName: "João da Silva",
   guestContact: "joao@example.com",
+  guestCpf: "529.982.247-25",
+  guestAddress: "Rua das Flores, 123, Centro",
   modeId: "mode-day-use",
   startsAt: "2026-11-20T11:00:00.000Z",
   endsAt: "2026-11-20T23:00:00.000Z",
@@ -37,4 +39,6 @@ test("monta contrato com as informações e os valores da reserva", () => {
   assert.match(contract, /R\$\u00a0800,00/);
   assert.match(contract, /R\$\u00a0400,00/);
   assert.match(contract, /CONTRATANTE/);
+  assert.match(contract, /CPF: 529\.982\.247-25/);
+  assert.match(contract, /Endereço: Rua das Flores, 123, Centro/);
 });

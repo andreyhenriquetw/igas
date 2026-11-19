@@ -17,6 +17,19 @@ test("aceita reserva com exatamente metade paga", () => {
   assert.equal(entryInputSchema.safeParse(validBooking).success, true);
 });
 
+test("aceita dados cadastrais opcionais e valida o formato do CPF", () => {
+  assert.equal(entryInputSchema.safeParse({
+    ...validBooking,
+    guestCpf: "529.982.247-25",
+    guestAddress: "Rua das Flores, 123, Centro",
+  }).success, true);
+  assert.equal(entryInputSchema.safeParse({
+    ...validBooking,
+    guestCpf: "52998224725",
+  }).success, false);
+  assert.equal(entryInputSchema.safeParse(validBooking).success, true);
+});
+
 test("rejeita data impossível e valor pago acima do total", () => {
   assert.equal(
     entryInputSchema.safeParse({ ...validBooking, startsAt: "2026-02-30T08:00" }).success,
