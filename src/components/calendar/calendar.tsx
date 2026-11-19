@@ -578,11 +578,7 @@ export function Calendar({ initialEntries, modes }: Props) {
       </section>
 
       <section
-        className={`calendar-panel ${isSwiping ? "is-swiping" : ""}`}
-        style={{ transform: `translateX(${swipeOffset}px)` }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        className="calendar-panel"
       >
         <div className="calendar-toolbar">
           <div className="period-heading">
@@ -664,7 +660,13 @@ export function Calendar({ initialEntries, modes }: Props) {
             ))}
           </div>
         ) : (
-          <div className={`calendar-grid ${view === "week" ? "week-grid" : ""}`}>
+          <div
+            className={`calendar-grid ${view === "week" ? "week-grid" : ""} ${isSwiping ? "is-swiping" : ""}`}
+            style={{ transform: `translateX(${swipeOffset}px)` }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <div className="weekday-row">
             {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((weekday) => <span key={weekday}>{weekday}</span>)}
             </div>
