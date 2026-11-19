@@ -13,8 +13,11 @@ const themeInitializationScript = `
 `;
 
 export const metadata: Metadata = {
-  title: "Meu espaço | Agenda",
+  title: "ÍGAS",
   description: "Agenda e reservas do espaço de hospedagem.",
+  icons: {
+    icon: "/igaspreto.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
