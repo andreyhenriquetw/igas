@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { CheckCircle2, UserPlus, UsersRound } from "lucide-react";
+import { CheckCircle2, Trash2, UserPlus, UsersRound } from "lucide-react";
 import type { TeamMemberDto } from "@/types/calendar";
 
 export function TeamSettings({ initialUsers }: { initialUsers: TeamMemberDto[] }) {
@@ -9,6 +9,7 @@ export function TeamSettings({ initialUsers }: { initialUsers: TeamMemberDto[] }
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -41,6 +42,27 @@ export function TeamSettings({ initialUsers }: { initialUsers: TeamMemberDto[] }
     }
   }
 
+  async function removeMember(member: TeamMemberDto) {
+    if (!window.confirm(`Remover o acesso de ${member.name}?`)) return;
+
+    setError("");
+    setSuccess("");
+    setRemovingId(member.id);
+    try {
+      const response = await fetch(`/api/users/${encodeURIComponent(member.id)}`, {
+        method: "DELETE",
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "Não foi possível remover o membro.");
+      setUsers((current) => current.filter((user) => user.id !== member.id));
+      setSuccess(`O acesso de ${member.name} foi removido.`);
+    } catch (removeError) {
+      setError(removeError instanceof Error ? removeError.message : "Não foi possível remover o membro.");
+    } finally {
+      setRemovingId(null);
+    }
+  }
+
   return (
     <div className="team-layout">
       <section className="settings-card">
@@ -51,6 +73,18 @@ export function TeamSettings({ initialUsers }: { initialUsers: TeamMemberDto[] }
               <span className="avatar">{user.name.slice(0, 1).toUpperCase()}</span>
               <span><strong>{user.name}</strong><small>{user.email}</small></span>
               <span className={`role-pill ${user.role === "OWNER" ? "owner" : ""}`}>{user.role === "OWNER" ? "Proprietário" : "Equipe"}</span>
+              {user.role !== "OWNER" && (
+                <button
+                  className="icon-button remove-member-button"
+                  type="button"
+                  disabled={removingId === user.id}
+                  onClick={() => void removeMember(user)}
+                  aria-label={`Remover ${user.name} da equipe`}
+                  title="Remover membro"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
             </div>
           ))}
         </div>
