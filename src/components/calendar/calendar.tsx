@@ -24,8 +24,10 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type FormEvent,
+  type TouchEvent,
 } from "react";
 import { TIME_ZONE, formatLocalDateTime, localDayBoundaryToUtc } from "@/lib/time";
 import { buildContractText, downloadContractPdf } from "@/lib/contract";
@@ -167,6 +169,7 @@ export function Calendar({ initialEntries, modes }: Props) {
   const [loading, setLoading] = useState(false);
   const [contractBusy, setContractBusy] = useState(false);
   const [contractDraft, setContractDraft] = useState("");
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const refresh = useCallback(async () => {
     if (!periodStart || !periodEnd || periodStart > periodEnd) return;
@@ -248,6 +251,23 @@ export function Calendar({ initialEntries, modes }: Props) {
       setPeriodStart(start);
       setPeriodEnd(changeKey(start, 6));
     }
+  }
+
+  function handleTouchStart(event: TouchEvent<HTMLElement>) {
+    const touch = event.changedTouches[0];
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function handleTouchEnd(event: TouchEvent<HTMLElement>) {
+    if (!touchStart.current) return;
+
+    const touch = event.changedTouches[0];
+    const distanceX = touch.clientX - touchStart.current.x;
+    const distanceY = touch.clientY - touchStart.current.y;
+    touchStart.current = null;
+
+    if (Math.abs(distanceX) < 48 || Math.abs(distanceX) <= Math.abs(distanceY) * 1.25) return;
+    navigate(distanceX < 0 ? 1 : -1);
   }
 
   function openNew(day = today, kind: "BOOKING" | "BLOCK" = "BOOKING") {
@@ -530,7 +550,11 @@ export function Calendar({ initialEntries, modes }: Props) {
         <div className="stat-card"><span>Datas bloqueadas</span><strong>{blockCount}</strong><ShieldAlert size={18} /></div>
       </section>
 
-      <section className="calendar-panel">
+      <section
+        className="calendar-panel"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="calendar-toolbar">
           <div className="period-heading">
             <div className="period-controls">
