@@ -274,7 +274,7 @@ export function Calendar({ initialEntries, modes }: Props) {
     event.preventDefault();
     setIsSwiping(true);
     setSwipeDirection(distanceX < 0 ? 1 : -1);
-    setSwipeOffset(distanceX);
+    setSwipeOffset(-distanceX);
   }
 
   function handleTouchEnd(event: TouchEvent<HTMLElement>) {
@@ -294,12 +294,12 @@ export function Calendar({ initialEntries, modes }: Props) {
 
     const direction = distanceX < 0 ? 1 : -1;
     const panelWidth = event.currentTarget.getBoundingClientRect().width;
-    setSwipeOffset(direction * -panelWidth);
+    setSwipeOffset(direction * panelWidth);
     window.setTimeout(() => {
       navigate(direction);
       setSwipeOffset(0);
       setSwipeDirection(0);
-    }, 180);
+    }, 240);
   }
 
   function openNew(day = today, kind: "BOOKING" | "BLOCK" = "BOOKING") {
@@ -649,6 +649,8 @@ export function Calendar({ initialEntries, modes }: Props) {
           <span><CircleX className="availability-icon occupied" size={15} /> Agendado ou bloqueado</span>
         </div>
 
+        {view !== "list" && <div className="calendar-month-heading"><h2>{heading}</h2></div>}
+
         {view === "list" ? (
           <div className="entry-list">
             {visibleList.length === 0 ? (
@@ -679,7 +681,7 @@ export function Calendar({ initialEntries, modes }: Props) {
             {swipeDirection !== 0 && (
               <div
                 className={`calendar-swipe-page calendar-swipe-next`}
-                style={{ transform: `translateX(${swipeDirection > 0 ? "100%" : "-100%"}) translateX(${swipeOffset}px)` }}
+                style={{ transform: `translateX(${swipeDirection > 0 ? "-100%" : "100%"}) translateX(${swipeOffset}px)` }}
                 aria-hidden="true"
               >
                 <div className="weekday-row">
