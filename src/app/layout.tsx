@@ -15,8 +15,14 @@ const themeInitializationScript = `
 export const metadata: Metadata = {
   title: "ÍGAS",
   description: "Agenda e reservas do espaço de hospedagem.",
+  appleWebApp: {
+    capable: true,
+    title: "ÍGAS",
+    statusBarStyle: "default",
+  },
   icons: {
     icon: "/igaspreto.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 

@@ -170,6 +170,8 @@ export function Calendar({ initialEntries, modes }: Props) {
   const [contractBusy, setContractBusy] = useState(false);
   const [contractDraft, setContractDraft] = useState("");
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
 
   const refresh = useCallback(async () => {
     if (!periodStart || !periodEnd || periodStart > periodEnd) return;
@@ -256,6 +258,20 @@ export function Calendar({ initialEntries, modes }: Props) {
   function handleTouchStart(event: TouchEvent<HTMLElement>) {
     const touch = event.changedTouches[0];
     touchStart.current = { x: touch.clientX, y: touch.clientY };
+    setIsSwiping(false);
+  }
+
+  function handleTouchMove(event: TouchEvent<HTMLElement>) {
+    if (!touchStart.current) return;
+
+    const touch = event.changedTouches[0];
+    const distanceX = touch.clientX - touchStart.current.x;
+    const distanceY = touch.clientY - touchStart.current.y;
+    if (Math.abs(distanceX) <= Math.abs(distanceY) * 1.25) return;
+
+    event.preventDefault();
+    setIsSwiping(true);
+    setSwipeOffset(distanceX);
   }
 
   function handleTouchEnd(event: TouchEvent<HTMLElement>) {
@@ -266,8 +282,19 @@ export function Calendar({ initialEntries, modes }: Props) {
     const distanceY = touch.clientY - touchStart.current.y;
     touchStart.current = null;
 
-    if (Math.abs(distanceX) < 48 || Math.abs(distanceX) <= Math.abs(distanceY) * 1.25) return;
-    navigate(distanceX < 0 ? 1 : -1);
+    setIsSwiping(false);
+    if (Math.abs(distanceX) < 48 || Math.abs(distanceX) <= Math.abs(distanceY) * 1.25) {
+      setSwipeOffset(0);
+      return;
+    }
+
+    const direction = distanceX < 0 ? 1 : -1;
+    const panelWidth = event.currentTarget.getBoundingClientRect().width;
+    setSwipeOffset(distanceX < 0 ? -panelWidth : panelWidth);
+    window.setTimeout(() => {
+      navigate(direction);
+      setSwipeOffset(0);
+    }, 180);
   }
 
   function openNew(day = today, kind: "BOOKING" | "BLOCK" = "BOOKING") {
@@ -551,8 +578,10 @@ export function Calendar({ initialEntries, modes }: Props) {
       </section>
 
       <section
-        className="calendar-panel"
+        className={`calendar-panel ${isSwiping ? "is-swiping" : ""}`}
+        style={{ transform: `translateX(${swipeOffset}px)` }}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         <div className="calendar-toolbar">
