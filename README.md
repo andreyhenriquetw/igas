@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agenda do Espaço
 
-## Getting Started
+Aplicação mobile-first para administrar reservas, bloqueios, pagamentos e contratos de um único espaço.
 
-First, run the development server:
+## Requisitos
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 20.19+ (ou 22.12+)
+- Banco PostgreSQL no Neon
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Configuração local
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Copie `.env.example` para `.env.local`. Use a URL **pooled** do Neon em `DATABASE_URL` (aplicação), a URL direta em `DIRECT_URL` (migrações) e gere um valor aleatório para `AUTH_SECRET`.
+2. Instale as dependências com `npm install`.
+3. Aplique a migração inicial com `npm run db:migrate`.
+4. Inicie o projeto com `npm run dev`.
+5. No primeiro acesso, crie a conta proprietária. Depois, use **Equipe** para cadastrar a conta individual da segunda pessoa.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O arquivo `.env.local` não deve ser compartilhado nem enviado ao Git.
 
-## Learn More
+## Banco e regras
 
-To learn more about Next.js, take a look at the following resources:
+- `prisma/schema.prisma` define usuários, modalidades e entradas da agenda.
+- `prisma/migrations` guarda o histórico SQL. A migração inicial cria as modalidades day-use (8h–20h) e day-use com pernoite (8h–20h do dia seguinte).
+- Horários e durações padrão podem ser editados em **Modalidades**; cada reserva também guarda seus próprios horários.
+- Uma restrição PostgreSQL impede sobreposição de reservas pendentes/confirmadas e bloqueios, inclusive em transações simultâneas. Cancelamentos liberam o horário.
+- Valores são armazenados em BRL. A situação do pagamento é derivada do valor pago e total.
+- Cada reserva pode ter um contrato próprio, editável e baixado em PDF. O texto e o status de geração ficam salvos na reserva.
+- Instantes são persistidos em UTC e apresentados no fuso `America/Sao_Paulo`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Sincronização
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Os navegadores consultam a agenda a cada seis segundos e ao voltar a ficar visíveis. Assim, mudanças aparecem sem recarregar a página e sem depender de uma função de tempo real do Neon. O limite é um atraso de até alguns segundos; não há envio instantâneo por WebSocket.
