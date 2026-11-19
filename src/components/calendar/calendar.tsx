@@ -172,6 +172,7 @@ export function Calendar({ initialEntries, modes }: Props) {
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
+  const [swipeDirection, setSwipeDirection] = useState<-1 | 0 | 1>(0);
 
   const refresh = useCallback(async () => {
     if (!periodStart || !periodEnd || periodStart > periodEnd) return;
@@ -259,6 +260,7 @@ export function Calendar({ initialEntries, modes }: Props) {
     const touch = event.changedTouches[0];
     touchStart.current = { x: touch.clientX, y: touch.clientY };
     setIsSwiping(false);
+    setSwipeDirection(0);
   }
 
   function handleTouchMove(event: TouchEvent<HTMLElement>) {
@@ -271,6 +273,7 @@ export function Calendar({ initialEntries, modes }: Props) {
 
     event.preventDefault();
     setIsSwiping(true);
+    setSwipeDirection(distanceX < 0 ? 1 : -1);
     setSwipeOffset(distanceX);
   }
 
@@ -285,15 +288,17 @@ export function Calendar({ initialEntries, modes }: Props) {
     setIsSwiping(false);
     if (Math.abs(distanceX) < 48 || Math.abs(distanceX) <= Math.abs(distanceY) * 1.25) {
       setSwipeOffset(0);
+      setSwipeDirection(0);
       return;
     }
 
     const direction = distanceX < 0 ? 1 : -1;
     const panelWidth = event.currentTarget.getBoundingClientRect().width;
-    setSwipeOffset(distanceX < 0 ? -panelWidth : panelWidth);
+    setSwipeOffset(direction * -panelWidth);
     window.setTimeout(() => {
       navigate(direction);
       setSwipeOffset(0);
+      setSwipeDirection(0);
     }, 180);
   }
 
@@ -475,6 +480,11 @@ export function Calendar({ initialEntries, modes }: Props) {
   const calendarDays = view === "month"
     ? Array.from({ length: 42 }, (_, index) => changeKey(monthBoundsForGrid.gridStart, index))
     : Array.from({ length: 7 }, (_, index) => changeKey(weekStart, index));
+  const swipeAnchor = swipeDirection === 0 ? anchor : changeMonth(anchor, swipeDirection);
+  const swipeBounds = monthBounds(swipeAnchor);
+  const swipeDays = view === "month"
+    ? Array.from({ length: 42 }, (_, index) => changeKey(swipeBounds.gridStart, index))
+    : Array.from({ length: 7 }, (_, index) => changeKey(getWeekStart(swipeAnchor), index));
   const heading = view === "month"
     ? formatInTimeZone(monthDate, TIME_ZONE, "MMMM 'de' yyyy", { locale: ptBR })
     : view === "week"
@@ -492,9 +502,9 @@ export function Calendar({ initialEntries, modes }: Props) {
     return filtered.filter((entry) => new Date(entry.startsAt) < end && new Date(entry.endsAt) > start);
   }
 
-  function dayCell(day: string) {
+  function dayCell(day: string, monthAnchor = anchor) {
     const items = entriesForDay(day);
-    const inMonth = day.slice(0, 7) === anchor.slice(0, 7);
+    const inMonth = day.slice(0, 7) === monthAnchor.slice(0, 7);
     const dayStart = localDayBoundaryToUtc(day);
     const dayEnd = localDayBoundaryToUtc(changeKey(day, 1));
     const occupied = entries.some((entry) => (
@@ -662,16 +672,34 @@ export function Calendar({ initialEntries, modes }: Props) {
         ) : (
           <div
             className={`calendar-grid ${view === "week" ? "week-grid" : ""} ${isSwiping ? "is-swiping" : ""}`}
-            style={{ transform: `translateX(${swipeOffset}px)` }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="weekday-row">
-            {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((weekday) => <span key={weekday}>{weekday}</span>)}
-            </div>
-            <div className={view === "week" ? "days-grid week-days" : "days-grid"}>
-              {calendarDays.map((day) => dayCell(day))}
+            {swipeDirection !== 0 && (
+              <div
+                className={`calendar-swipe-page calendar-swipe-next`}
+                style={{ transform: `translateX(${swipeDirection > 0 ? "100%" : "-100%"}) translateX(${swipeOffset}px)` }}
+                aria-hidden="true"
+              >
+                <div className="weekday-row">
+                  {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((weekday) => <span key={weekday}>{weekday}</span>)}
+                </div>
+                <div className={view === "week" ? "days-grid week-days" : "days-grid"}>
+                  {swipeDays.map((day) => dayCell(day, swipeAnchor))}
+                </div>
+              </div>
+            )}
+            <div
+              className="calendar-swipe-page"
+              style={{ transform: `translateX(${swipeOffset}px)` }}
+            >
+              <div className="weekday-row">
+                {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((weekday) => <span key={weekday}>{weekday}</span>)}
+              </div>
+              <div className={view === "week" ? "days-grid week-days" : "days-grid"}>
+                {calendarDays.map((day) => dayCell(day))}
+              </div>
             </div>
           </div>
         )}

@@ -137,6 +137,9 @@ a { color: inherit; text-decoration: none; }
 .availability-icon.occupied, .day-status.occupied { color: #cf4b45; }
 
 .weekday-row, .days-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.calendar-grid { position: relative; }
+.calendar-swipe-page { width: 100%; }
+.calendar-swipe-next { position: absolute; inset: 0 0 auto; }
 .weekday-row { border-bottom: 1px solid var(--line); background: var(--canvas); }
 .weekday-row span { padding: 11px 8px; color: #838d86; font-size: 11px; font-weight: 700; text-align: center; }
 .days-grid { gap: 1px; background: var(--line); }
@@ -310,7 +313,9 @@ a { color: inherit; text-decoration: none; }
   .stat-card strong { font-size: 20px; }
   .stat-card svg { top: 11px; right: 9px; width: 14px; }
   .calendar-panel { border-radius: 12px; }
-  .calendar-grid { touch-action: pan-y; transition: transform .18s cubic-bezier(.22, 1, .36, 1); }
+  .calendar-grid { touch-action: pan-y; overflow: hidden; }
+  .calendar-swipe-page { transition: transform .18s cubic-bezier(.22, 1, .36, 1); }
+  .calendar-grid.is-swiping .calendar-swipe-page { transition: none; }
   .calendar-grid.is-swiping { transition: none; }
   .calendar-toolbar { min-height: 0; flex-direction: column; align-items: stretch; gap: 11px; padding: 13px 12px; }
   .period-heading { justify-content: space-between; gap: 9px; }
