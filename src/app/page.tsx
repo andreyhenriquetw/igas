@@ -1,9 +1,9 @@
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { formatInTimeZone } from "date-fns-tz";
-import { auth } from "@/auth";
 import { AppHeader } from "@/components/app-header";
 import { Calendar } from "@/components/calendar/calendar";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { findEntriesForPeriod } from "@/lib/entries";
 import { getPrisma } from "@/lib/prisma";
 import { TIME_ZONE } from "@/lib/time";
@@ -17,9 +17,9 @@ function currentMonthRange() {
 
 export default async function HomePage() {
   await connection();
-  const session = await auth();
+  const user = await getAuthenticatedUser();
   const prisma = getPrisma();
-  if (!session?.user?.id) {
+  if (!user) {
     redirect((await prisma.user.count()) > 0 ? "/login" : "/setup");
   }
 
@@ -31,7 +31,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <AppHeader user={session.user} current="calendar" />
+      <AppHeader user={user} current="calendar" />
       <Calendar initialEntries={entries} modes={modes} />
     </>
   );

@@ -86,3 +86,14 @@ export const entryStateSchema = z
 export const contractInputSchema = z.object({
   contractText: z.string().trim().min(1, "O contrato não pode ficar vazio.").max(20000),
 });
+
+export const contractAcceptanceInputSchema = z.object({
+  name: z.string().trim().min(1, "Informe seu nome completo.").max(120),
+  cpf: z
+    .string()
+    .trim()
+    .refine((value) => /^\d{11}$|^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(value), {
+      message: "Informe os 11 dígitos do CPF.",
+    }),
+  accepted: z.boolean().refine((value) => value, "Marque a confirmação para registrar o aceite."),
+});

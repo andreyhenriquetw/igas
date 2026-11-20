@@ -1,16 +1,16 @@
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { auth } from "@/auth";
 import { AppHeader } from "@/components/app-header";
 import { TeamSettings } from "@/components/team-settings";
 import { UserRole } from "@/generated/prisma/enums";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { getPrisma } from "@/lib/prisma";
 
 export default async function TeamPage() {
   await connection();
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
-  if (session.user.role !== UserRole.OWNER) redirect("/");
+  const user = await getAuthenticatedUser();
+  if (!user) redirect("/login");
+  if (user.role !== UserRole.OWNER) redirect("/");
 
   const users = await getPrisma().user.findMany({
     select: { id: true, name: true, email: true, role: true, createdAt: true },
@@ -22,7 +22,7 @@ export default async function TeamPage() {
 
   return (
     <>
-      <AppHeader user={session.user} current="team" />
+      <AppHeader user={user} current="team" />
       <main className="app-main settings-main">
         <section className="page-intro">
           <div>

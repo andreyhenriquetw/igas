@@ -40,13 +40,23 @@ export async function PUT(request: Request, context: RouteContext) {
     if (!existing) return NextResponse.json({ error: "Esta reserva não foi encontrada." }, { status: 404 });
     if (existing.kind !== EntryKind.BOOKING) return validationError("Bloqueios não possuem contrato.");
 
-    const entry = await prisma.calendarEntry.update({
-      where: { id },
-      data: {
-        contractText: parsed.data.contractText,
-        contractStatus: ContractStatus.GENERATED,
-      },
-      include: { mode: true },
+    const entry = await prisma.$transaction(async (transaction) => {
+      await transaction.contractAcceptance.updateMany({
+        where: { entryId: id, acceptedAt: null, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      return transaction.calendarEntry.update({
+        where: { id },
+        data: {
+          contractText: parsed.data.contractText,
+          contractStatus: ContractStatus.GENERATED,
+          contractRevision: { increment: 1 },
+          contractAcceptanceExpiresAt: null,
+          contractAcceptedAt: null,
+          contractAcceptedName: null,
+        },
+        include: { mode: true },
+      });
     });
     return NextResponse.json({ entry: serializeEntry(entry) });
   } catch (error) {

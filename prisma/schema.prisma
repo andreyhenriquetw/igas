@@ -64,13 +64,37 @@ model CalendarEntry {
   paidAmount     Decimal?       @db.Decimal(10, 2)
   contractStatus ContractStatus @default(PENDING)
   contractText   String?        @db.Text
+  contractRevision Int          @default(0)
+  contractAcceptanceExpiresAt DateTime? @db.Timestamptz(3)
+  contractAcceptedAt DateTime?  @db.Timestamptz(3)
+  contractAcceptedName String?  @db.VarChar(120)
   notes          String?
   createdById    String
   createdAt      DateTime       @default(now()) @db.Timestamptz(3)
   updatedAt      DateTime       @updatedAt @db.Timestamptz(3)
   mode           ReservationMode? @relation(fields: [modeId], references: [id], onDelete: Restrict)
   createdBy      User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  contractAcceptances ContractAcceptance[]
 
   @@index([startsAt, endsAt])
   @@index([status, startsAt])
+}
+
+model ContractAcceptance {
+  id               String        @id @default(cuid())
+  entryId          String
+  tokenHash        String        @unique @db.VarChar(64)
+  contractRevision Int
+  contractText     String        @db.Text
+  guestName        String        @db.VarChar(120)
+  guestCpf         String        @db.VarChar(14)
+  expiresAt        DateTime      @db.Timestamptz(3)
+  acceptedAt       DateTime?     @db.Timestamptz(3)
+  acceptedName     String?       @db.VarChar(120)
+  acceptedCpf      String?       @db.VarChar(14)
+  revokedAt        DateTime?     @db.Timestamptz(3)
+  createdAt        DateTime      @default(now()) @db.Timestamptz(3)
+  entry            CalendarEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@index([entryId, contractRevision, createdAt])
 }

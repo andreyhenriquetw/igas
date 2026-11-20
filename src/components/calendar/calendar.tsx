@@ -11,9 +11,12 @@ import {
   CheckCircle2,
   CircleX,
   Clock3,
+  Copy,
   Download,
   FileCheck2,
   List,
+  Link2,
+  MessageCircle,
   Pencil,
   Plus,
   Save,
@@ -30,9 +33,15 @@ import {
   type TouchEvent,
 } from "react";
 import { TIME_ZONE, formatLocalDateTime, localDayBoundaryToUtc } from "@/lib/time";
-import { buildContractText, downloadContractPdf } from "@/lib/contract";
+import {
+  buildContractText,
+  downloadAcceptedContractPdf,
+  downloadContractPdf,
+  personalizeContractText,
+} from "@/lib/contract";
 import { changeKey, getWeekStart, monthBounds } from "@/lib/calendar-dates";
 import { getPaymentStatus, hasPaidAtLeastHalf } from "@/lib/payment";
+import { toWhatsAppPhoneNumber } from "@/lib/whatsapp";
 import type {
   CalendarEntryDto,
   EntryStatus,
@@ -60,6 +69,14 @@ type Draft = {
   status: "PENDING" | "CONFIRMED";
   notes: string;
 };
+
+function contractSignatureData(entry: CalendarEntryDto) {
+  return {
+    landlordAcceptedAt: entry.landlordAcceptedAt,
+    tenantAcceptedName: entry.contractAcceptedName,
+    tenantAcceptedAt: entry.contractAcceptedAt,
+  };
+}
 
 const money = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -169,6 +186,8 @@ export function Calendar({ initialEntries, modes }: Props) {
   const [loading, setLoading] = useState(false);
   const [contractBusy, setContractBusy] = useState(false);
   const [contractDraft, setContractDraft] = useState("");
+  const [acceptanceBusy, setAcceptanceBusy] = useState(false);
+  const [acceptanceLink, setAcceptanceLink] = useState<{ entryId: string; url: string; expiresAt: string } | null>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
@@ -182,7 +201,9 @@ export function Calendar({ initialEntries, modes }: Props) {
     );
     const result = await response.json();
     if (!response.ok) throw new Error(result.error ?? "Não foi possível atualizar a agenda.");
-    setEntries(result.entries as CalendarEntryDto[]);
+    const updatedEntries = result.entries as CalendarEntryDto[];
+    setEntries(updatedEntries);
+    setSelected((current) => current ? updatedEntries.find((entry) => entry.id === current.id) ?? current : null);
     setSyncError("");
   }, [periodEnd, periodStart]);
 
@@ -215,7 +236,9 @@ export function Calendar({ initialEntries, modes }: Props) {
   }, [message]);
 
   const filtered = useMemo(
-    () => entries.filter((entry) => statusFilter === "ALL" || entry.status === statusFilter),
+    () => entries.filter((entry) => statusFilter === "ALL"
+      ? entry.status !== "CANCELLED"
+      : entry.status === statusFilter),
     [entries, statusFilter],
   );
   const sortedEntries = useMemo(
@@ -374,6 +397,7 @@ export function Calendar({ initialEntries, modes }: Props) {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível salvar.");
+      setAcceptanceLink(null);
       setModal(null);
       setSelected(result.entry as CalendarEntryDto);
       setMessage(editingId ? "Alterações salvas." : "Entrada adicionada à agenda.");
@@ -397,9 +421,17 @@ export function Calendar({ initialEntries, modes }: Props) {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível atualizar.");
-      setSelected(result.entry as CalendarEntryDto);
-      setEntries((current) => current.map((entry) => entry.id === selected.id ? result.entry : entry));
-      setMessage("Situação atualizada.");
+      const updatedEntry = result.entry as CalendarEntryDto;
+      setEntries((current) => current.map((entry) => entry.id === selected.id ? updatedEntry : entry));
+      if (patch.status === "CANCELLED") {
+        setAcceptanceLink(null);
+        setSelected(null);
+        setModal(null);
+        setMessage(selected.kind === "BLOCK" ? "Bloqueio removido da agenda." : "Reserva cancelada e removida da agenda.");
+      } else {
+        setSelected(updatedEntry);
+        setMessage("Situação atualizada.");
+      }
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Não foi possível atualizar.");
     } finally {
@@ -414,7 +446,7 @@ export function Calendar({ initialEntries, modes }: Props) {
       const response = await fetch(`/api/entries/${entry.id}/contract`, { cache: "no-store" });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível carregar o contrato.");
-      setContractDraft(result.contractText ?? buildContractText(entry));
+      setContractDraft(personalizeContractText(result.contractText ?? buildContractText(entry), entry));
       setSelected(entry);
       setModal("contract");
     } catch (contractError) {
@@ -442,6 +474,7 @@ export function Calendar({ initialEntries, modes }: Props) {
     setError("");
     try {
       const entry = await persistContract(selected, contractDraft);
+      setAcceptanceLink(null);
       setSelected(entry);
       setEntries((current) => current.map((item) => item.id === entry.id ? entry : item));
       setModal("details");
@@ -460,9 +493,9 @@ export function Calendar({ initialEntries, modes }: Props) {
       const response = await fetch(`/api/entries/${entry.id}/contract`, { cache: "no-store" });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível carregar o contrato.");
-      const contractText = result.contractText ?? buildContractText(entry);
+      const contractText = personalizeContractText(result.contractText ?? buildContractText(entry), entry);
       const updatedEntry = result.contractText ? entry : await persistContract(entry, contractText);
-      downloadContractPdf(contractText, entry.guestName ?? "reserva");
+      downloadContractPdf(contractText, entry.guestName ?? "reserva", contractSignatureData(entry));
       setSelected(updatedEntry);
       setEntries((current) => current.map((item) => item.id === updatedEntry.id ? updatedEntry : item));
       setMessage("Contrato baixado em PDF.");
@@ -470,6 +503,81 @@ export function Calendar({ initialEntries, modes }: Props) {
       setError(contractError instanceof Error ? contractError.message : "Não foi possível baixar o contrato.");
     } finally {
       setContractBusy(false);
+    }
+  }
+
+  async function sendAcceptedContractViaWhatsApp(entry: CalendarEntryDto) {
+    if (entry.contractAcceptanceStatus !== "ACCEPTED" || !entry.contractAcceptedAt) {
+      setError("O contrato ainda não tem aceite registrado.");
+      return;
+    }
+
+    const phoneNumber = toWhatsAppPhoneNumber(entry.guestContact ?? "");
+    if (!phoneNumber) {
+      setError("Cadastre um telefone válido com DDD na reserva antes de enviar pelo WhatsApp.");
+      return;
+    }
+
+    const whatsappWindow = window.open("about:blank", "_blank");
+    if (!whatsappWindow) {
+      setError("Permita a abertura de pop-ups para preparar o envio pelo WhatsApp.");
+      return;
+    }
+    whatsappWindow.opener = null;
+
+    setContractBusy(true);
+    setError("");
+    try {
+      const response = await fetch(`/api/entries/${entry.id}/contract`, { cache: "no-store" });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "Não foi possível carregar o contrato.");
+
+      const contractText = personalizeContractText(result.contractText ?? buildContractText(entry), entry);
+      downloadAcceptedContractPdf(
+        contractText,
+        entry.guestName ?? "reserva",
+        contractSignatureData(entry),
+      );
+
+      const acceptedAt = formatLocalDateTime(entry.contractAcceptedAt, "dd/MM/yyyy 'às' HH:mm");
+      const message = `Olá, ${entry.guestName ?? "tudo bem"}! Segue o contrato da sua reserva no ÍGAS, com o aceite registrado em ${acceptedAt}.`;
+      whatsappWindow.location.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+      setMessage("PDF baixado. Anexe-o na conversa do WhatsApp e toque em enviar.");
+    } catch (sendError) {
+      whatsappWindow.close();
+      setError(sendError instanceof Error ? sendError.message : "Não foi possível preparar o contrato para envio.");
+    } finally {
+      setContractBusy(false);
+    }
+  }
+
+  async function generateAcceptanceLink(entry: CalendarEntryDto) {
+    setAcceptanceBusy(true);
+    setError("");
+    try {
+      const response = await fetch(`/api/entries/${entry.id}/acceptance-link`, { method: "POST" });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "Não foi possível gerar o link de aceite.");
+      const updatedEntry = result.entry as CalendarEntryDto;
+      const url = `${window.location.origin}/contrato/aceite/${result.token as string}`;
+      setAcceptanceLink({ entryId: entry.id, url, expiresAt: result.expiresAt as string });
+      setSelected(updatedEntry);
+      setEntries((current) => current.map((item) => item.id === updatedEntry.id ? updatedEntry : item));
+      setMessage("Link de aceite criado. Copie e envie ao cliente.");
+    } catch (linkError) {
+      setError(linkError instanceof Error ? linkError.message : "Não foi possível gerar o link de aceite.");
+    } finally {
+      setAcceptanceBusy(false);
+    }
+  }
+
+  async function copyAcceptanceLink(url: string) {
+    setError("");
+    try {
+      await navigator.clipboard.writeText(url);
+      setMessage("Link de aceite copiado.");
+    } catch {
+      setError("Não foi possível copiar automaticamente. Selecione o link exibido e copie manualmente.");
     }
   }
 
@@ -734,6 +842,26 @@ export function Calendar({ initialEntries, modes }: Props) {
                   <div><small>Valor pago</small><strong>{money.format(selected.paidAmount ?? 0)}</strong></div>
                   <div><small>Saldo restante</small><strong>{money.format((selected.totalAmount ?? 0) - (selected.paidAmount ?? 0))}</strong></div>
                   <div><small>Pagou pelo menos 50%?</small><strong>{hasPaidAtLeastHalf(selected.totalAmount ?? 0, selected.paidAmount ?? 0) ? "Sim" : "Ainda não"}</strong></div>
+                  <div>
+                    <small>Aceite do contrato</small>
+                    <strong>
+                      {selected.status === "CANCELLED"
+                        ? "Reserva cancelada"
+                        : selected.contractAcceptanceStatus === "ACCEPTED"
+                        ? `Aceito por ${selected.contractAcceptedName ?? selected.guestName}`
+                        : selected.contractAcceptanceStatus === "PENDING"
+                          ? "Aguardando aceite do cliente"
+                          : selected.contractAcceptanceStatus === "EXPIRED"
+                            ? "Link de aceite expirado"
+                            : "Link de aceite ainda não enviado"}
+                    </strong>
+                    {selected.contractAcceptedAt && (
+                      <small>{formatLocalDateTime(selected.contractAcceptedAt, "dd/MM/yyyy 'às' HH:mm")}</small>
+                    )}
+                    {selected.contractAcceptanceStatus === "PENDING" && selected.contractAcceptanceExpiresAt && (
+                      <small>Válido até {formatLocalDateTime(selected.contractAcceptanceExpiresAt, "dd/MM/yyyy 'às' HH:mm")}</small>
+                    )}
+                  </div>
                 </div>
               )}
               {selected.notes && <div className="notes-box"><small>Observações</small><p>{selected.notes}</p></div>}
@@ -753,6 +881,24 @@ export function Calendar({ initialEntries, modes }: Props) {
                     <button className="button button-primary" type="button" disabled={contractBusy || loading} onClick={() => void downloadContract(selected)}>
                       <Download size={16} /> {contractBusy ? "Preparando…" : "Baixar contrato PDF"}
                     </button>
+                    <button
+                      className="button button-secondary"
+                      type="button"
+                      disabled={acceptanceBusy || loading || selected.status === "CANCELLED" || !selected.guestCpf || selected.contractAcceptanceStatus === "ACCEPTED"}
+                      onClick={() => void generateAcceptanceLink(selected)}
+                    >
+                      <Link2 size={16} /> {acceptanceBusy ? "Gerando link…" : selected.contractAcceptanceStatus === "PENDING" ? "Gerar novo link" : "Gerar link de aceite"}
+                    </button>
+                    {selected.contractAcceptanceStatus === "ACCEPTED" && (
+                      <button
+                        className="button button-secondary"
+                        type="button"
+                        disabled={contractBusy || loading || !toWhatsAppPhoneNumber(selected.guestContact ?? "")}
+                        onClick={() => void sendAcceptedContractViaWhatsApp(selected)}
+                      >
+                        <MessageCircle size={16} /> {contractBusy ? "Preparando…" : "Enviar contrato aceito via WhatsApp"}
+                      </button>
+                    )}
                   </>
                 )}
                 {selected.status !== "CANCELLED" && (
@@ -775,6 +921,29 @@ export function Calendar({ initialEntries, modes }: Props) {
                   </button>
                 )}
               </div>
+              {selected.kind === "BOOKING" && (
+                <div className="acceptance-link-panel">
+                  {selected.contractAcceptanceStatus === "ACCEPTED" && !toWhatsAppPhoneNumber(selected.guestContact ?? "") && (
+                    <p className="muted">Cadastre um telefone válido com DDD nos dados da reserva para enviar o contrato pelo WhatsApp.</p>
+                  )}
+                  <p className="muted contract-signing-help">
+                    {selected.status === "CANCELLED"
+                      ? "Reservas canceladas não podem receber novos links de aceite."
+                      : selected.guestCpf
+                      ? "Envie o link ao locatário. Ele poderá conferir o contrato e registrar o aceite por 7 dias. Esse registro é interno ao ÍGAS, não uma assinatura gov.br."
+                      : "Cadastre o CPF do locatário para poder gerar um link de aceite."}
+                  </p>
+                  {acceptanceLink?.entryId === selected.id && (
+                    <div className="acceptance-link-row">
+                      <input aria-label="Link de aceite do contrato" readOnly value={acceptanceLink.url} onFocus={(event) => event.currentTarget.select()} />
+                      <button className="button button-secondary" type="button" onClick={() => void copyAcceptanceLink(acceptanceLink.url)}>
+                        <Copy size={16} /> Copiar
+                      </button>
+                      <small>Expira em {formatLocalDateTime(acceptanceLink.expiresAt, "dd/MM/yyyy 'às' HH:mm")}</small>
+                    </div>
+                  )}
+                </div>
+              )}
             </section>
           ) : modal === "contract" && selected ? (
             <section className="modal-card contract-modal" role="dialog" aria-modal="true" aria-labelledby="contract-title">
@@ -786,7 +955,7 @@ export function Calendar({ initialEntries, modes }: Props) {
                 <button className="icon-button" type="button" onClick={() => { setError(""); setModal("details"); }} aria-label="Voltar aos detalhes"><X size={20} /></button>
               </div>
               <p className="muted contract-help">
-                Revise os dados e complete as condições específicas do estabelecimento. O texto salvo será usado no PDF desta reserva.
+                Revise as condições do estabelecimento. Nome, CPF, modalidade, datas, horários e valores são atualizados automaticamente com os dados desta reserva.
               </p>
               <form className="form-stack modal-form" onSubmit={saveContract}>
                 <label className="field">

@@ -1,6 +1,7 @@
 export type EntryStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "BLOCKED";
 export type EntryKind = "BOOKING" | "BLOCK";
 export type ContractStatus = "PENDING" | "GENERATED";
+export type ContractAcceptanceStatus = "NONE" | "PENDING" | "ACCEPTED" | "EXPIRED";
 
 export type ReservationModeDto = {
   id: string;
@@ -25,6 +26,11 @@ export type CalendarEntryDto = {
   totalAmount: number | null;
   paidAmount: number | null;
   contractStatus: ContractStatus;
+  contractAcceptanceStatus: ContractAcceptanceStatus;
+  contractAcceptanceExpiresAt: string | null;
+  landlordAcceptedAt: string | null;
+  contractAcceptedAt: string | null;
+  contractAcceptedName: string | null;
   notes: string | null;
   createdById: string;
   createdAt: string;

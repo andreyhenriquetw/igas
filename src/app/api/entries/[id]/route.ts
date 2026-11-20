@@ -24,12 +24,21 @@ export async function PATCH(request: Request, context: RouteContext) {
       return validationError("Um bloqueio só pode ser liberado.");
     }
 
-    const entry = await prisma.calendarEntry.update({
-      where: { id },
-      data: {
-        ...(parsed.data.status !== undefined && { status: parsed.data.status as EntryStatus }),
-      },
-      include: { mode: true },
+    const entry = await prisma.$transaction(async (transaction) => {
+      if (parsed.data.status === "CANCELLED" && existing.kind === EntryKind.BOOKING) {
+        await transaction.contractAcceptance.updateMany({
+          where: { entryId: id, acceptedAt: null, revokedAt: null },
+          data: { revokedAt: new Date() },
+        });
+      }
+      return transaction.calendarEntry.update({
+        where: { id },
+        data: {
+          ...(parsed.data.status !== undefined && { status: parsed.data.status as EntryStatus }),
+          ...(parsed.data.status === "CANCELLED" && { contractAcceptanceExpiresAt: null }),
+        },
+        include: { mode: true },
+      });
     });
     return NextResponse.json({ entry: serializeEntry(entry) });
   } catch (error) {
@@ -104,10 +113,22 @@ export async function PUT(request: Request, context: RouteContext) {
             notes: parsed.data.notes,
           };
 
-    const entry = await prisma.calendarEntry.update({
-      where: { id },
-      data,
-      include: { mode: true },
+    const entry = await prisma.$transaction(async (transaction) => {
+      await transaction.contractAcceptance.updateMany({
+        where: { entryId: id, acceptedAt: null, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      return transaction.calendarEntry.update({
+        where: { id },
+        data: {
+          ...data,
+          contractRevision: { increment: 1 },
+          contractAcceptanceExpiresAt: null,
+          contractAcceptedAt: null,
+          contractAcceptedName: null,
+        },
+        include: { mode: true },
+      });
     });
     return NextResponse.json({ entry: serializeEntry(entry) });
   } catch (error) {

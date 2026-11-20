@@ -24,7 +24,8 @@ O arquivo `.env.local` não deve ser compartilhado nem enviado ao Git.
 - Horários e durações padrão podem ser editados em **Modalidades**; cada reserva também guarda seus próprios horários.
 - Uma restrição PostgreSQL impede sobreposição de reservas pendentes/confirmadas e bloqueios, inclusive em transações simultâneas. Cancelamentos liberam o horário.
 - Valores são armazenados em BRL. A situação do pagamento é derivada do valor pago e total.
-- Cada reserva pode ter um contrato próprio, editável e baixado em PDF. O texto e o status de geração ficam salvos na reserva.
+- Cada reserva pode ter um contrato próprio, editável e baixado em PDF. O modelo de locação inclui as condições do espaço e atualiza automaticamente nome, CPF, modalidade, datas, horários e valores com os dados da reserva; o texto e o status de geração ficam salvos nela.
+- O sistema também pode gerar um link de aceite do contrato, válido por sete dias. O cliente confirma o nome, CPF e concordância com o contrato; esse registro é interno ao ÍGAS e não equivale a uma assinatura gov.br ou certificado digital. O PDF registra automaticamente o aceite do locador no horário de criação da reserva; o aceite do locatário só aparece após a confirmação pelo link. O PDF posiciona cada registro acima da assinatura correspondente. Após o aceite do locatário, a agenda permite baixar o PDF e abrir uma conversa no WhatsApp do contato cadastrado; é necessário anexar o PDF e enviar manualmente. A migração correspondente precisa estar aplicada para habilitar o recurso.
 - Instantes são persistidos em UTC e apresentados no fuso `America/Sao_Paulo`.
 
 ## Sincronização
