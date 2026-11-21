@@ -5486,20 +5486,20 @@ body {
 }
 
 :root[data-theme="dark"] .reports-main .report-kpi-received .stat-icon svg {
-  color: #34785b;
-  stroke: #34785b;
+  color: #1f5a40 !important;
+  stroke: #1f5a40 !important;
 }
 :root[data-theme="dark"] .reports-main .report-kpi-outstanding .stat-icon svg {
-  color: #9a671c;
-  stroke: #9a671c;
+  color: #80540f !important;
+  stroke: #80540f !important;
 }
 :root[data-theme="dark"] .reports-main .report-kpi-settled .stat-icon svg {
-  color: #3174b5;
-  stroke: #3174b5;
+  color: #1f5a8e !important;
+  stroke: #1f5a8e !important;
 }
 :root[data-theme="dark"] .reports-main .report-kpi-cancelled .stat-icon svg {
-  color: #ad4d4a;
-  stroke: #ad4d4a;
+  color: #873a3b !important;
+  stroke: #873a3b !important;
 }
 
 :root[data-theme="dark"] .report-kpi-settled .report-kpi-heading svg {
@@ -5614,5 +5614,685 @@ body {
     letter-spacing: -0.025em;
     text-overflow: clip;
   }
+}
+
+.reservation-form-modal,
+.reservation-details-modal {
+  border-top: 4px solid #2582ce;
+  border-radius: 20px;
+  box-shadow: 0 22px 60px rgb(23 61 94 / 20%);
+}
+.reservation-form-modal .modal-heading,
+.reservation-details-modal .modal-heading {
+  align-items: center;
+  gap: 13px;
+  margin: -20px -24px 20px;
+  padding: 25px 24px 18px;
+  border-bottom: 1px solid rgb(48 125 178 / 16%);
+  background:
+    radial-gradient(circle at 100% 0, rgb(70 163 217 / 14%), transparent 42%),
+    linear-gradient(135deg, #f2f9ff, #ffffff 68%);
+}
+.reservation-form-modal .modal-heading > div,
+.reservation-details-modal .modal-heading > div {
+  min-width: 0;
+  flex: 1;
+}
+.reservation-modal-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgb(42 130 196 / 22%);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #e8f5ff, #d6ebfb);
+  color: #267cba;
+  box-shadow: 0 6px 16px rgb(38 124 186 / 12%);
+}
+.reservation-form-modal .modal-heading h2,
+.reservation-details-modal .modal-heading h2 {
+  overflow-wrap: anywhere;
+  font-size: clamp(19px, 3vw, 23px);
+}
+.reservation-form-modal .eyebrow,
+.reservation-details-modal .eyebrow {
+  color: #6085a0;
+}
+.reservation-form-modal .entry-kind-switch {
+  gap: 6px;
+  margin: 0 0 18px;
+  padding: 5px;
+  border: 1px solid #dceaf5;
+  border-radius: 12px;
+  background: #f1f7fc;
+}
+.reservation-form-modal .entry-kind-switch button {
+  min-height: 38px;
+  border-radius: 9px;
+  color: #657b8c;
+  transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+.reservation-form-modal .entry-kind-switch button.selected {
+  background: #fff;
+  color: #216ca6;
+  box-shadow: 0 2px 8px rgb(28 82 125 / 12%);
+}
+.reservation-form-modal .modal-form {
+  gap: 15px;
+}
+.reservation-form-modal .field {
+  gap: 7px;
+  color: #4c6578;
+  font-size: 12px;
+  font-weight: 700;
+}
+.reservation-form-modal .field input,
+.reservation-form-modal .field select,
+.reservation-form-modal .field textarea {
+  min-height: 45px;
+  border-color: #d7e5ef;
+  border-radius: 11px;
+  background: #f9fcff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.reservation-form-modal .field textarea {
+  min-height: 82px;
+}
+.reservation-form-modal .field input:focus,
+.reservation-form-modal .field select:focus,
+.reservation-form-modal .field textarea:focus {
+  border-color: #4a9bd0;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgb(51 140 196 / 14%);
+}
+.reservation-form-modal .field-row {
+  gap: 13px;
+}
+.reservation-form-modal .payment-hint {
+  margin: -5px 0 0;
+  padding: 9px 11px;
+  border: 1px solid #f0dfbd;
+  border-radius: 10px;
+  background: #fff8eb;
+}
+.reservation-form-modal .payment-hint.paid {
+  border-color: #cce5d2;
+  background: #f0f8f2;
+}
+.reservation-form-modal .modal-actions,
+.reservation-details-modal .detail-actions {
+  margin-top: 5px;
+  padding-top: 17px;
+  border-top: 1px solid #e1eaf1;
+}
+.reservation-form-modal .button-primary,
+.reservation-details-modal .button-primary {
+  background: linear-gradient(135deg, #2579c9, #1689b9);
+  box-shadow: 0 5px 14px rgb(37 121 201 / 20%);
+}
+.reservation-form-modal .button-primary:hover:not(:disabled),
+.reservation-details-modal .button-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d67ae, #11769f);
+}
+.reservation-details-modal .detail-datetime {
+  border: 1px solid #dcebf5;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #eef8ff, #f7fbff);
+}
+.reservation-details-modal .detail-grid {
+  gap: 10px;
+}
+.reservation-details-modal .detail-grid > div {
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid #e1eaf1;
+  border-radius: 11px;
+  background: #fbfdff;
+}
+.reservation-details-modal .detail-grid small,
+.reservation-details-modal .notes-box small {
+  color: #71879a;
+}
+.reservation-details-modal .detail-grid strong {
+  line-height: 1.4;
+}
+.reservation-details-modal .notes-box {
+  border-color: #dce8f0;
+  border-radius: 12px;
+  background: #f8fbfd;
+}
+.reservation-details-modal .notes-box p {
+  color: #40586b;
+}
+
+.reservation-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.reservation-details-modal .detail-datetime-card {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  margin: 0;
+  padding: 12px;
+  color: #60768a;
+}
+.detail-date-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 11px;
+  background: #dceffc;
+  color: #277eb9;
+}
+.detail-datetime-card > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+.detail-datetime-card > div small,
+.detail-section-heading small,
+.detail-info-grid small,
+.payment-summary small,
+.contract-status-card small {
+  color: #7a8e9d;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.detail-datetime-card > div strong {
+  overflow: hidden;
+  color: #294458;
+  font-size: 12px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+}
+.detail-datetime-card > div span {
+  color: #537089;
+  font-size: 13px;
+  font-weight: 800;
+}
+.detail-status {
+  align-self: start;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #e8f1f7;
+  color: #527187;
+  font-size: 9px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.detail-status-confirmed {
+  background: #dff2e6;
+  color: #247246;
+}
+.detail-status-pending {
+  background: #fff1d7;
+  color: #976d20;
+}
+.detail-status-cancelled {
+  background: #fde5e5;
+  color: #a94a4a;
+}
+.detail-section {
+  overflow: hidden;
+  border: 1px solid #e1eaf1;
+  border-radius: 13px;
+  background: #fff;
+}
+.detail-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 42px;
+  padding: 9px 12px;
+  border-bottom: 1px solid #edf2f5;
+  background: #fbfdff;
+  color: #355267;
+  font-size: 12px;
+  font-weight: 800;
+}
+.detail-section-heading small {
+  max-width: 58%;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: none;
+}
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+.detail-info-grid > div {
+  display: flex;
+  min-height: 58px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border-right: 1px solid #edf2f5;
+  border-bottom: 1px solid #edf2f5;
+}
+.detail-info-grid > div:nth-child(2n) {
+  border-right: 0;
+}
+.detail-info-grid > div:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+.detail-info-grid .detail-full {
+  grid-column: 1 / -1;
+  border-right: 0;
+}
+.detail-info-grid strong {
+  color: #294458;
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.payment-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: #edf2f5;
+}
+.payment-summary > div {
+  display: flex;
+  min-width: 0;
+  min-height: 66px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px 12px;
+  background: #fff;
+}
+.payment-summary strong {
+  color: #294458;
+  font-size: 13px;
+}
+.payment-summary .payment-balance {
+  color: #9b6532;
+}
+.payment-state {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #fff1d7;
+  color: #976d20;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.payment-state-paid {
+  background: #dff2e6;
+  color: #247246;
+}
+.payment-progress {
+  height: 5px;
+  background: #edf2f5;
+}
+.payment-progress span {
+  display: block;
+  height: 100%;
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(90deg, #3a9a68, #65bd82);
+  transition: width 0.2s ease;
+}
+.contract-status-card {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid #dce7ed;
+  border-radius: 13px;
+  background: #f8fbfd;
+}
+.contract-status-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 10px;
+  background: #e7f1f8;
+  color: #2a7dad;
+}
+.contract-status-card > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+.contract-status-card strong {
+  color: #355267;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.contract-status-card > div span {
+  color: #7a8e9d;
+  font-size: 10px;
+}
+.reservation-details-modal .notes-box {
+  margin: 0;
+}
+
+:root[data-theme="dark"] .reservation-form-modal,
+:root[data-theme="dark"] .reservation-details-modal {
+  border-top-color: #579be0;
+  box-shadow: 0 22px 60px rgb(0 0 0 / 42%);
+}
+:root[data-theme="dark"] .reservation-form-modal .modal-heading,
+:root[data-theme="dark"] .reservation-details-modal .modal-heading {
+  border-bottom-color: #2d426b;
+  background:
+    radial-gradient(circle at 100% 0, rgb(83 131 203 / 16%), transparent 42%),
+    linear-gradient(135deg, #15294c, #111e3b 72%);
+}
+:root[data-theme="dark"] .reservation-modal-icon {
+  border-color: #3a5a89;
+  background: linear-gradient(145deg, #203e6a, #1a3157);
+  color: #a9c8ee;
+  box-shadow: 0 6px 16px rgb(0 0 0 / 25%);
+}
+:root[data-theme="dark"] .reservation-form-modal .eyebrow,
+:root[data-theme="dark"] .reservation-details-modal .eyebrow,
+:root[data-theme="dark"] .reservation-form-modal .field {
+  color: #a9bad6;
+}
+:root[data-theme="dark"] .reservation-form-modal .entry-kind-switch {
+  border-color: #2d426b;
+  background: #0e1a34;
+}
+:root[data-theme="dark"] .reservation-form-modal .entry-kind-switch button {
+  color: #a4b3ce;
+}
+:root[data-theme="dark"] .reservation-form-modal .entry-kind-switch button.selected {
+  background: #263d66;
+  color: #dceaff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 26%);
+}
+:root[data-theme="dark"] .reservation-form-modal .field input,
+:root[data-theme="dark"] .reservation-form-modal .field select,
+:root[data-theme="dark"] .reservation-form-modal .field textarea {
+  border-color: #34496f;
+  background: #0d1a35;
+  color: #edf4ff;
+}
+:root[data-theme="dark"] .reservation-form-modal .field input:focus,
+:root[data-theme="dark"] .reservation-form-modal .field select:focus,
+:root[data-theme="dark"] .reservation-form-modal .field textarea:focus {
+  border-color: #6da9e8;
+  background: #101f3e;
+  box-shadow: 0 0 0 3px rgb(88 143 210 / 20%);
+}
+:root[data-theme="dark"] .reservation-form-modal .payment-hint {
+  border-color: #66502e;
+  background: #322a20;
+  color: #e8c982;
+}
+:root[data-theme="dark"] .reservation-form-modal .payment-hint.paid {
+  border-color: #315b4b;
+  background: #18352d;
+  color: #a8d7bd;
+}
+:root[data-theme="dark"] .reservation-form-modal .modal-actions,
+:root[data-theme="dark"] .reservation-details-modal .detail-actions {
+  border-top-color: #2d426b;
+}
+:root[data-theme="dark"] .reservation-details-modal .detail-datetime {
+  border-color: #2e4a77;
+  background: linear-gradient(135deg, #192e53, #142442);
+}
+:root[data-theme="dark"] .reservation-details-modal .detail-grid > div {
+  border-color: #2d426b;
+  background: #142442;
+}
+:root[data-theme="dark"] .reservation-details-modal .detail-grid small,
+:root[data-theme="dark"] .reservation-details-modal .notes-box small {
+  color: #9fb2d2;
+}
+:root[data-theme="dark"] .reservation-details-modal .notes-box {
+  border-color: #2d426b;
+  background: #142442;
+}
+:root[data-theme="dark"] .reservation-details-modal .notes-box p {
+  color: #d4dfef;
+}
+:root[data-theme="dark"] .reservation-details-modal .detail-datetime-card {
+  color: #adc0d8;
+}
+:root[data-theme="dark"] .detail-date-icon {
+  background: #1d3b61;
+  color: #9bc3e8;
+}
+:root[data-theme="dark"] .detail-datetime-card > div strong,
+:root[data-theme="dark"] .detail-info-grid strong,
+:root[data-theme="dark"] .payment-summary strong,
+:root[data-theme="dark"] .contract-status-card strong {
+  color: #dfe9f7;
+}
+:root[data-theme="dark"] .detail-datetime-card > div span {
+  color: #bdcce0;
+}
+:root[data-theme="dark"] .detail-section,
+:root[data-theme="dark"] .contract-status-card {
+  border-color: #2d426b;
+  background: #142442;
+}
+:root[data-theme="dark"] .detail-section-heading {
+  border-bottom-color: #2d426b;
+  background: #182b50;
+  color: #d8e5f6;
+}
+:root[data-theme="dark"] .detail-info-grid > div,
+:root[data-theme="dark"] .detail-info-grid > div:nth-last-child(-n + 2) {
+  border-color: #2d426b;
+}
+:root[data-theme="dark"] .payment-summary {
+  background: #2d426b;
+}
+:root[data-theme="dark"] .payment-summary > div,
+:root[data-theme="dark"] .payment-progress {
+  background: #142442;
+}
+:root[data-theme="dark"] .payment-summary .payment-balance {
+  color: #e4b77d;
+}
+:root[data-theme="dark"] .contract-status-icon {
+  background: #203a60;
+  color: #9bc3e8;
+}
+:root[data-theme="dark"] .detail-datetime-card > div small,
+:root[data-theme="dark"] .detail-section-heading small,
+:root[data-theme="dark"] .detail-info-grid small,
+:root[data-theme="dark"] .payment-summary small,
+:root[data-theme="dark"] .contract-status-card small,
+:root[data-theme="dark"] .contract-status-card > div span {
+  color: #9fb2d2;
+}
+
+@media (max-width: 680px) {
+  .reservation-form-modal .modal-heading,
+  .reservation-details-modal .modal-heading {
+    margin: -15px -16px 17px;
+    padding: 21px 16px 16px;
+  }
+  .reservation-modal-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+  .reservation-form-modal .modal-form {
+    gap: 13px;
+  }
+  .reservation-form-modal .field-row {
+    gap: 9px;
+  }
+  .reservation-details-modal .detail-grid > div {
+    padding: 9px;
+  }
+  .reservation-details-modal .detail-datetime-card {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+  .detail-date-icon {
+    width: 38px;
+    height: 38px;
+  }
+  .reservation-details-modal .detail-status {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .detail-info-grid {
+    grid-template-columns: 1fr;
+  }
+  .detail-info-grid > div,
+  .detail-info-grid > div:nth-child(2n),
+  .detail-info-grid > div:nth-last-child(-n + 2) {
+    min-height: 52px;
+    border-right: 0;
+    border-bottom: 1px solid #edf2f5;
+  }
+  .detail-info-grid > div:last-child {
+    border-bottom: 0;
+  }
+  .payment-summary {
+    grid-template-columns: 1fr;
+  }
+  .payment-summary > div {
+    min-height: 58px;
+  }
+  :root[data-theme="dark"] .detail-info-grid > div,
+  :root[data-theme="dark"] .detail-info-grid > div:nth-child(2n),
+  :root[data-theme="dark"] .detail-info-grid > div:nth-last-child(-n + 2) {
+    border-color: #2d426b;
+  }
+}
+
+/* Reservation details: stable spacing and alignment on all screen sizes */
+.reservation-details-modal .reservation-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.reservation-details-modal .detail-datetime-card {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 13px;
+}
+.reservation-details-modal .detail-datetime-card > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+.reservation-details-modal .reservation-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+.reservation-details-modal .reservation-detail-grid > div {
+  display: flex;
+  min-width: 0;
+  min-height: 68px;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 6px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #dfe8ee;
+  border-radius: 11px;
+  background: #fbfdfe;
+}
+.reservation-details-modal .reservation-detail-grid .detail-full {
+  grid-column: 1 / -1;
+  min-height: 72px;
+}
+.reservation-details-modal .reservation-detail-grid small {
+  display: block;
+  margin: 0;
+  color: #71879a;
+  font-size: 10px;
+  line-height: 1.2;
+}
+.reservation-details-modal .reservation-detail-grid strong {
+  display: block;
+  margin: 0;
+  color: #294458;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.reservation-details-modal .reservation-detail-grid > div > span {
+  display: block;
+  color: #71879a;
+  font-size: 10px;
+  line-height: 1.35;
+}
+.reservation-details-modal .notes-box {
+  margin: 0;
+  padding: 14px;
+}
+.reservation-details-modal .detail-actions {
+  margin-top: 16px;
+  padding-top: 14px;
+}
+.reservation-details-modal .acceptance-link-panel {
+  margin-top: 14px;
+}
+
+@media (max-width: 480px) {
+  .reservation-details-modal {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .reservation-details-modal .detail-datetime-card {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 10px;
+  }
+  .reservation-details-modal .detail-status {
+    grid-column: 2;
+  }
+  .reservation-details-modal .reservation-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .reservation-details-modal .reservation-detail-grid > div {
+    min-height: 64px;
+    padding: 10px;
+  }
+  .reservation-details-modal .reservation-detail-grid .detail-full {
+    min-height: 68px;
+  }
+  .reservation-details-modal .detail-actions {
+    gap: 8px;
+  }
+  .reservation-details-modal .detail-actions .button {
+    min-height: 44px;
+  }
+}
+
+:root[data-theme="dark"] .reservation-details-modal .reservation-detail-grid > div {
+  border-color: #2d426b;
+  background: #142442;
+}
+:root[data-theme="dark"] .reservation-details-modal .reservation-detail-grid strong {
+  color: #dfe9f7;
+}
+:root[data-theme="dark"] .reservation-details-modal .reservation-detail-grid small,
+:root[data-theme="dark"] .reservation-details-modal .reservation-detail-grid > div > span {
+  color: #9fb2d2;
 }
 

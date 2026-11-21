@@ -846,53 +846,67 @@ export function Calendar({ initialEntries, modes }: Props) {
       {modal && (
         <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setModal(null); }}>
           {modal === "details" && selected ? (
-            <section className="modal-card detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+            <section className="modal-card detail-modal reservation-details-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
               <div className="modal-heading">
+                <span className="reservation-modal-icon" aria-hidden="true"><CalendarDays size={21} /></span>
                 <div>
                   <p className="eyebrow">{selected.kind === "BLOCK" ? "BLOQUEIO DE AGENDA" : "DETALHES DA RESERVA"}</p>
                   <h2 id="detail-title">{selected.kind === "BLOCK" ? "Data bloqueada" : selected.guestName}</h2>
                 </div>
                 <button className="icon-button" type="button" onClick={() => setModal(null)} aria-label="Fechar"><X size={20} /></button>
               </div>
-              <div className="detail-datetime">
-                <CalendarDays size={18} />
-                <span>{formatLocalDateTime(selected.startsAt, "EEEE, dd 'de' MMMM 'de' yyyy")}</span>
-                <strong>{formatLocalDateTime(selected.startsAt, "HH:mm")} – {formatLocalDateTime(selected.endsAt, "dd/MM 'às' HH:mm")}</strong>
-              </div>
-              <EntryBadges entry={selected} />
-              {selected.kind === "BOOKING" && (
-                <div className="detail-grid">
-                  <div><small>Modalidade</small><strong>{selected.mode?.name ?? "—"}</strong></div>
-                  <div><small>Contato</small><strong>{selected.guestContact || "Não informado"}</strong></div>
-                  <div><small>CPF</small><strong>{selected.guestCpf || "Não informado"}</strong></div>
-                  <div className="detail-full"><small>Endereço</small><strong>{selected.guestAddress || "Não informado"}</strong></div>
-                  <div><small>Valor total</small><strong>{money.format(selected.totalAmount ?? 0)}</strong></div>
-                  <div><small>Valor pago</small><strong>{money.format(selected.paidAmount ?? 0)}</strong></div>
-                  <div><small>Saldo restante</small><strong>{money.format((selected.totalAmount ?? 0) - (selected.paidAmount ?? 0))}</strong></div>
-                  <div><small>Pagou pelo menos 50%?</small><strong>{hasPaidAtLeastHalf(selected.totalAmount ?? 0, selected.paidAmount ?? 0) ? "Sim" : "Ainda não"}</strong></div>
+              <div className="reservation-detail-content">
+                <div className="detail-datetime detail-datetime-card">
+                  <span className="detail-date-icon" aria-hidden="true"><CalendarDays size={19} /></span>
                   <div>
-                    <small>Aceite do contrato</small>
-                    <strong>
-                      {selected.status === "CANCELLED"
-                        ? "Reserva cancelada"
-                        : selected.contractAcceptanceStatus === "ACCEPTED"
-                        ? `Aceito por ${selected.contractAcceptedName ?? selected.guestName}`
-                        : selected.contractAcceptanceStatus === "PENDING"
-                          ? "Aguardando aceite do cliente"
-                          : selected.contractAcceptanceStatus === "EXPIRED"
-                            ? "Link de aceite expirado"
-                            : "Link de aceite ainda não enviado"}
-                    </strong>
-                    {selected.contractAcceptedAt && (
-                      <small>{formatLocalDateTime(selected.contractAcceptedAt, "dd/MM/yyyy 'às' HH:mm")}</small>
-                    )}
-                    {selected.contractAcceptanceStatus === "PENDING" && selected.contractAcceptanceExpiresAt && (
-                      <small>Válido até {formatLocalDateTime(selected.contractAcceptanceExpiresAt, "dd/MM/yyyy 'às' HH:mm")}</small>
-                    )}
+                    <small>Data e horário</small>
+                    <strong>{formatLocalDateTime(selected.startsAt, "EEEE, dd 'de' MMMM 'de' yyyy")}</strong>
+                    <span>{formatLocalDateTime(selected.startsAt, "HH:mm")} – {formatLocalDateTime(selected.endsAt, "dd/MM 'às' HH:mm")}</span>
                   </div>
+                  <span className={`detail-status detail-status-${selected.status.toLowerCase()}`}>{statusLabel(selected.status)}</span>
                 </div>
-              )}
-              {selected.notes && <div className="notes-box"><small>Observações</small><p>{selected.notes}</p></div>}
+
+                {selected.kind === "BOOKING" && (
+                  <>
+                    <div className="detail-grid reservation-detail-grid">
+                      <div><small>Modalidade</small><strong>{selected.mode?.name ?? "—"}</strong></div>
+                      <div><small>Contato</small><strong>{selected.guestContact || "Não informado"}</strong></div>
+                      <div><small>CPF</small><strong>{selected.guestCpf || "Não informado"}</strong></div>
+                      <div><small>Endereço</small><strong>{selected.guestAddress || "Não informado"}</strong></div>
+                      <div><small>Valor total</small><strong>{money.format(selected.totalAmount ?? 0)}</strong></div>
+                      <div><small>Valor pago</small><strong>{money.format(selected.paidAmount ?? 0)}</strong></div>
+                      <div><small>Saldo restante</small><strong>{money.format((selected.totalAmount ?? 0) - (selected.paidAmount ?? 0))}</strong></div>
+                      <div><small>Pagamento mínimo</small><strong>{hasPaidAtLeastHalf(selected.totalAmount ?? 0, selected.paidAmount ?? 0) ? "Sim" : "Ainda não"}</strong></div>
+                      <div className="detail-full">
+                        <small>Aceite do contrato</small>
+                        <strong>
+                          {selected.status === "CANCELLED"
+                            ? "Reserva cancelada"
+                            : selected.contractAcceptanceStatus === "ACCEPTED"
+                              ? `Aceito por ${selected.contractAcceptedName ?? selected.guestName}`
+                              : selected.contractAcceptanceStatus === "PENDING"
+                                ? "Aguardando aceite do cliente"
+                                : selected.contractAcceptanceStatus === "EXPIRED"
+                                  ? "Link de aceite expirado"
+                                  : "Link de aceite ainda não enviado"}
+                        </strong>
+                        {selected.contractAcceptedAt && (
+                          <span>{formatLocalDateTime(selected.contractAcceptedAt, "dd/MM/yyyy 'às' HH:mm")}</span>
+                        )}
+                        {selected.contractAcceptanceStatus === "PENDING" && selected.contractAcceptanceExpiresAt && (
+                          <span>Válido até {formatLocalDateTime(selected.contractAcceptanceExpiresAt, "dd/MM/yyyy 'às' HH:mm")}</span>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+                {selected.notes && (
+                  <section className="notes-box">
+                    <small>Observações</small>
+                    <p>{selected.notes}</p>
+                  </section>
+                )}
+              </div>
               {error && <p className="form-error" role="alert">{error}</p>}
               <div className="modal-actions detail-actions">
                 {selected.kind === "BOOKING" && selected.status !== "CANCELLED" && (
@@ -1007,8 +1021,9 @@ export function Calendar({ initialEntries, modes }: Props) {
               </form>
             </section>
           ) : (
-            <section className="modal-card" role="dialog" aria-modal="true" aria-labelledby="form-title">
+            <section className="modal-card reservation-form-modal" role="dialog" aria-modal="true" aria-labelledby="form-title">
               <div className="modal-heading">
+                <span className="reservation-modal-icon" aria-hidden="true"><CalendarDays size={21} /></span>
                 <div>
                   <p className="eyebrow">{editingId ? "EDITAR AGENDA" : "ADICIONAR À AGENDA"}</p>
                   <h2 id="form-title">{draft.kind === "BLOCK" ? "Bloquear período" : editingId ? "Editar reserva" : "Nova reserva"}</h2>
