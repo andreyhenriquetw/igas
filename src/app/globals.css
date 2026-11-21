@@ -2008,7 +2008,10 @@ a {
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
-  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 .report-period-tab:hover {
   color: var(--ink);
@@ -2083,7 +2086,7 @@ a {
   justify-content: space-between;
   gap: 8px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 .report-kpi-received .report-kpi-heading svg {
@@ -2111,7 +2114,7 @@ a {
   min-height: 28px;
   margin: 7px 0 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.4;
 }
 .report-chart-grid {
@@ -2138,7 +2141,7 @@ a {
 .report-chart-heading h2 {
   margin: 0;
   color: var(--ink);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 730;
   letter-spacing: -0.02em;
 }
@@ -2146,7 +2149,7 @@ a {
   min-height: 28px;
   margin: 5px 0 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.4;
 }
 .report-chart-icon {
@@ -2170,7 +2173,7 @@ a {
   display: block;
   margin-top: 3px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
 }
 .report-chart-wrap {
   width: 100%;
@@ -2190,10 +2193,10 @@ a {
 }
 .report-axis-label {
   fill: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .report-bucket-label {
-  font-size: 9px;
+  font-size: 12px;
   text-transform: capitalize;
 }
 .report-bar {
@@ -2232,7 +2235,7 @@ a {
 }
 .report-quick-summary span {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 14px;
 }
 .report-quick-summary strong {
   color: var(--ink);
@@ -2260,12 +2263,12 @@ a {
 .report-section-heading h2 {
   margin: 0;
   color: var(--ink);
-  font-size: 17px;
+  font-size: 18px;
   letter-spacing: -0.03em;
 }
 .report-section-heading > span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   text-transform: capitalize;
 }
 .report-table-scroll {
@@ -2279,15 +2282,15 @@ a {
 }
 .report-table th,
 .report-table td {
-  padding: 12px 10px;
+  padding: 14px 12px;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .report-table thead th {
   border-top: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 650;
 }
 .report-table tbody th,
@@ -2305,7 +2308,7 @@ a {
 .report-footnote {
   margin: 12px 2px 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.55;
 }
 .report-error {
@@ -2343,7 +2346,12 @@ a {
 .report-skeleton::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(100deg, transparent 25%, color-mix(in srgb, var(--green) 8%, transparent) 48%, transparent 70%);
+  background: linear-gradient(
+    100deg,
+    transparent 25%,
+    color-mix(in srgb, var(--green) 8%, transparent) 48%,
+    transparent 70%
+  );
   content: "";
   transform: translateX(-100%);
   animation: report-shimmer 1.35s ease-in-out infinite;
@@ -2456,7 +2464,7 @@ a {
     padding: 13px;
   }
   .report-kpi-heading {
-    font-size: 10px;
+    font-size: 11px;
   }
   .report-kpi > strong {
     margin-top: 11px;
@@ -2464,13 +2472,13 @@ a {
   }
   .report-kpi > p {
     min-height: 28px;
-    font-size: 9px;
+    font-size: 10px;
   }
   .report-chart-card {
     padding: 15px 11px 9px;
   }
   .report-chart-heading h2 {
-    font-size: 13px;
+    font-size: 14px;
   }
   .report-chart-heading p {
     min-height: auto;
@@ -2485,21 +2493,28 @@ a {
     padding: 11px;
   }
   .report-quick-summary span {
-    font-size: 9px;
+    font-size: 11px;
   }
   .report-breakdown {
     padding: 15px 12px 5px;
   }
   .report-section-heading h2 {
-    font-size: 15px;
+    font-size: 16px;
   }
   .report-section-heading > span {
     max-width: 110px;
-    font-size: 10px;
+    font-size: 11px;
     text-align: right;
   }
   .report-table {
-    min-width: 610px;
+    min-width: 650px;
+  }
+  .report-table th,
+  .report-table td {
+    padding: 13px 10px;
+  }
+  .report-table thead th {
+    font-size: 11px;
   }
   .report-error {
     align-items: flex-start;
