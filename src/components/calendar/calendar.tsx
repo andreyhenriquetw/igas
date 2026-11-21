@@ -40,6 +40,7 @@ import {
   personalizeContractText,
 } from "@/lib/contract";
 import { changeKey, getWeekStart, monthBounds } from "@/lib/calendar-dates";
+import { capitalizeNameInitials } from "@/lib/name";
 import { getPaymentStatus, hasPaidAtLeastHalf } from "@/lib/payment";
 import { toWhatsAppPhoneNumber } from "@/lib/whatsapp";
 import type {
@@ -998,7 +999,7 @@ export function Calendar({ initialEntries, modes }: Props) {
                   <>
                     <label className="field">
                       <span>Nome do hóspede</span>
-                      <input name="guestName" value={draft.guestName} onChange={(event) => setDraft({ ...draft, guestName: event.target.value })} maxLength={120} required />
+                      <input name="guestName" value={draft.guestName} onChange={(event) => setDraft({ ...draft, guestName: capitalizeNameInitials(event.target.value) })} maxLength={120} required />
                     </label>
                     <label className="field">
                       <span>Contato <small>(telefone ou e-mail)</small></span>
