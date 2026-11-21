@@ -555,6 +555,10 @@ a {
 .day-cell.occupied {
   background: var(--red-pale);
 }
+:root:not([data-theme="dark"]) .day-cell.today,
+:root:not([data-theme="dark"]) .day-cell.today.occupied {
+  background: #e1f4ff;
+}
 .day-heading {
   display: flex;
   min-height: 26px;
