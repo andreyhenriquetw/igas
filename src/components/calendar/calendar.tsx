@@ -6,6 +6,7 @@ import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
+  BedDouble,
   CalendarDays,
   Check,
   CheckCircle2,
@@ -704,9 +705,18 @@ export function Calendar({ initialEntries, modes }: Props) {
       {syncError && <div className="sync-warning" role="alert"><AlertCircle size={17} />{syncError}<button type="button" onClick={() => void refresh()}>Tentar novamente</button></div>}
 
       <section className="stats-row" aria-label="Resumo do período">
-        <div className="stat-card"><span>Reservas ativas</span><strong>{activeBookings.length}</strong><CalendarDays size={18} /></div>
-        <div className="stat-card"><span>Pendentes</span><strong>{pendingCount}</strong><Clock3 size={18} /></div>
-        <div className="stat-card"><span>Datas bloqueadas</span><strong>{blockCount}</strong><ShieldAlert size={18} /></div>
+        <div className="stat-card">
+          <span className="stat-icon"><BedDouble size={18} /></span>
+          <span className="stat-content"><span className="stat-label">Reservas ativas</span><strong>{activeBookings.length}</strong></span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-icon"><Clock3 size={18} /></span>
+          <span className="stat-content"><span className="stat-label">Reservas pendentes</span><strong>{pendingCount}</strong></span>
+        </div>
+        <div className="stat-card">
+          <span className="stat-icon"><ShieldAlert size={18} /></span>
+          <span className="stat-content"><span className="stat-label">Datas bloqueadas</span><strong>{blockCount}</strong></span>
+        </div>
       </section>
 
       <section
@@ -719,7 +729,7 @@ export function Calendar({ initialEntries, modes }: Props) {
               <button className="icon-button" type="button" onClick={() => navigate(1)} aria-label="Próximo período"><ArrowRight size={18} /></button>
               <button className="button button-today" type="button" onClick={goToday}>Hoje</button>
             </div>
-            <h2>{heading}</h2>
+            <h2><CalendarDays size={16} /><span>{heading}</span></h2>
           </div>
           <div className="view-switch" role="tablist" aria-label="Visualização da agenda">
             {([
@@ -771,7 +781,11 @@ export function Calendar({ initialEntries, modes }: Props) {
           <span><CircleX className="availability-icon occupied" size={15} /> Agendado ou bloqueado</span>
         </div>
 
-        {view !== "list" && <div className="calendar-month-heading"><h2>{heading}</h2></div>}
+        {view !== "list" && (
+          <div className="calendar-month-heading">
+            <h2><CalendarDays size={18} /><span>{heading}</span></h2>
+          </div>
+        )}
 
         {view === "list" ? (
           <div className="entry-list">

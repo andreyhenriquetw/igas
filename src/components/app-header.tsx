@@ -16,10 +16,13 @@ export function AppHeader({ user, current }: Props) {
       <header className="app-header">
         <Link className="brand" href="/" aria-label="Agenda do espaço">
           <span className="brand-mark">
-            <Image className="brand-logo-light" src="/igaspreto.png" width={44} height={44} alt="" />
+            <Image className="brand-logo-light" src="/igas-logo-transparent.png" width={44} height={44} alt="" />
             <Image className="brand-logo-dark" src="/igas-logo-transparent.png" width={44} height={44} alt="" />
           </span>
-          <span className="brand-name">Balneário Ígas</span>
+          <span className="brand-copy">
+            <span className="brand-name"><span>Balneário</span><strong>Ígas</strong></span>
+            <small>Seu lazer, nossa prioridade!</small>
+          </span>
         </Link>
         <nav className="desktop-nav" aria-label="Navegação principal">
           <Link className={current === "calendar" ? "nav-link active" : "nav-link"} href="/">
