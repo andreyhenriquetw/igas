@@ -616,6 +616,11 @@ export function Calendar({ initialEntries, modes }: Props) {
     const inMonth = day.slice(0, 7) === monthAnchor.slice(0, 7);
     const dayStart = localDayBoundaryToUtc(day);
     const dayEnd = localDayBoundaryToUtc(changeKey(day, 1));
+    const dayEntry = entries.find((entry) => (
+      entry.status !== "CANCELLED"
+      && new Date(entry.startsAt) < dayEnd
+      && new Date(entry.endsAt) > dayStart
+    )) ?? items[0];
     const occupied = entries.some((entry) => (
       entry.status !== "CANCELLED"
       && new Date(entry.startsAt) < dayEnd
@@ -628,11 +633,19 @@ export function Calendar({ initialEntries, modes }: Props) {
         key={day}
         onClick={(event) => {
           if (event.target instanceof Element && event.target.closest("button")) return;
-          openNew(day);
+          if (dayEntry) openDetails(dayEntry);
+          else openNew(day);
         }}
       >
         <div className="day-heading">
-          <button className="day-number" type="button" onClick={() => openNew(day)} aria-label={`Criar reserva em ${day}`}>
+          <button
+            className="day-number"
+            type="button"
+            onClick={() => dayEntry ? openDetails(dayEntry) : openNew(day)}
+            aria-label={dayEntry
+              ? `Ver ${dayEntry.kind === "BLOCK" ? "bloqueio" : "reserva"} de ${day}`
+              : `Criar reserva em ${day}`}
+          >
             {formatInTimeZone(keyDate(day), TIME_ZONE, "d")}
           </button>
           {availabilityVisible && (
