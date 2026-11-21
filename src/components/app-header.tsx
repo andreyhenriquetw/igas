@@ -1,13 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarDays, Settings2, UsersRound } from "lucide-react";
+import { CalendarDays, ChartNoAxesColumnIncreasing, Settings2, UsersRound } from "lucide-react";
 import { UserRole } from "@/generated/prisma/enums";
 import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 type Props = {
   user: { name?: string | null; role: UserRole };
-  current: "calendar" | "modes" | "team";
+  current: "calendar" | "modes" | "reports" | "team";
 };
 
 export function AppHeader({ user, current }: Props) {
@@ -28,6 +28,9 @@ export function AppHeader({ user, current }: Props) {
           <Link className={current === "modes" ? "nav-link active" : "nav-link"} href="/modes">
             Modalidades
           </Link>
+          <Link className={current === "reports" ? "nav-link active" : "nav-link"} href="/reports">
+            Relatórios
+          </Link>
           {user.role === UserRole.OWNER && (
             <Link className={current === "team" ? "nav-link active" : "nav-link"} href="/team">
               Equipe
@@ -46,6 +49,9 @@ export function AppHeader({ user, current }: Props) {
         </Link>
         <Link className={current === "modes" ? "mobile-nav-link active" : "mobile-nav-link"} href="/modes">
           <Settings2 size={18} /><span>Modalidades</span>
+        </Link>
+        <Link className={current === "reports" ? "mobile-nav-link active" : "mobile-nav-link"} href="/reports">
+          <ChartNoAxesColumnIncreasing size={18} /><span>Relatórios</span>
         </Link>
         {user.role === UserRole.OWNER && (
           <Link className={current === "team" ? "mobile-nav-link active" : "mobile-nav-link"} href="/team">
