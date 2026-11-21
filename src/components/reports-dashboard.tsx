@@ -11,11 +11,14 @@ import {
   Clock3,
   RefreshCw,
   Wallet,
+  X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   getReportRange,
+  filterReportEntries,
   summarizeReport,
+  type ReportDetailCategory,
   type ReportEntry,
   type ReportPeriod,
   type ReportSummary,
@@ -249,6 +252,7 @@ export function ReportsDashboard() {
   const [result, setResult] = useState<{ key: string; entries: ReportEntry[] } | null>(null);
   const [requestError, setRequestError] = useState<{ key: string; message: string } | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [detailCategory, setDetailCategory] = useState<ReportDetailCategory | null>(null);
   const range = getReportRange(referenceDay, period);
   const rangeLabel = formatRangeLabel(range, period);
   const requestKey = `${range.from}:${range.to}:${refreshKey}`;
@@ -259,6 +263,50 @@ export function ReportsDashboard() {
     () => entries ? summarizeReport(entries, referenceDay, period) : null,
     [entries, period, referenceDay],
   );
+  const detailEntries = useMemo(
+    () => entries && detailCategory ? filterReportEntries(entries, detailCategory) : [],
+    [detailCategory, entries],
+  );
+
+  const detailContent = detailCategory ? {
+    received: {
+      eyebrow: "PAGAMENTOS REGISTRADOS",
+      title: "Reservas com valores recebidos",
+      description: "Clientes com pagamento informado neste período.",
+      empty: "Nenhuma reserva com pagamento registrado neste período.",
+      amountLabel: "Valor pago",
+    },
+    outstanding: {
+      eyebrow: "SALDOS PENDENTES",
+      title: "Reservas em aberto",
+      description: "Clientes com saldo restante para pagar.",
+      empty: "Nenhuma reserva com saldo em aberto neste período.",
+      amountLabel: "Falta pagar",
+    },
+    settled: {
+      eyebrow: "PAGAMENTO INTEGRAL",
+      title: "Reservas quitadas",
+      description: "Clientes que já quitaram o valor total da reserva.",
+      empty: "Nenhuma reserva quitada neste período.",
+      amountLabel: "Total pago",
+    },
+    cancelled: {
+      eyebrow: "RESERVAS CANCELADAS",
+      title: "Cancelamentos",
+      description: "Clientes com reservas canceladas neste período.",
+      empty: "Nenhuma reserva cancelada neste período.",
+      amountLabel: "Valor contratado",
+    },
+  }[detailCategory] : null;
+
+  useEffect(() => {
+    if (!detailCategory) return;
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setDetailCategory(null);
+    }
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [detailCategory]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -378,27 +426,105 @@ export function ReportsDashboard() {
       ) : (
         <>
           <section className="report-kpis" aria-label="Indicadores financeiros do período">
-            <article className="report-kpi report-kpi-received">
-              <div className="report-kpi-heading"><span>Recebido</span><Wallet size={18} /></div>
+            <button className="report-kpi report-kpi-received" type="button" aria-haspopup="dialog" onClick={() => setDetailCategory("received")}>
+              <span className="report-kpi-heading"><span>Recebido</span><Wallet size={18} /></span>
               <strong>{formatCurrency(summary.totalReceived)}</strong>
-              <p>Valores pagos em reservas ativas</p>
-            </article>
-            <article className="report-kpi report-kpi-outstanding">
-              <div className="report-kpi-heading"><span>Em aberto</span><Clock3 size={18} /></div>
+              <span className="report-kpi-description">Valores pagos em reservas ativas</span>
+            </button>
+            <button className="report-kpi report-kpi-outstanding" type="button" aria-haspopup="dialog" onClick={() => setDetailCategory("outstanding")}>
+              <span className="report-kpi-heading"><span>Em aberto</span><Clock3 size={18} /></span>
               <strong>{formatCurrency(summary.totalOutstanding)}</strong>
-              <p>Saldo restante das reservas ativas</p>
-            </article>
-            <article className="report-kpi report-kpi-settled">
-              <div className="report-kpi-heading"><span>Reservas quitadas</span><BadgeCheck size={18} /></div>
+              <span className="report-kpi-description">Saldo restante das reservas ativas</span>
+            </button>
+            <button className="report-kpi report-kpi-settled" type="button" aria-haspopup="dialog" onClick={() => setDetailCategory("settled")}>
+              <span className="report-kpi-heading"><span>Reservas quitadas</span><BadgeCheck size={18} /></span>
               <strong>{summary.fullyPaidCount}</strong>
-              <p>Pagamento integral informado</p>
-            </article>
-            <article className="report-kpi report-kpi-cancelled">
-              <div className="report-kpi-heading"><span>Cancelamentos</span><CircleX size={18} /></div>
+              <span className="report-kpi-description">Pagamento integral informado</span>
+            </button>
+            <button className="report-kpi report-kpi-cancelled" type="button" aria-haspopup="dialog" onClick={() => setDetailCategory("cancelled")}>
+              <span className="report-kpi-heading"><span>Cancelamentos</span><CircleX size={18} /></span>
               <strong>{summary.cancelledCount}</strong>
-              <p>{formatCurrency(summary.cancelledValue)} em reservas canceladas</p>
-            </article>
+              <span className="report-kpi-description">{formatCurrency(summary.cancelledValue)} em reservas canceladas</span>
+            </button>
           </section>
+
+          {detailCategory && detailContent && (
+            <div className="modal-backdrop" onMouseDown={(event) => {
+              if (event.target === event.currentTarget) setDetailCategory(null);
+            }}>
+              <section className={`modal-card report-detail-modal report-detail-${detailCategory}`} role="dialog" aria-modal="true" aria-labelledby="report-detail-title">
+                <div className="modal-heading">
+                  <div>
+                    <p className="eyebrow">{detailContent.eyebrow}</p>
+                    <h2 id="report-detail-title">{detailContent.title}</h2>
+                    <p className="report-detail-description">{detailContent.description} <span>{rangeLabel}</span></p>
+                  </div>
+                  <button
+                    className="icon-button"
+                    type="button"
+                    autoFocus
+                    onClick={() => setDetailCategory(null)}
+                    aria-label="Fechar detalhes"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                <div className="report-detail-summary">
+                  <strong>{detailEntries.length}</strong>
+                  <span>{detailEntries.length === 1 ? "reserva encontrada" : "reservas encontradas"}</span>
+                </div>
+                {detailEntries.length === 0 ? (
+                  <p className="report-detail-empty">{detailContent.empty}</p>
+                ) : (
+                  <ul className="report-detail-list">
+                    {detailEntries.map((entry) => {
+                      const total = Math.max(0, entry.totalAmount ?? 0);
+                      const paid = Math.max(0, entry.paidAmount ?? 0);
+                      const outstanding = Math.max(0, total - paid);
+                      const amount = detailCategory === "outstanding"
+                        ? outstanding
+                        : detailCategory === "cancelled" ? total : paid;
+
+                      return (
+                        <li className="report-detail-item" key={entry.id}>
+                          <div className="report-detail-person">
+                            <strong>{entry.guestName?.trim() || "Cliente não identificado"}</strong>
+                            <span>{entry.guestContact?.trim() || "Contato não informado"}</span>
+                          </div>
+                          <div className="report-detail-booking">
+                            <span>
+                              {formatLocalDateTime(entry.startsAt, "dd/MM 'às' HH:mm")}
+                              {" – "}
+                              {formatLocalDateTime(entry.endsAt, "dd/MM 'às' HH:mm")}
+                            </span>
+                            <span>{entry.modeName?.trim() || "Sem modalidade"}</span>
+                          </div>
+                          <div className="report-detail-amount">
+                            <small>{detailContent.amountLabel}</small>
+                            <strong
+                              className={detailCategory === "outstanding" ? "report-detail-open-amount" : undefined}
+                              style={detailCategory === "outstanding" ? { color: "var(--amber)" } : undefined}
+                            >
+                              {formatCurrency(amount)}
+                            </strong>
+                            {detailCategory === "received" && outstanding > 0 && (
+                              <span className="report-detail-balance">
+                                <small>Falta pagar</small>
+                                <strong>{formatCurrency(outstanding)}</strong>
+                              </span>
+                            )}
+                          </div>
+                          {detailCategory === "cancelled" && (
+                            <p className="report-detail-note">Valor contratado; não representa estorno.</p>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </section>
+            </div>
+          )}
 
           <section className="report-chart-grid" aria-label="Gráficos do período">
             <ChartPanel

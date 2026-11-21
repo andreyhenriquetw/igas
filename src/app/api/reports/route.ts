@@ -36,8 +36,12 @@ export async function GET(request: Request) {
         startsAt: { gte: startsAt, lt: endsAt },
       },
       select: {
+        id: true,
         startsAt: true,
+        endsAt: true,
         status: true,
+        guestName: true,
+        guestContact: true,
         totalAmount: true,
         paidAmount: true,
         mode: { select: { name: true } },
@@ -47,8 +51,12 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       entries: entries.map((entry) => ({
+        id: entry.id,
         startsAt: entry.startsAt.toISOString(),
+        endsAt: entry.endsAt.toISOString(),
         status: entry.status,
+        guestName: entry.guestName,
+        guestContact: entry.guestContact,
         totalAmount: entry.totalAmount ? Number(entry.totalAmount.toString()) : null,
         paidAmount: entry.paidAmount ? Number(entry.paidAmount.toString()) : null,
         modeName: entry.mode?.name ?? null,

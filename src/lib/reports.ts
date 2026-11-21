@@ -5,12 +5,18 @@ import { TIME_ZONE } from "@/lib/time";
 export type ReportPeriod = "week" | "month" | "year";
 
 export type ReportEntry = {
+  id: string;
   startsAt: string;
+  endsAt: string;
   status: "PENDING" | "CONFIRMED" | "CANCELLED" | "BLOCKED";
+  guestName: string | null;
+  guestContact: string | null;
   totalAmount: number | null;
   paidAmount: number | null;
   modeName: string | null;
 };
+
+export type ReportDetailCategory = "received" | "outstanding" | "settled" | "cancelled";
 
 type ReportBucket = {
   key: string;
@@ -69,6 +75,19 @@ export function getReportRange(referenceDay: string, period: ReportPeriod) {
   const from = date.toISOString().slice(0, 10);
   date.setUTCFullYear(date.getUTCFullYear() + 1);
   return { from, to: date.toISOString().slice(0, 10) };
+}
+
+export function filterReportEntries(entries: ReportEntry[], category: ReportDetailCategory) {
+  return entries.filter((entry) => {
+    if (category === "cancelled") return entry.status === "CANCELLED";
+    if (entry.status !== "PENDING" && entry.status !== "CONFIRMED") return false;
+
+    const total = Math.max(0, entry.totalAmount ?? 0);
+    const paid = Math.max(0, entry.paidAmount ?? 0);
+    if (category === "received") return paid > 0;
+    if (category === "outstanding") return total - paid > 0;
+    return total > 0 && paid >= total;
+  });
 }
 
 function dayKey(date: Date) {

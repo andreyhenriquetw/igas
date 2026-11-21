@@ -2079,6 +2079,20 @@ a {
   border-radius: 15px;
   background: var(--paper);
   box-shadow: 0 7px 22px rgb(26 47 35 / 4%);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+.report-kpi:hover {
+  border-color: color-mix(in srgb, var(--green) 48%, var(--line));
+  box-shadow: 0 10px 26px rgb(26 47 35 / 9%);
+  transform: translateY(-2px);
+}
+.report-kpi:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
 }
 .report-kpi-heading {
   display: flex;
@@ -2110,12 +2124,121 @@ a {
   letter-spacing: -0.045em;
   overflow-wrap: anywhere;
 }
-.report-kpi > p {
+.report-kpi-description {
+  display: block;
   min-height: 28px;
   margin: 7px 0 0;
   color: var(--muted);
   font-size: 11px;
   line-height: 1.4;
+}
+.report-detail-modal {
+  width: min(100%, 760px);
+}
+.report-detail-description {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.report-detail-description span {
+  display: block;
+  margin-top: 3px;
+  color: var(--green);
+  font-weight: 700;
+}
+.report-detail-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.report-detail-summary strong {
+  color: var(--ink);
+  font-size: 18px;
+}
+.report-detail-list {
+  max-height: min(52vh, 500px);
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+.report-detail-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 0;
+  border-top: 1px solid var(--line);
+}
+.report-detail-person,
+.report-detail-booking,
+.report-detail-amount {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+.report-detail-person strong {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.report-detail-person span,
+.report-detail-booking span,
+.report-detail-amount small {
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.report-detail-amount {
+  align-items: flex-end;
+  text-align: right;
+}
+.report-detail-amount strong {
+  color: var(--green);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.report-detail-balance {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 3px;
+}
+.report-detail-balance small,
+.report-detail-balance strong {
+  color: var(--report-open);
+}
+.report-detail-balance small {
+  font-size: 10px;
+}
+.report-detail-balance strong {
+  font-size: 12px;
+}
+.report-detail-cancelled .report-detail-amount strong {
+  color: var(--report-cancelled);
+}
+.report-detail-amount strong.report-detail-open-amount {
+  color: var(--report-open);
+}
+.report-detail-note {
+  grid-column: 1 / -1;
+  margin: -5px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+.report-detail-empty {
+  margin: 0;
+  padding: 28px 14px;
+  border: 1px dashed var(--line);
+  border-radius: 11px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
 }
 .report-chart-grid {
   display: grid;
@@ -2470,9 +2593,23 @@ a {
     margin-top: 11px;
     font-size: clamp(18px, 5vw, 23px);
   }
-  .report-kpi > p {
+  .report-kpi-description {
     min-height: 28px;
     font-size: 10px;
+  }
+  .report-detail-modal {
+    padding: 18px;
+  }
+  .report-detail-item {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px 12px;
+  }
+  .report-detail-booking {
+    grid-column: 1;
+  }
+  .report-detail-amount {
+    grid-column: 2;
+    grid-row: 1 / span 2;
   }
   .report-chart-card {
     padding: 15px 11px 9px;
