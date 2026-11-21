@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { accountInputSchema, entryInputSchema } from "./validation";
+import { accountInputSchema, entryInputSchema, entryPatchSchema } from "./validation";
 
 const validBooking = {
   kind: "BOOKING",
@@ -39,6 +39,14 @@ test("rejeita data impossível e valor pago acima do total", () => {
     entryInputSchema.safeParse({ ...validBooking, paidAmount: 801 }).success,
     false,
   );
+});
+
+test("valida atualização parcial do pagamento da reserva", () => {
+  assert.equal(entryPatchSchema.safeParse({ paidAmount: 0 }).success, true);
+  assert.equal(entryPatchSchema.safeParse({ paidAmount: 400 }).success, true);
+  assert.equal(entryPatchSchema.safeParse({ status: "CONFIRMED" }).success, true);
+  assert.equal(entryPatchSchema.safeParse({ paidAmount: -1 }).success, false);
+  assert.equal(entryPatchSchema.safeParse({}).success, false);
 });
 
 test("aceita senhas de 6 caracteres e rejeita as menores", () => {

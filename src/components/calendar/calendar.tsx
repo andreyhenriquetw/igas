@@ -40,6 +40,7 @@ import {
   downloadContractPdf,
   personalizeContractText,
 } from "@/lib/contract";
+import { ReservationDetailsDialog } from "@/components/calendar/reservation-details-dialog";
 import { changeKey, getWeekStart, monthBounds } from "@/lib/calendar-dates";
 import { capitalizeNameInitials } from "@/lib/name";
 import { getPaymentStatus, hasPaidAtLeastHalf } from "@/lib/payment";
@@ -79,11 +80,6 @@ function contractSignatureData(entry: CalendarEntryDto) {
     tenantAcceptedAt: entry.contractAcceptedAt,
   };
 }
-
-const money = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-});
 
 function dayKey(date: Date) {
   return formatInTimeZone(date, TIME_ZONE, "yyyy-MM-dd");
@@ -846,68 +842,7 @@ export function Calendar({ initialEntries, modes }: Props) {
       {modal && (
         <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setModal(null); }}>
           {modal === "details" && selected ? (
-            <section className="modal-card detail-modal reservation-details-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
-              <div className="modal-heading">
-                <span className="reservation-modal-icon" aria-hidden="true"><CalendarDays size={21} /></span>
-                <div>
-                  <p className="eyebrow">{selected.kind === "BLOCK" ? "BLOQUEIO DE AGENDA" : "DETALHES DA RESERVA"}</p>
-                  <h2 id="detail-title">{selected.kind === "BLOCK" ? "Data bloqueada" : selected.guestName}</h2>
-                </div>
-                <button className="icon-button" type="button" onClick={() => setModal(null)} aria-label="Fechar"><X size={20} /></button>
-              </div>
-              <div className="reservation-detail-content">
-                <div className="detail-datetime detail-datetime-card">
-                  <span className="detail-date-icon" aria-hidden="true"><CalendarDays size={19} /></span>
-                  <div>
-                    <small>Data e horário</small>
-                    <strong>{formatLocalDateTime(selected.startsAt, "EEEE, dd 'de' MMMM 'de' yyyy")}</strong>
-                    <span>{formatLocalDateTime(selected.startsAt, "HH:mm")} – {formatLocalDateTime(selected.endsAt, "dd/MM 'às' HH:mm")}</span>
-                  </div>
-                  <span className={`detail-status detail-status-${selected.status.toLowerCase()}`}>{statusLabel(selected.status)}</span>
-                </div>
-
-                {selected.kind === "BOOKING" && (
-                  <>
-                    <div className="detail-grid reservation-detail-grid">
-                      <div><small>Modalidade</small><strong>{selected.mode?.name ?? "—"}</strong></div>
-                      <div><small>Contato</small><strong>{selected.guestContact || "Não informado"}</strong></div>
-                      <div><small>CPF</small><strong>{selected.guestCpf || "Não informado"}</strong></div>
-                      <div><small>Endereço</small><strong>{selected.guestAddress || "Não informado"}</strong></div>
-                      <div><small>Valor total</small><strong>{money.format(selected.totalAmount ?? 0)}</strong></div>
-                      <div><small>Valor pago</small><strong>{money.format(selected.paidAmount ?? 0)}</strong></div>
-                      <div><small>Saldo restante</small><strong>{money.format((selected.totalAmount ?? 0) - (selected.paidAmount ?? 0))}</strong></div>
-                      <div><small>Pagamento mínimo</small><strong>{hasPaidAtLeastHalf(selected.totalAmount ?? 0, selected.paidAmount ?? 0) ? "Sim" : "Ainda não"}</strong></div>
-                      <div className="detail-full">
-                        <small>Aceite do contrato</small>
-                        <strong>
-                          {selected.status === "CANCELLED"
-                            ? "Reserva cancelada"
-                            : selected.contractAcceptanceStatus === "ACCEPTED"
-                              ? `Aceito por ${selected.contractAcceptedName ?? selected.guestName}`
-                              : selected.contractAcceptanceStatus === "PENDING"
-                                ? "Aguardando aceite do cliente"
-                                : selected.contractAcceptanceStatus === "EXPIRED"
-                                  ? "Link de aceite expirado"
-                                  : "Link de aceite ainda não enviado"}
-                        </strong>
-                        {selected.contractAcceptedAt && (
-                          <span>{formatLocalDateTime(selected.contractAcceptedAt, "dd/MM/yyyy 'às' HH:mm")}</span>
-                        )}
-                        {selected.contractAcceptanceStatus === "PENDING" && selected.contractAcceptanceExpiresAt && (
-                          <span>Válido até {formatLocalDateTime(selected.contractAcceptanceExpiresAt, "dd/MM/yyyy 'às' HH:mm")}</span>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-                {selected.notes && (
-                  <section className="notes-box">
-                    <small>Observações</small>
-                    <p>{selected.notes}</p>
-                  </section>
-                )}
-              </div>
-              {error && <p className="form-error" role="alert">{error}</p>}
+            <ReservationDetailsDialog entry={selected} error={error} onClose={() => setModal(null)}>
               <div className="modal-actions detail-actions">
                 {selected.kind === "BOOKING" && selected.status !== "CANCELLED" && (
                   <button className="button button-secondary" type="button" disabled={loading} onClick={() => openEdit(selected)}>Editar reserva</button>
@@ -986,7 +921,7 @@ export function Calendar({ initialEntries, modes }: Props) {
                   )}
                 </div>
               )}
-            </section>
+            </ReservationDetailsDialog>
           ) : modal === "contract" && selected ? (
             <section className="modal-card contract-modal" role="dialog" aria-modal="true" aria-labelledby="contract-title">
               <div className="modal-heading">

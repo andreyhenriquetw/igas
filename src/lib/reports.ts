@@ -23,6 +23,7 @@ type ReportBucket = {
   label: string;
   received: number;
   outstanding: number;
+  settledCount: number;
   cancelledCount: number;
   cancelledValue: number;
 };
@@ -42,6 +43,7 @@ export type ReportSummary = {
   totalOutstanding: number;
   activeContractValue: number;
   fullyPaidCount: number;
+  fullyPaidValue: number;
   openBalanceCount: number;
   activeCount: number;
   pendingConfirmationCount: number;
@@ -78,16 +80,25 @@ export function getReportRange(referenceDay: string, period: ReportPeriod) {
 }
 
 export function filterReportEntries(entries: ReportEntry[], category: ReportDetailCategory) {
-  return entries.filter((entry) => {
+  const filtered = entries.filter((entry) => {
     if (category === "cancelled") return entry.status === "CANCELLED";
     if (entry.status !== "PENDING" && entry.status !== "CONFIRMED") return false;
 
     const total = Math.max(0, entry.totalAmount ?? 0);
     const paid = Math.max(0, entry.paidAmount ?? 0);
-    if (category === "received") return paid > 0;
+    if (category === "received") return total - paid > 0;
     if (category === "outstanding") return total - paid > 0;
     return total > 0 && paid >= total;
   });
+
+  return category === "settled"
+    ? filtered.sort((a, b) => b.startsAt.localeCompare(a.startsAt))
+    : filtered;
+}
+
+export function sumSettledAmount(entries: ReportEntry[]) {
+  return filterReportEntries(entries, "settled")
+    .reduce((total, entry) => total + Math.max(0, entry.paidAmount ?? 0), 0);
 }
 
 function dayKey(date: Date) {
@@ -110,6 +121,7 @@ function getBuckets(referenceDay: string, period: ReportPeriod): ReportBucket[] 
         label: formatInTimeZone(`${key}T12:00:00.000Z`, "UTC", "dd/MM", { locale: ptBR }),
         received: 0,
         outstanding: 0,
+        settledCount: 0,
         cancelledCount: 0,
         cancelledValue: 0,
       };
@@ -129,6 +141,7 @@ function getBuckets(referenceDay: string, period: ReportPeriod): ReportBucket[] 
         label: `${firstDay}–${lastDay}`,
         received: 0,
         outstanding: 0,
+        settledCount: 0,
         cancelledCount: 0,
         cancelledValue: 0,
       };
@@ -144,6 +157,7 @@ function getBuckets(referenceDay: string, period: ReportPeriod): ReportBucket[] 
       label: formatInTimeZone(`${key}T12:00:00.000Z`, "UTC", "MMM", { locale: ptBR }).replace(".", ""),
       received: 0,
       outstanding: 0,
+      settledCount: 0,
       cancelledCount: 0,
       cancelledValue: 0,
     };
@@ -158,6 +172,7 @@ export function summarizeReport(entries: ReportEntry[], referenceDay: string, pe
     totalOutstanding: 0,
     activeContractValue: 0,
     fullyPaidCount: 0,
+    fullyPaidValue: 0,
     openBalanceCount: 0,
     activeCount: 0,
     pendingConfirmationCount: 0,
@@ -219,7 +234,11 @@ export function summarizeReport(entries: ReportEntry[], referenceDay: string, pe
     }
     if (total > 0 && paid >= total) {
       summary.fullyPaidCount += 1;
+      summary.fullyPaidValue += paid;
       mode.paidCount += 1;
+      if (bucket) {
+        bucket.settledCount += 1;
+      }
     }
     if (outstanding > 0) summary.openBalanceCount += 1;
     if (bucket) {

@@ -5,23 +5,49 @@ import { apiError, validationError } from "@/lib/api-error";
 import { activeStatuses, serializeEntry } from "@/lib/entries";
 import { getPrisma } from "@/lib/prisma";
 import { localDateTimeToUtc } from "@/lib/time";
-import { entryInputSchema, entryStateSchema } from "@/lib/validation";
+import { entryInputSchema, entryPatchSchema } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(_request: Request, context: RouteContext) {
+  try {
+    await requireUser();
+    const { id } = await context.params;
+    const entry = await getPrisma().calendarEntry.findUnique({
+      where: { id },
+      include: { mode: true },
+    });
+    if (!entry) return NextResponse.json({ error: "Esta entrada não foi encontrada." }, { status: 404 });
+    return NextResponse.json({ entry: serializeEntry(entry) });
+  } catch (error) {
+    return apiError(error);
+  }
+}
 
 export async function PATCH(request: Request, context: RouteContext) {
   try {
     await requireUser();
     const { id } = await context.params;
     const body: unknown = await request.json();
-    const parsed = entryStateSchema.safeParse(body);
+    const parsed = entryPatchSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error.issues[0]?.message ?? "Confira os dados.");
 
     const prisma = getPrisma();
-    const existing = await prisma.calendarEntry.findUnique({ where: { id }, select: { kind: true } });
+    const existing = await prisma.calendarEntry.findUnique({
+      where: { id },
+      select: { kind: true, totalAmount: true },
+    });
     if (!existing) return NextResponse.json({ error: "Esta entrada não foi encontrada." }, { status: 404 });
     if (existing.kind === EntryKind.BLOCK && parsed.data.status !== undefined && parsed.data.status !== "CANCELLED") {
       return validationError("Um bloqueio só pode ser liberado.");
+    }
+    if (parsed.data.paidAmount !== undefined) {
+      if (existing.kind !== EntryKind.BOOKING || existing.totalAmount === null) {
+        return validationError("Só é possível registrar pagamento em uma reserva.");
+      }
+      if (parsed.data.paidAmount > Number(existing.totalAmount.toString())) {
+        return validationError("O valor pago não pode ser maior que o valor total.");
+      }
     }
 
     const entry = await prisma.$transaction(async (transaction) => {
@@ -35,6 +61,7 @@ export async function PATCH(request: Request, context: RouteContext) {
         where: { id },
         data: {
           ...(parsed.data.status !== undefined && { status: parsed.data.status as EntryStatus }),
+          ...(parsed.data.paidAmount !== undefined && { paidAmount: new Prisma.Decimal(parsed.data.paidAmount) }),
           ...(parsed.data.status === "CANCELLED" && { contractAcceptanceExpiresAt: null }),
         },
         include: { mode: true },

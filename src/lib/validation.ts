@@ -75,12 +75,13 @@ export const modesInputSchema = z.object({
     }),
 });
 
-export const entryStateSchema = z
+export const entryPatchSchema = z
   .object({
     status: z.enum(["PENDING", "CONFIRMED", "CANCELLED"]).optional(),
+    paidAmount: z.coerce.number().finite().nonnegative("O valor pago não pode ser negativo.").optional(),
   })
-  .refine((value) => value.status !== undefined, {
-    message: "Informe uma situação para atualizar.",
+  .refine((value) => value.status !== undefined || value.paidAmount !== undefined, {
+    message: "Informe uma alteração para salvar.",
   });
 
 export const contractInputSchema = z.object({

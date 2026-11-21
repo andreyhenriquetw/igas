@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { filterReportEntries, getReportRange, summarizeReport, type ReportEntry } from "./reports";
+import { filterReportEntries, getReportRange, sumSettledAmount, summarizeReport, type ReportEntry } from "./reports";
 
 test("calcula períodos de relatório semanal, mensal e anual", () => {
   assert.deepEqual(getReportRange("2026-11-20", "week"), { from: "2026-11-15", to: "2026-11-22" });
@@ -61,12 +61,14 @@ test("resume pagamentos ativos e cancelamentos sem somar bloqueios", () => {
   assert.equal(report.totalOutstanding, 150);
   assert.equal(report.activeContractValue, 300);
   assert.equal(report.fullyPaidCount, 1);
+  assert.equal(report.fullyPaidValue, 100);
   assert.equal(report.openBalanceCount, 1);
   assert.equal(report.activeCount, 2);
   assert.equal(report.pendingConfirmationCount, 1);
   assert.equal(report.cancelledCount, 1);
   assert.equal(report.cancelledValue, 80);
   assert.equal(report.buckets[0]?.received, 150);
+  assert.equal(report.buckets[0]?.settledCount, 1);
   assert.equal(report.buckets[0]?.cancelledCount, 1);
   assert.equal(report.byMode[0]?.activeCount, 2);
   assert.equal(report.byMode[0]?.cancelledCount, 1);
@@ -86,6 +88,17 @@ test("filtra reservas para cada lista detalhada sem incluir valores indevidos", 
       modeName: "Day-use",
     },
     {
+      id: "paid-newer",
+      startsAt: "2026-03-06T12:00:00.000Z",
+      endsAt: "2026-03-06T20:00:00.000Z",
+      status: "CONFIRMED",
+      guestName: "Pago mais recente",
+      guestContact: null,
+      totalAmount: 120,
+      paidAmount: 120,
+      modeName: "Day-use",
+    },
+    {
       id: "open",
       startsAt: "2026-03-04T12:00:00.000Z",
       endsAt: "2026-03-04T20:00:00.000Z",
@@ -94,6 +107,17 @@ test("filtra reservas para cada lista detalhada sem incluir valores indevidos", 
       guestContact: null,
       totalAmount: 200,
       paidAmount: 50,
+      modeName: "Day-use",
+    },
+    {
+      id: "unpaid",
+      startsAt: "2026-03-04T12:00:00.000Z",
+      endsAt: "2026-03-04T20:00:00.000Z",
+      status: "CONFIRMED",
+      guestName: "Sem pagamento",
+      guestContact: null,
+      totalAmount: 200,
+      paidAmount: 0,
       modeName: "Day-use",
     },
     {
@@ -109,9 +133,10 @@ test("filtra reservas para cada lista detalhada sem incluir valores indevidos", 
     },
   ];
 
-  assert.deepEqual(filterReportEntries(entries, "received").map((entry) => entry.id), ["paid", "open"]);
-  assert.deepEqual(filterReportEntries(entries, "outstanding").map((entry) => entry.id), ["open"]);
-  assert.deepEqual(filterReportEntries(entries, "settled").map((entry) => entry.id), ["paid"]);
+  assert.deepEqual(filterReportEntries(entries, "received").map((entry) => entry.id), ["open", "unpaid"]);
+  assert.deepEqual(filterReportEntries(entries, "outstanding").map((entry) => entry.id), ["open", "unpaid"]);
+  assert.deepEqual(filterReportEntries(entries, "settled").map((entry) => entry.id), ["paid-newer", "paid"]);
+  assert.equal(sumSettledAmount(entries), 220);
   assert.deepEqual(filterReportEntries(entries, "cancelled").map((entry) => entry.id), ["cancelled"]);
 });
 

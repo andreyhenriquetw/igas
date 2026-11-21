@@ -14,9 +14,11 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { ReportReservationDialog } from "@/components/report-reservation-dialog";
 import {
   getReportRange,
   filterReportEntries,
+  sumSettledAmount,
   summarizeReport,
   type ReportDetailCategory,
   type ReportEntry,
@@ -24,6 +26,7 @@ import {
   type ReportSummary,
 } from "@/lib/reports";
 import { formatLocalDateTime, localDayBoundaryToUtc } from "@/lib/time";
+import type { CalendarEntryDto } from "@/types/calendar";
 
 const currency = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -32,6 +35,17 @@ const currency = new Intl.NumberFormat("pt-BR", {
 
 function formatCurrency(value: number) {
   return currency.format(value);
+}
+
+async function fetchReportEntries(range: { from: string; to: string }, signal: AbortSignal) {
+  const response = await fetch(`/api/reports?from=${encodeURIComponent(range.from)}&to=${encodeURIComponent(range.to)}`, {
+    cache: "no-store",
+    signal,
+  });
+  const result = await response.json() as { entries?: ReportEntry[]; error?: string };
+  if (!response.ok) throw new Error(result.error ?? "Não foi possível carregar os relatórios.");
+  if (!Array.isArray(result.entries)) throw new Error("A resposta dos relatórios está incompleta.");
+  return result.entries;
 }
 
 function formatCompactNumber(value: number) {
@@ -108,13 +122,11 @@ function ReportBarChart({
   buckets,
   metric,
   color,
-  count = false,
 }: {
   title: string;
   buckets: ReportSummary["buckets"];
-  metric: "received" | "outstanding" | "cancelledCount";
+  metric: "received" | "outstanding" | "settledCount";
   color: string;
-  count?: boolean;
 }) {
   const width = 420;
   const height = 250;
@@ -131,13 +143,14 @@ function ReportBarChart({
   const max = step * 4;
   const slot = plotWidth / Math.max(1, buckets.length);
   const barWidth = Math.min(34, slot * 0.58);
+  const count = metric === "settledCount";
 
   function axisLabel(value: number) {
     return count ? String(value) : `R$ ${formatCompactNumber(value)}`;
   }
 
   function valueLabel(value: number) {
-    if (metric === "cancelledCount") return `${value} ${value === 1 ? "reserva" : "reservas"}`;
+    if (count) return `${value} ${value === 1 ? "reserva quitada" : "reservas quitadas"}`;
     return formatCurrency(value);
   }
 
@@ -212,38 +225,37 @@ function ChartPanel({
   buckets,
   metric,
   color,
-  count = false,
 }: {
   title: string;
   description: string;
   value: string;
   detail: string;
   buckets: ReportSummary["buckets"];
-  metric: "received" | "outstanding" | "cancelledCount";
+  metric: "received" | "outstanding" | "settledCount";
   color: string;
-  count?: boolean;
 }) {
-  const chartKind = count ? "cancelled" : metric;
-  const statusLabel = count ? "Canceladas" : metric === "received" ? "Pagos" : "A receber";
+  const isSettled = metric === "settledCount";
+  const chartKind = isSettled ? "settled" : metric;
+  const statusLabel = isSettled ? "Quitadas" : metric === "received" ? "Pagos" : "A receber";
 
   return (
-    <article className={`report-chart-card report-chart-${chartKind} ${count ? "report-chart-cancellations" : ""}`}>
+    <article className={`report-chart-card report-chart-${chartKind} ${isSettled ? "report-chart-settled" : ""}`}>
       <div className="report-chart-heading">
         <span className="report-chart-icon" style={{ color }} aria-hidden="true">
-          {count ? <CircleX size={22} /> : metric === "received" ? <CircleDollarSign size={22} /> : <Clock3 size={22} />}
+          {isSettled ? <BadgeCheck size={22} /> : metric === "received" ? <CircleDollarSign size={22} /> : <Clock3 size={22} />}
         </span>
         <div>
           <h2>{title}</h2>
           <p>{description}</p>
         </div>
         <span className="report-chart-status" style={{ color }} aria-label={statusLabel}>
-          {count ? <CircleX size={15} /> : metric === "received" ? <BadgeCheck size={15} /> : <Clock3 size={15} />}
+          {isSettled ? <BadgeCheck size={15} /> : metric === "received" ? <BadgeCheck size={15} /> : <Clock3 size={15} />}
           {statusLabel}
         </span>
       </div>
       <strong className="report-chart-total">{value}</strong>
       <span className="report-chart-detail">{detail}</span>
-      <ReportBarChart title={title} buckets={buckets} metric={metric} color={color} count={count} />
+      <ReportBarChart title={title} buckets={buckets} metric={metric} color={color} />
     </article>
   );
 }
@@ -266,31 +278,53 @@ function ReportSkeleton() {
 export function ReportsDashboard() {
   const [period, setPeriod] = useState<ReportPeriod>("month");
   const [referenceDay, setReferenceDay] = useState(() => formatLocalDateTime(new Date(), "yyyy-MM-dd"));
-  const [result, setResult] = useState<{ key: string; entries: ReportEntry[] } | null>(null);
+  const [result, setResult] = useState<{
+    key: string;
+    entries: ReportEntry[];
+    settledEntries: ReportEntry[];
+  } | null>(null);
   const [requestError, setRequestError] = useState<{ key: string; message: string } | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [detailCategory, setDetailCategory] = useState<ReportDetailCategory | null>(null);
+  const [reservationId, setReservationId] = useState<string | null>(null);
   const range = getReportRange(referenceDay, period);
+  const settledYearRange = getReportRange(referenceDay, "year");
+  const rangeFrom = range.from;
+  const rangeTo = range.to;
+  const settledYearFrom = settledYearRange.from;
+  const settledYearTo = settledYearRange.to;
+  const settledYearLabel = formatRangeLabel(settledYearRange, "year");
   const rangeLabel = formatRangeLabel(range, period);
   const requestKey = `${range.from}:${range.to}:${refreshKey}`;
   const entries = result?.key === requestKey ? result.entries : null;
+  const settledEntries = result?.key === requestKey ? result.settledEntries : null;
   const error = requestError?.key === requestKey ? requestError.message : "";
   const loading = entries === null && !error;
   const summary = useMemo(
     () => entries ? summarizeReport(entries, referenceDay, period) : null,
     [entries, period, referenceDay],
   );
+  const settledYearEntries = useMemo(
+    () => settledEntries ? filterReportEntries(settledEntries, "settled") : [],
+    [settledEntries],
+  );
+  const settledYearTotal = useMemo(
+    () => settledEntries ? sumSettledAmount(settledEntries) : 0,
+    [settledEntries],
+  );
   const detailEntries = useMemo(
-    () => entries && detailCategory ? filterReportEntries(entries, detailCategory) : [],
-    [detailCategory, entries],
+    () => entries && detailCategory
+      ? detailCategory === "settled" ? settledYearEntries : filterReportEntries(entries, detailCategory)
+      : [],
+    [detailCategory, entries, settledYearEntries],
   );
 
   const detailContent = detailCategory ? {
     received: {
-      eyebrow: "PAGAMENTOS REGISTRADOS",
-      title: "Reservas com valores recebidos",
-      description: "Clientes com pagamento informado neste período.",
-      empty: "Nenhuma reserva com pagamento registrado neste período.",
+      eyebrow: "PENDENTES DE QUITAÇÃO",
+      title: "Reservas com saldo pendente",
+      description: "Reservas deste período que ainda não foram quitadas, com ou sem pagamento recebido.",
+      empty: "Nenhuma reserva com saldo pendente neste período.",
       amountLabel: "Valor pago",
     },
     outstanding: {
@@ -303,8 +337,8 @@ export function ReportsDashboard() {
     settled: {
       eyebrow: "PAGAMENTO INTEGRAL",
       title: "Reservas quitadas",
-      description: "Clientes que já quitaram o valor total da reserva.",
-      empty: "Nenhuma reserva quitada neste período.",
+      description: `Reservas com pagamento integral no ano de ${settledYearLabel}.`,
+      empty: `Nenhuma reserva quitada em ${settledYearLabel}.`,
       amountLabel: "Total pago",
     },
     cancelled: {
@@ -319,26 +353,27 @@ export function ReportsDashboard() {
   useEffect(() => {
     if (!detailCategory) return;
     function closeOnEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") setDetailCategory(null);
+      if (event.key === "Escape") {
+        if (reservationId) setReservationId(null);
+        else setDetailCategory(null);
+      }
     }
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [detailCategory]);
+  }, [detailCategory, reservationId]);
 
   useEffect(() => {
     const controller = new AbortController();
-    const key = `${range.from}:${range.to}:${refreshKey}`;
+    const reportRange = { from: rangeFrom, to: rangeTo };
+    const yearRange = { from: settledYearFrom, to: settledYearTo };
+    const key = `${rangeFrom}:${rangeTo}:${refreshKey}`;
+    const reportRequest = fetchReportEntries(reportRange, controller.signal);
+    const settledRequest = rangeFrom === settledYearFrom && rangeTo === settledYearTo
+      ? reportRequest
+      : fetchReportEntries(yearRange, controller.signal);
 
-    void fetch(`/api/reports?from=${encodeURIComponent(range.from)}&to=${encodeURIComponent(range.to)}`, {
-      cache: "no-store",
-      signal: controller.signal,
-    })
-      .then(async (response) => {
-        const result = await response.json() as { entries?: ReportEntry[]; error?: string };
-        if (!response.ok) throw new Error(result.error ?? "Não foi possível carregar os relatórios.");
-        if (!Array.isArray(result.entries)) throw new Error("A resposta dos relatórios está incompleta.");
-        setResult({ key, entries: result.entries });
-      })
+    void Promise.all([reportRequest, settledRequest])
+      .then(([entries, settledEntries]) => setResult({ key, entries, settledEntries }))
       .catch((loadError: unknown) => {
         if (controller.signal.aborted) return;
         setRequestError({
@@ -348,7 +383,7 @@ export function ReportsDashboard() {
       });
 
     return () => controller.abort();
-  }, [range.from, range.to, refreshKey]);
+  }, [rangeFrom, rangeTo, refreshKey, settledYearFrom, settledYearTo]);
 
   function navigatePeriod(direction: -1 | 1) {
     setReferenceDay((current) => {
@@ -463,8 +498,10 @@ export function ReportsDashboard() {
               <span className="stat-icon"><BadgeCheck size={18} /></span>
               <span className="stat-content">
                 <span className="stat-label">Reservas quitadas</span>
-                <strong>{summary.fullyPaidCount}</strong>
-                <span className="report-kpi-description">Pagamento integral informado</span>
+                <strong>{formatCurrency(settledYearTotal)}</strong>
+                <span className="report-kpi-description">
+                  {settledYearEntries.length} {settledYearEntries.length === 1 ? "reserva quitada" : "reservas quitadas"} em {settledYearLabel}
+                </span>
               </span>
             </button>
             <button className="report-kpi report-kpi-cancelled" type="button" aria-haspopup="dialog" onClick={() => setDetailCategory("cancelled")}>
@@ -492,7 +529,11 @@ export function ReportsDashboard() {
                   <div>
                     <p className="eyebrow">{detailContent.eyebrow}</p>
                     <h2 id="report-detail-title">{detailContent.title}</h2>
-                    <p className="report-detail-description">{detailContent.description} <span>{rangeLabel}</span></p>
+                    <p className="report-detail-description">
+                      {detailContent.description}
+                      <span>{detailCategory === "settled" ? settledYearLabel : rangeLabel}</span>
+                      <small>Selecione uma reserva para abrir os detalhes.</small>
+                    </p>
                   </div>
                   <button
                     className="icon-button"
@@ -521,20 +562,26 @@ export function ReportsDashboard() {
                         : detailCategory === "cancelled" ? total : paid;
 
                       return (
-                        <li className="report-detail-item" key={entry.id}>
-                          <div className="report-detail-person">
+                        <li key={entry.id}>
+                          <button
+                            className="report-detail-item report-detail-item-button"
+                            type="button"
+                            aria-label={`Abrir detalhes da reserva de ${entry.guestName?.trim() || "cliente não identificado"}`}
+                            onClick={() => setReservationId(entry.id)}
+                          >
+                          <span className="report-detail-person">
                             <strong>{entry.guestName?.trim() || "Cliente não identificado"}</strong>
                             <span>{entry.guestContact?.trim() || "Contato não informado"}</span>
-                          </div>
-                          <div className="report-detail-booking">
+                          </span>
+                          <span className="report-detail-booking">
                             <span>
                               {formatLocalDateTime(entry.startsAt, "dd/MM 'às' HH:mm")}
                               {" – "}
                               {formatLocalDateTime(entry.endsAt, "dd/MM 'às' HH:mm")}
                             </span>
                             <span>{entry.modeName?.trim() || "Sem modalidade"}</span>
-                          </div>
-                          <div className="report-detail-amount">
+                          </span>
+                          <span className="report-detail-amount">
                             <small>{detailContent.amountLabel}</small>
                             <strong
                               className={detailCategory === "outstanding" ? "report-detail-open-amount" : undefined}
@@ -548,10 +595,11 @@ export function ReportsDashboard() {
                                 <strong>{formatCurrency(outstanding)}</strong>
                               </span>
                             )}
-                          </div>
+                          </span>
                           {detailCategory === "cancelled" && (
-                            <p className="report-detail-note">Valor contratado; não representa estorno.</p>
+                            <span className="report-detail-note">Valor contratado; não representa estorno.</span>
                           )}
+                          </button>
                         </li>
                       );
                     })}
@@ -559,6 +607,35 @@ export function ReportsDashboard() {
                 )}
               </section>
             </div>
+          )}
+
+          {reservationId && (
+            <ReportReservationDialog
+              entryId={reservationId}
+              onClose={() => setReservationId(null)}
+              onSaved={(updatedEntry: CalendarEntryDto) => {
+                const updateEntry = (entry: ReportEntry) => entry.id === updatedEntry.id
+                  ? {
+                      ...entry,
+                      status: updatedEntry.status,
+                      startsAt: updatedEntry.startsAt,
+                      endsAt: updatedEntry.endsAt,
+                      guestName: updatedEntry.guestName,
+                      guestContact: updatedEntry.guestContact,
+                      totalAmount: updatedEntry.totalAmount,
+                      paidAmount: updatedEntry.paidAmount,
+                      modeName: updatedEntry.mode?.name ?? null,
+                    }
+                  : entry;
+                setResult((current) => current?.key === requestKey
+                  ? {
+                      ...current,
+                      entries: current.entries.map(updateEntry),
+                      settledEntries: current.settledEntries.map(updateEntry),
+                    }
+                  : current);
+              }}
+            />
           )}
 
           <section className="report-chart-grid" aria-label="Gráficos do período">
@@ -581,14 +658,13 @@ export function ReportsDashboard() {
               color="var(--report-open)"
             />
             <ChartPanel
-              title="Reservas canceladas"
-              description="Quantidade de reservas canceladas por período."
-              value={String(summary.cancelledCount)}
-              detail={`${formatCurrency(summary.cancelledValue)} em valores contratados`}
+              title="Reservas quitadas"
+              description="Quantidade de reservas quitadas por período."
+              value={String(summary.fullyPaidCount)}
+              detail={`${formatCurrency(summary.fullyPaidValue)} em pagamentos integrais`}
               buckets={summary.buckets}
-              metric="cancelledCount"
-              color="var(--report-cancelled)"
-              count
+              metric="settledCount"
+              color="var(--report-paid)"
             />
           </section>
 
