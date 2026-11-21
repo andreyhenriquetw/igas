@@ -446,7 +446,6 @@ export function ReportsDashboard() {
         <div>
           <p className="eyebrow">VISÃO FINANCEIRA</p>
           <h1>Relatórios</h1>
-          <p className="muted">Acompanhe pagamentos, valores em aberto e cancelamentos.</p>
         </div>
         <button
           className="button button-secondary report-export"
