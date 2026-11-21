@@ -37,6 +37,45 @@ function formatCurrency(value: number) {
   return currency.format(value);
 }
 
+function formatCount(value: number) {
+  return Math.round(value).toLocaleString("pt-BR");
+}
+
+function AnimatedReportValue({
+  value,
+  format,
+}: {
+  value: number;
+  format: (value: number) => string;
+}) {
+  const [animatedValue, setAnimatedValue] = useState(0);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const duration = 1200;
+    let startTime: number | null = null;
+    let frameId = 0;
+    function animate(timestamp: number) {
+      startTime ??= timestamp;
+      const progress = prefersReducedMotion ? 1 : Math.min((timestamp - startTime) / duration, 1);
+      const easedProgress = 1 - (1 - progress) ** 3;
+      setAnimatedValue(value * easedProgress);
+
+      if (progress < 1) frameId = window.requestAnimationFrame(animate);
+    }
+
+    frameId = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(frameId);
+  }, [value]);
+
+  return (
+    <>
+      <span aria-hidden="true">{format(animatedValue)}</span>
+      <span className="visually-hidden">{format(value)}</span>
+    </>
+  );
+}
+
 async function fetchReportEntries(range: { from: string; to: string }, signal: AbortSignal) {
   const response = await fetch(`/api/reports?from=${encodeURIComponent(range.from)}&to=${encodeURIComponent(range.to)}`, {
     cache: "no-store",
@@ -482,7 +521,9 @@ export function ReportsDashboard() {
               <span className="stat-icon"><Wallet size={18} /></span>
               <span className="stat-content">
                 <span className="stat-label">Recebido</span>
-                <strong>{formatCurrency(summary.totalReceived)}</strong>
+                <strong>
+                  <AnimatedReportValue key={`${requestKey}:received:${summary.totalReceived}`} value={summary.totalReceived} format={formatCurrency} />
+                </strong>
                 <span className="report-kpi-description">Valores pagos em reservas ativas</span>
               </span>
             </button>
@@ -490,7 +531,9 @@ export function ReportsDashboard() {
               <span className="stat-icon"><Clock3 size={18} /></span>
               <span className="stat-content">
                 <span className="stat-label">Em aberto</span>
-                <strong>{formatCurrency(summary.totalOutstanding)}</strong>
+                <strong>
+                  <AnimatedReportValue key={`${requestKey}:outstanding:${summary.totalOutstanding}`} value={summary.totalOutstanding} format={formatCurrency} />
+                </strong>
                 <span className="report-kpi-description">Saldo restante das reservas ativas</span>
               </span>
             </button>
@@ -498,7 +541,9 @@ export function ReportsDashboard() {
               <span className="stat-icon"><BadgeCheck size={18} /></span>
               <span className="stat-content">
                 <span className="stat-label">Reservas quitadas</span>
-                <strong>{formatCurrency(settledYearTotal)}</strong>
+                <strong>
+                  <AnimatedReportValue key={`${requestKey}:settled:${settledYearTotal}`} value={settledYearTotal} format={formatCurrency} />
+                </strong>
                 <span className="report-kpi-description">
                   {settledYearEntries.length} {settledYearEntries.length === 1 ? "reserva quitada" : "reservas quitadas"} em {settledYearLabel}
                 </span>
@@ -508,7 +553,13 @@ export function ReportsDashboard() {
               <span className="stat-icon"><CircleX size={18} /></span>
               <span className="stat-content">
                 <span className="stat-label">Cancelamentos</span>
-                <strong>{summary.cancelledCount}</strong>
+                <strong>
+                  <AnimatedReportValue
+                    key={`${requestKey}:cancelled:${summary.cancelledCount}`}
+                    value={summary.cancelledCount}
+                    format={formatCount}
+                  />
+                </strong>
                 <span className="report-kpi-description">{formatCurrency(summary.cancelledValue)} em reservas canceladas</span>
               </span>
             </button>
