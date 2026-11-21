@@ -183,6 +183,16 @@ function ReportBarChart({
               >
                 <title>{`${bucket.label}: ${valueLabel(value)}`}</title>
               </rect>
+              {value > 0 && (
+                <text
+                  className="report-bar-value"
+                  x={x + barWidth / 2}
+                  y={Math.max(top + 10, y - 7)}
+                  textAnchor="middle"
+                >
+                  {count ? String(value) : formatCurrency(value)}
+                </text>
+              )}
               <text className="report-axis-label report-bucket-label" x={left + slot * index + slot / 2} y={height - 13} textAnchor="middle">
                 {bucket.label}
               </text>
@@ -213,15 +223,22 @@ function ChartPanel({
   color: string;
   count?: boolean;
 }) {
+  const chartKind = count ? "cancelled" : metric;
+  const statusLabel = count ? "Canceladas" : metric === "received" ? "Pagos" : "A receber";
+
   return (
-    <article className={`report-chart-card ${count ? "report-chart-cancellations" : ""}`}>
+    <article className={`report-chart-card report-chart-${chartKind} ${count ? "report-chart-cancellations" : ""}`}>
       <div className="report-chart-heading">
+        <span className="report-chart-icon" style={{ color }} aria-hidden="true">
+          {count ? <CircleX size={22} /> : metric === "received" ? <CircleDollarSign size={22} /> : <Clock3 size={22} />}
+        </span>
         <div>
           <h2>{title}</h2>
           <p>{description}</p>
         </div>
-        <span className="report-chart-icon" style={{ color }} aria-hidden="true">
-          {count ? <CircleX size={18} /> : <CircleDollarSign size={18} />}
+        <span className="report-chart-status" style={{ color }} aria-label={statusLabel}>
+          {count ? <CircleX size={15} /> : metric === "received" ? <BadgeCheck size={15} /> : <Clock3 size={15} />}
+          {statusLabel}
         </span>
       </div>
       <strong className="report-chart-total">{value}</strong>
@@ -427,24 +444,36 @@ export function ReportsDashboard() {
         <>
           <section className="report-kpis" aria-label="Indicadores financeiros do período">
             <button className="report-kpi report-kpi-received" type="button" aria-haspopup="dialog" onClick={() => setDetailCategory("received")}>
-              <span className="report-kpi-heading"><span>Recebido</span><Wallet size={18} /></span>
-              <strong>{formatCurrency(summary.totalReceived)}</strong>
-              <span className="report-kpi-description">Valores pagos em reservas ativas</span>
+              <span className="stat-icon"><Wallet size={18} /></span>
+              <span className="stat-content">
+                <span className="stat-label">Recebido</span>
+                <strong>{formatCurrency(summary.totalReceived)}</strong>
+                <span className="report-kpi-description">Valores pagos em reservas ativas</span>
+              </span>
             </button>
             <button className="report-kpi report-kpi-outstanding" type="button" aria-haspopup="dialog" onClick={() => setDetailCategory("outstanding")}>
-              <span className="report-kpi-heading"><span>Em aberto</span><Clock3 size={18} /></span>
-              <strong>{formatCurrency(summary.totalOutstanding)}</strong>
-              <span className="report-kpi-description">Saldo restante das reservas ativas</span>
+              <span className="stat-icon"><Clock3 size={18} /></span>
+              <span className="stat-content">
+                <span className="stat-label">Em aberto</span>
+                <strong>{formatCurrency(summary.totalOutstanding)}</strong>
+                <span className="report-kpi-description">Saldo restante das reservas ativas</span>
+              </span>
             </button>
             <button className="report-kpi report-kpi-settled" type="button" aria-haspopup="dialog" onClick={() => setDetailCategory("settled")}>
-              <span className="report-kpi-heading"><span>Reservas quitadas</span><BadgeCheck size={18} /></span>
-              <strong>{summary.fullyPaidCount}</strong>
-              <span className="report-kpi-description">Pagamento integral informado</span>
+              <span className="stat-icon"><BadgeCheck size={18} /></span>
+              <span className="stat-content">
+                <span className="stat-label">Reservas quitadas</span>
+                <strong>{summary.fullyPaidCount}</strong>
+                <span className="report-kpi-description">Pagamento integral informado</span>
+              </span>
             </button>
             <button className="report-kpi report-kpi-cancelled" type="button" aria-haspopup="dialog" onClick={() => setDetailCategory("cancelled")}>
-              <span className="report-kpi-heading"><span>Cancelamentos</span><CircleX size={18} /></span>
-              <strong>{summary.cancelledCount}</strong>
-              <span className="report-kpi-description">{formatCurrency(summary.cancelledValue)} em reservas canceladas</span>
+              <span className="stat-icon"><CircleX size={18} /></span>
+              <span className="stat-content">
+                <span className="stat-label">Cancelamentos</span>
+                <strong>{summary.cancelledCount}</strong>
+                <span className="report-kpi-description">{formatCurrency(summary.cancelledValue)} em reservas canceladas</span>
+              </span>
             </button>
           </section>
 
@@ -454,6 +483,12 @@ export function ReportsDashboard() {
             }}>
               <section className={`modal-card report-detail-modal report-detail-${detailCategory}`} role="dialog" aria-modal="true" aria-labelledby="report-detail-title">
                 <div className="modal-heading">
+                  <span className="report-detail-heading-icon" aria-hidden="true">
+                    {detailCategory === "received" ? <Wallet size={24} />
+                      : detailCategory === "outstanding" ? <Clock3 size={24} />
+                        : detailCategory === "settled" ? <BadgeCheck size={24} />
+                          : <CircleX size={24} />}
+                  </span>
                   <div>
                     <p className="eyebrow">{detailContent.eyebrow}</p>
                     <h2 id="report-detail-title">{detailContent.title}</h2>
@@ -558,10 +593,23 @@ export function ReportsDashboard() {
           </section>
 
           <section className="report-quick-summary" aria-label="Resumo operacional">
-            <div><span>Reservas ativas</span><strong>{summary.activeCount}</strong></div>
-            <div><span>Aguardando confirmação</span><strong>{summary.pendingConfirmationCount}</strong></div>
-            <div><span>Com saldo em aberto</span><strong>{summary.openBalanceCount}</strong></div>
-            <div>
+            <div className="report-quick-active">
+              <span className="report-quick-icon"><BadgeCheck size={17} /></span>
+              <span>Reservas ativas</span>
+              <strong>{summary.activeCount}</strong>
+            </div>
+            <div className="report-quick-pending">
+              <span className="report-quick-icon"><Clock3 size={17} /></span>
+              <span>Aguardando confirmação</span>
+              <strong>{summary.pendingConfirmationCount}</strong>
+            </div>
+            <div className="report-quick-open">
+              <span className="report-quick-icon"><CircleDollarSign size={17} /></span>
+              <span>Com saldo em aberto</span>
+              <strong>{summary.openBalanceCount}</strong>
+            </div>
+            <div className="report-quick-percent">
+              <span className="report-quick-icon"><Wallet size={17} /></span>
               <span>Percentual recebido</span>
               <strong>{summary.activeContractValue > 0
                 ? `${Math.round((summary.totalReceived / summary.activeContractValue) * 100)}%`
