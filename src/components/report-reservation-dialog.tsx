@@ -57,27 +57,29 @@ export function ReportReservationDialog({ entryId, onClose, onSaved }: Props) {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const controller = new AbortController();
+    let isCurrent = true;
     void fetch(`/api/entries/${encodeURIComponent(entryId)}`, {
       cache: "no-store",
-      signal: controller.signal,
     })
       .then(async (response) => {
         const result = await response.json() as { entry?: CalendarEntryDto; error?: string };
         if (!response.ok) throw new Error(result.error ?? "Não foi possível carregar a reserva.");
         if (!result.entry) throw new Error("Os detalhes da reserva estão incompletos.");
+        if (!isCurrent) return;
         setEntry(result.entry);
         setPaidAmount((result.entry.paidAmount ?? 0).toFixed(2));
       })
       .catch((loadError: unknown) => {
-        if (controller.signal.aborted) return;
+        if (!isCurrent) return;
         setError(loadError instanceof Error ? loadError.message : "Não foi possível carregar a reserva.");
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+        if (isCurrent) setLoading(false);
       });
 
-    return () => controller.abort();
+    return () => {
+      isCurrent = false;
+    };
   }, [entryId]);
 
   useEffect(() => {

@@ -3150,32 +3150,6 @@ a {
   text-align: center;
   text-transform: capitalize;
 }
-.report-date-picker {
-  position: relative;
-  display: flex;
-  width: 40px;
-  height: 38px;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--paper);
-  color: var(--muted);
-  cursor: pointer;
-}
-.report-date-picker input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-.report-date-picker:focus-within {
-  outline: 2px solid var(--green);
-  outline-offset: 2px;
-}
 .report-period-note {
   margin: 11px 2px 18px;
   color: var(--muted);
@@ -3941,10 +3915,6 @@ a {
     min-width: 0;
     flex: 1;
     font-size: 12px;
-  }
-  .report-date-picker {
-    width: 38px;
-    height: 38px;
   }
   .report-period-note {
     margin-bottom: 13px;
@@ -6773,8 +6743,7 @@ body {
     0 1px 0 #1b5eaa,
     inset 0 1px 0 rgb(255 255 255 / 25%);
 }
-.reports-main .report-period-navigation > .icon-button,
-.reports-main .report-date-picker {
+.reports-main .report-period-navigation > .icon-button {
   box-shadow:
     0 3px 0 #dce8df,
     0 5px 10px rgb(43 79 53 / 9%),
@@ -6785,15 +6754,13 @@ body {
     color 0.16s ease,
     transform 0.12s ease;
 }
-.reports-main .report-period-navigation > .icon-button:active,
-.reports-main .report-date-picker:active {
+.reports-main .report-period-navigation > .icon-button:active {
   transform: translateY(2px);
   box-shadow:
     0 1px 0 #dce8df,
     inset 0 1px 0 rgb(255 255 255 / 80%);
 }
-.reports-main .report-period-navigation > .icon-button:focus-visible,
-.reports-main .report-date-picker:focus-within {
+.reports-main .report-period-navigation > .icon-button:focus-visible {
   outline: 2px solid #2878c7;
   outline-offset: 3px;
 }
@@ -6876,8 +6843,7 @@ body {
     0 1px 0 #43338e,
     inset 0 1px 0 rgb(255 255 255 / 18%);
 }
-:root[data-theme="dark"] .reports-main .report-period-navigation > .icon-button,
-:root[data-theme="dark"] .reports-main .report-date-picker {
+:root[data-theme="dark"] .reports-main .report-period-navigation > .icon-button {
   box-shadow:
     0 3px 0 #0b1429,
     0 5px 10px rgb(0 0 0 / 22%),
@@ -6886,8 +6852,7 @@ body {
 :root[data-theme="dark"]
   .reports-main
   .report-period-navigation
-  > .icon-button:active,
-:root[data-theme="dark"] .reports-main .report-date-picker:active {
+  > .icon-button:active {
   box-shadow:
     0 1px 0 #0b1429,
     inset 0 1px 0 rgb(255 255 255 / 7%);
