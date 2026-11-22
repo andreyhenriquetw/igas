@@ -3881,26 +3881,17 @@ a {
     padding: 0 16px;
   }
   .reports-main {
-    padding-top: 8px;
+    padding-top: 0;
     padding-bottom: 12px;
   }
   .reports-intro {
-    align-items: stretch;
-    min-height: 0;
-    margin-bottom: 8px;
-    gap: 0;
-  }
-  .reports-vision-title {
-    display: none;
-  }
-  .report-export {
     display: none;
   }
   .report-toolbar {
     align-items: stretch;
     flex-direction: column;
-    gap: 8px;
-    padding: 8px;
+    gap: 4px;
+    padding: 6px;
   }
   .report-period-tabs {
     display: grid;
