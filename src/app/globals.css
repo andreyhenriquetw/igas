@@ -1987,7 +1987,11 @@ a {
         60px + env(safe-area-inset-bottom)
       );
     background:
-      radial-gradient(circle at 100% 0, rgb(116 194 226 / 14%), transparent 32%),
+      radial-gradient(
+        circle at 100% 0,
+        rgb(116 194 226 / 14%),
+        transparent 32%
+      ),
       linear-gradient(180deg, #eef8fc 0%, #f8fbfd 100%);
   }
 
@@ -2002,14 +2006,24 @@ a {
     padding: 0 12px;
     border-bottom: 0;
     background:
-      linear-gradient(90deg, rgb(234 250 255 / 94%), rgb(205 239 249 / 82%) 72%, rgb(168 224 241 / 88%)),
+      linear-gradient(
+        90deg,
+        rgb(234 250 255 / 94%),
+        rgb(205 239 249 / 82%) 72%,
+        rgb(168 224 241 / 88%)
+      ),
       url("/igasdia.png") center 58% / cover;
     box-shadow: 0 2px 12px rgb(48 112 146 / 10%);
   }
 
   :root[data-theme="dark"] .app-header {
     background:
-      linear-gradient(90deg, rgb(5 18 50 / 96%), rgb(8 34 74 / 91%) 72%, rgb(19 67 115 / 92%)),
+      linear-gradient(
+        90deg,
+        rgb(5 18 50 / 96%),
+        rgb(8 34 74 / 91%) 72%,
+        rgb(19 67 115 / 92%)
+      ),
       url("/noiteigas.png") center 58% / cover;
     box-shadow: 0 3px 16px rgb(0 0 0 / 30%);
   }
@@ -2090,17 +2104,26 @@ a {
     min-height: 76px;
     border: 1px solid rgb(91 174 211 / 32%);
     border-radius: 10px;
-    background:
-      linear-gradient(135deg, rgb(220 244 255 / 94%), rgb(185 223 242 / 92%));
+    background: linear-gradient(
+      135deg,
+      rgb(220 244 255 / 94%),
+      rgb(185 223 242 / 92%)
+    );
     box-shadow: 0 7px 15px rgb(65 112 137 / 14%);
   }
   .stat-card:nth-child(2) {
-    background:
-      linear-gradient(135deg, rgb(207 244 231 / 96%), rgb(154 224 201 / 90%));
+    background: linear-gradient(
+      135deg,
+      rgb(207 244 231 / 96%),
+      rgb(154 224 201 / 90%)
+    );
   }
   .stat-card:nth-child(3) {
-    background:
-      linear-gradient(135deg, rgb(255 238 196 / 96%), rgb(255 207 137 / 90%));
+    background: linear-gradient(
+      135deg,
+      rgb(255 238 196 / 96%),
+      rgb(255 207 137 / 90%)
+    );
   }
   .stat-card span {
     color: #273d49;
@@ -2120,15 +2143,27 @@ a {
 
   :root[data-theme="dark"] .stat-card {
     border-color: rgb(76 128 203 / 42%);
-    background: linear-gradient(135deg, rgb(20 49 95 / 96%), rgb(14 68 104 / 94%));
+    background: linear-gradient(
+      135deg,
+      rgb(20 49 95 / 96%),
+      rgb(14 68 104 / 94%)
+    );
   }
   :root[data-theme="dark"] .stat-card:nth-child(2) {
     border-color: rgb(43 152 139 / 44%);
-    background: linear-gradient(135deg, rgb(11 70 76 / 96%), rgb(25 89 95 / 94%));
+    background: linear-gradient(
+      135deg,
+      rgb(11 70 76 / 96%),
+      rgb(25 89 95 / 94%)
+    );
   }
   :root[data-theme="dark"] .stat-card:nth-child(3) {
     border-color: rgb(179 79 159 / 44%);
-    background: linear-gradient(135deg, rgb(74 34 106 / 96%), rgb(118 58 110 / 94%));
+    background: linear-gradient(
+      135deg,
+      rgb(74 34 106 / 96%),
+      rgb(118 58 110 / 94%)
+    );
   }
   :root[data-theme="dark"] .stat-card span,
   :root[data-theme="dark"] .stat-card strong {
@@ -2222,8 +2257,11 @@ a {
   }
   :root[data-theme="dark"] .mobile-nav {
     border-top: 1px solid rgb(55 94 162 / 55%);
-    background:
-      linear-gradient(90deg, rgb(18 28 67 / 96%), rgb(31 25 76 / 96%));
+    background: linear-gradient(
+      90deg,
+      rgb(18 28 67 / 96%),
+      rgb(31 25 76 / 96%)
+    );
   }
   :root[data-theme="dark"] .mobile-nav-link {
     color: #8294bc;
@@ -2242,7 +2280,11 @@ a {
     border-bottom: 0;
     border-radius: 14px 14px 0 0;
     background:
-      radial-gradient(ellipse at 18% 0%, rgb(183 91 255 / 54%), transparent 48%),
+      radial-gradient(
+        ellipse at 18% 0%,
+        rgb(183 91 255 / 54%),
+        transparent 48%
+      ),
       linear-gradient(105deg, #792de5 0%, #4825aa 48%, #192b84 100%);
     box-shadow:
       inset 0 1px rgb(255 255 255 / 24%),
@@ -2257,7 +2299,11 @@ a {
     height: 33px;
     border-bottom: 3px solid #276aff;
     border-radius: 0 0 48% 55%;
-    background: linear-gradient(115deg, transparent 10%, rgb(61 73 232 / 58%) 80%);
+    background: linear-gradient(
+      115deg,
+      transparent 10%,
+      rgb(61 73 232 / 58%) 80%
+    );
     filter: drop-shadow(0 2px 4px rgb(40 104 255 / 75%));
     transform: rotate(-5deg);
   }
@@ -2312,7 +2358,13 @@ a {
   height: 112px;
   border: 0;
   background:
-    linear-gradient(90deg, rgb(7 17 43 / 98%) 0%, rgb(9 31 69 / 94%) 43%, rgb(16 54 96 / 50%) 68%, rgb(8 25 61 / 30%) 100%),
+    linear-gradient(
+      90deg,
+      rgb(7 17 43 / 98%) 0%,
+      rgb(9 31 69 / 94%) 43%,
+      rgb(16 54 96 / 50%) 68%,
+      rgb(8 25 61 / 30%) 100%
+    ),
     url("/noiteigas.png") right 52% / cover no-repeat;
   box-shadow: 0 3px 12px rgb(0 0 0 / 38%);
   backdrop-filter: none;
@@ -2367,7 +2419,9 @@ a {
   border-radius: 9px;
   background: rgb(22 57 111 / 82%);
   color: #64a6ff;
-  box-shadow: inset 0 1px rgb(151 181 229 / 8%), 0 3px 10px rgb(0 0 0 / 20%);
+  box-shadow:
+    inset 0 1px rgb(151 181 229 / 8%),
+    0 3px 10px rgb(0 0 0 / 20%);
 }
 
 :root[data-theme="dark"] .desktop-nav {
@@ -2383,7 +2437,9 @@ a {
 
 @media (max-width: 680px) {
   body:has(.mobile-nav) {
-    grid-template-rows: 112px minmax(0, 1fr) calc(68px + env(safe-area-inset-bottom));
+    grid-template-rows: 112px minmax(0, 1fr) calc(
+        68px + env(safe-area-inset-bottom)
+      );
   }
   :root[data-theme="dark"] body:has(.mobile-nav) {
     background:
@@ -2604,7 +2660,9 @@ a {
 
 @media (max-width: 680px) {
   :root[data-theme="dark"] body:has(.mobile-nav) {
-    grid-template-rows: 112px minmax(0, 1fr) calc(68px + env(safe-area-inset-bottom));
+    grid-template-rows: 112px minmax(0, 1fr) calc(
+        68px + env(safe-area-inset-bottom)
+      );
   }
   :root[data-theme="dark"] .app-header {
     height: 112px;
@@ -2612,11 +2670,13 @@ a {
     padding: 0 10px;
     border: 0;
     background:
-      linear-gradient(90deg,
+      linear-gradient(
+        90deg,
         rgb(6 15 39 / 99%) 0%,
         rgb(8 29 68 / 97%) 38%,
         rgb(12 43 78 / 70%) 72%,
-        rgb(8 25 56 / 82%) 100%),
+        rgb(8 25 56 / 82%) 100%
+      ),
       url("/noiteigas.png") 68% 52% / cover no-repeat;
   }
   :root[data-theme="dark"] .app-header::after {
@@ -2626,7 +2686,13 @@ a {
     bottom: 0;
     left: 0;
     height: 7px;
-    background: linear-gradient(90deg, transparent 0%, #286fcb 22%, #1ab8d6 54%, transparent 100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      #286fcb 22%,
+      #1ab8d6 54%,
+      transparent 100%
+    );
     opacity: 0.92;
   }
   :root[data-theme="dark"] .brand {
@@ -2693,19 +2759,31 @@ a {
   :root[data-theme="dark"] .stat-card:nth-child(1) {
     border-color: #314da1;
     background:
-      radial-gradient(circle at 100% 100%, rgb(62 145 234 / 32%), transparent 42%),
+      radial-gradient(
+        circle at 100% 100%,
+        rgb(62 145 234 / 32%),
+        transparent 42%
+      ),
       linear-gradient(135deg, #172b67 0%, #263e88 100%);
   }
   :root[data-theme="dark"] .stat-card:nth-child(2) {
     border-color: #24758c;
     background:
-      radial-gradient(circle at 100% 100%, rgb(50 194 176 / 28%), transparent 43%),
+      radial-gradient(
+        circle at 100% 100%,
+        rgb(50 194 176 / 28%),
+        transparent 43%
+      ),
       linear-gradient(135deg, #123b50 0%, #164b5d 100%);
   }
   :root[data-theme="dark"] .stat-card:nth-child(3) {
     border-color: #6c4a66;
     background:
-      radial-gradient(circle at 100% 100%, rgb(241 170 48 / 27%), transparent 44%),
+      radial-gradient(
+        circle at 100% 100%,
+        rgb(241 170 48 / 27%),
+        transparent 44%
+      ),
       linear-gradient(135deg, #35254c 0%, #5a4451 100%);
   }
   :root[data-theme="dark"] .stat-card span {
@@ -2766,7 +2844,11 @@ a {
   :root[data-theme="dark"] .stat-card:nth-child(1) {
     border-color: #8c35ed;
     background:
-      radial-gradient(ellipse at 100% 100%, rgb(44 84 225 / 70%), transparent 57%),
+      radial-gradient(
+        ellipse at 100% 100%,
+        rgb(44 84 225 / 70%),
+        transparent 57%
+      ),
       linear-gradient(145deg, #180e40 0%, #171a59 55%, #111b50 100%);
     color: #7772ff;
     box-shadow:
@@ -2777,7 +2859,11 @@ a {
   :root[data-theme="dark"] .stat-card:nth-child(2) {
     border-color: #08c8b7;
     background:
-      radial-gradient(ellipse at 100% 100%, rgb(4 204 173 / 75%), transparent 55%),
+      radial-gradient(
+        ellipse at 100% 100%,
+        rgb(4 204 173 / 75%),
+        transparent 55%
+      ),
       linear-gradient(145deg, #083842 0%, #06444c 58%, #073746 100%);
     color: #20ddbe;
     box-shadow:
@@ -2788,7 +2874,11 @@ a {
   :root[data-theme="dark"] .stat-card:nth-child(3) {
     border-color: #f3981f;
     background:
-      radial-gradient(ellipse at 100% 100%, rgb(255 154 18 / 80%), transparent 56%),
+      radial-gradient(
+        ellipse at 100% 100%,
+        rgb(255 154 18 / 80%),
+        transparent 56%
+      ),
       linear-gradient(145deg, #402522 0%, #573016 58%, #4c2b17 100%);
     color: #ff9f19;
     box-shadow:
@@ -2807,7 +2897,9 @@ a {
     border: 1px solid currentColor;
     border-radius: 50%;
     background: rgb(5 10 38 / 38%);
-    box-shadow: inset 0 0 8px currentColor, 0 0 8px currentColor;
+    box-shadow:
+      inset 0 0 8px currentColor,
+      0 0 8px currentColor;
   }
   :root[data-theme="dark"] .stat-icon svg {
     position: static;
@@ -2820,19 +2912,25 @@ a {
     border-color: rgb(159 82 255 / 64%);
     background: rgb(32 20 85 / 72%);
     color: #58c8ff;
-    box-shadow: inset 0 0 5px rgb(135 64 255 / 35%), 0 0 5px rgb(135 64 255 / 32%);
+    box-shadow:
+      inset 0 0 5px rgb(135 64 255 / 35%),
+      0 0 5px rgb(135 64 255 / 32%);
   }
   :root[data-theme="dark"] .stat-card:nth-child(2) .stat-icon {
     border-color: rgb(31 200 173 / 64%);
     background: rgb(10 65 67 / 74%);
     color: #4de0bd;
-    box-shadow: inset 0 0 5px rgb(27 202 175 / 30%), 0 0 5px rgb(27 202 175 / 28%);
+    box-shadow:
+      inset 0 0 5px rgb(27 202 175 / 30%),
+      0 0 5px rgb(27 202 175 / 28%);
   }
   :root[data-theme="dark"] .stat-card:nth-child(3) .stat-icon {
     border-color: rgb(255 157 33 / 68%);
     background: rgb(84 47 20 / 76%);
     color: #ffad2e;
-    box-shadow: inset 0 0 5px rgb(255 151 24 / 32%), 0 0 5px rgb(255 151 24 / 30%);
+    box-shadow:
+      inset 0 0 5px rgb(255 151 24 / 32%),
+      0 0 5px rgb(255 151 24 / 30%);
   }
   :root[data-theme="dark"] .stat-content {
     position: relative;
@@ -2985,8 +3083,13 @@ a {
   align-items: center;
   margin-bottom: 18px;
 }
-.reports-intro h1 {
-  margin-bottom: 0;
+.reports-intro h1.reports-vision-title {
+  margin: 0;
+  color: #849087;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
 }
 .report-export {
   flex: 0 0 auto;
@@ -3096,7 +3199,10 @@ a {
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.16s ease;
 }
 .report-kpi:hover {
   border-color: color-mix(in srgb, var(--green) 48%, var(--line));
@@ -3268,7 +3374,10 @@ a {
   border-radius: 12px;
   background: var(--paper);
   box-shadow: 0 4px 12px rgb(26 47 35 / 3%);
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 .report-detail-item:hover {
   border-color: rgb(57 126 185 / 28%);
@@ -3960,14 +4069,24 @@ body {
   height: 82px;
   border-bottom: 0;
   background:
-    linear-gradient(90deg, rgb(237 250 254 / 98%), rgb(206 236 248 / 94%) 65%, rgb(162 217 238 / 96%)),
+    linear-gradient(
+      90deg,
+      rgb(237 250 254 / 98%),
+      rgb(206 236 248 / 94%) 65%,
+      rgb(162 217 238 / 96%)
+    ),
     url("/igasdia.png") center 58% / cover;
   box-shadow: 0 3px 14px rgb(46 112 150 / 11%);
   backdrop-filter: blur(12px);
 }
 :root[data-theme="dark"] .app-header {
   background:
-    linear-gradient(90deg, rgb(7 18 47 / 97%), rgb(9 37 78 / 96%) 68%, rgb(18 62 112 / 96%)),
+    linear-gradient(
+      90deg,
+      rgb(7 18 47 / 97%),
+      rgb(9 37 78 / 96%) 68%,
+      rgb(18 62 112 / 96%)
+    ),
     url("/noiteigas.png") center 58% / cover;
   box-shadow: 0 4px 18px rgb(0 0 0 / 34%);
 }
@@ -4122,7 +4241,9 @@ body {
 @media (max-width: 680px) {
   body:has(.mobile-nav) {
     height: 100dvh;
-    grid-template-rows: 82px minmax(0, 1fr) calc(60px + env(safe-area-inset-bottom));
+    grid-template-rows: 82px minmax(0, 1fr) calc(
+        60px + env(safe-area-inset-bottom)
+      );
   }
   .app-header {
     grid-row: 1;
@@ -4158,7 +4279,11 @@ body {
   }
   :root[data-theme="dark"] .mobile-nav {
     border-top: 1px solid rgb(55 94 162 / 55%);
-    background: linear-gradient(90deg, rgb(18 28 67 / 98%), rgb(31 25 76 / 98%));
+    background: linear-gradient(
+      90deg,
+      rgb(18 28 67 / 98%),
+      rgb(31 25 76 / 98%)
+    );
   }
   :root[data-theme="dark"] .mobile-nav-link {
     color: #8294bc;
@@ -4228,13 +4353,23 @@ body {
   height: 82px;
   border-bottom: 0;
   background:
-    linear-gradient(90deg, rgb(232 248 253 / 96%), rgb(194 229 244 / 94%) 68%, rgb(133 200 229 / 94%)),
+    linear-gradient(
+      90deg,
+      rgb(232 248 253 / 96%),
+      rgb(194 229 244 / 94%) 68%,
+      rgb(133 200 229 / 94%)
+    ),
     url("/igasdia.png") center 55% / cover;
   box-shadow: 0 3px 12px rgb(43 113 153 / 14%);
 }
 :root[data-theme="dark"] .app-header {
   background:
-    linear-gradient(90deg, rgb(7 18 47 / 97%), rgb(9 38 82 / 95%) 68%, rgb(16 67 119 / 95%)),
+    linear-gradient(
+      90deg,
+      rgb(7 18 47 / 97%),
+      rgb(9 38 82 / 95%) 68%,
+      rgb(16 67 119 / 95%)
+    ),
     url("/noiteigas.png") center 55% / cover;
   box-shadow: 0 4px 16px rgb(0 0 0 / 38%);
 }
@@ -4382,7 +4517,9 @@ body {
 @media (max-width: 680px) {
   body:has(.mobile-nav) {
     height: 100dvh;
-    grid-template-rows: 82px minmax(0, 1fr) calc(74px + env(safe-area-inset-bottom));
+    grid-template-rows: 82px minmax(0, 1fr) calc(
+        74px + env(safe-area-inset-bottom)
+      );
   }
   .app-header {
     grid-row: 1;
@@ -4499,7 +4636,9 @@ body {
     border-radius: 50%;
     background: linear-gradient(145deg, #34276f, #191d4d);
     color: #e4e9ff;
-    box-shadow: inset 0 1px rgb(255 255 255 / 13%), 0 0 8px rgb(116 61 227 / 26%);
+    box-shadow:
+      inset 0 1px rgb(255 255 255 / 13%),
+      0 0 8px rgb(116 61 227 / 26%);
   }
   :root[data-theme="dark"] .period-controls .button-today {
     width: auto;
@@ -4509,7 +4648,9 @@ body {
     border-radius: 12px;
     background: #0c2348;
     color: #e9f8ff;
-    box-shadow: inset 0 0 7px rgb(0 165 255 / 23%), 0 0 9px rgb(0 195 255 / 70%);
+    box-shadow:
+      inset 0 0 7px rgb(0 165 255 / 23%),
+      0 0 9px rgb(0 195 255 / 70%);
   }
   :root[data-theme="dark"] .period-heading h2 {
     display: flex;
@@ -4689,9 +4830,15 @@ body {
 
 @media (max-width: 680px) {
   :root:not([data-theme="dark"]) body:has(.mobile-nav) {
-    grid-template-rows: 112px minmax(0, 1fr) calc(68px + env(safe-area-inset-bottom));
+    grid-template-rows: 112px minmax(0, 1fr) calc(
+        68px + env(safe-area-inset-bottom)
+      );
     background:
-      radial-gradient(circle at 100% 0, rgb(105 202 235 / 20%), transparent 34%),
+      radial-gradient(
+        circle at 100% 0,
+        rgb(105 202 235 / 20%),
+        transparent 34%
+      ),
       linear-gradient(180deg, #eaf8fd 0%, #f8fcff 100%);
   }
   :root:not([data-theme="dark"]) .app-header {
@@ -4701,7 +4848,12 @@ body {
     padding: 0 10px;
     border: 0;
     background:
-      linear-gradient(90deg, rgb(231 249 255 / 96%) 0%, rgb(204 239 251 / 88%) 47%, rgb(133 209 239 / 55%) 100%),
+      linear-gradient(
+        90deg,
+        rgb(231 249 255 / 96%) 0%,
+        rgb(204 239 251 / 88%) 47%,
+        rgb(133 209 239 / 55%) 100%
+      ),
       url("/igasdia.png") 68% 52% / cover no-repeat;
     box-shadow: 0 3px 12px rgb(52 132 169 / 17%);
   }
@@ -4712,7 +4864,13 @@ body {
     bottom: 0;
     left: 0;
     height: 7px;
-    background: linear-gradient(90deg, transparent, #2d9feb 30%, #14c1dc 68%, transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      #2d9feb 30%,
+      #14c1dc 68%,
+      transparent
+    );
   }
   :root:not([data-theme="dark"]) .brand {
     height: 112px;
@@ -4786,7 +4944,9 @@ body {
     overflow: hidden;
     border: 1px solid;
     border-radius: 13px;
-    box-shadow: inset 0 1px rgb(255 255 255 / 65%), 0 5px 12px rgb(36 104 146 / 18%);
+    box-shadow:
+      inset 0 1px rgb(255 255 255 / 65%),
+      0 5px 12px rgb(36 104 146 / 18%);
   }
   :root:not([data-theme="dark"]) .stat-card::after {
     content: "";
@@ -4804,21 +4964,33 @@ body {
   :root:not([data-theme="dark"]) .stat-card:nth-child(1) {
     border-color: #3a97df;
     background:
-      radial-gradient(ellipse at 100% 100%, rgb(42 169 239 / 50%), transparent 58%),
+      radial-gradient(
+        ellipse at 100% 100%,
+        rgb(42 169 239 / 50%),
+        transparent 58%
+      ),
       linear-gradient(145deg, #edfaff, #c2eaff 70%, #a5dbfc);
     color: #168de1;
   }
   :root:not([data-theme="dark"]) .stat-card:nth-child(2) {
     border-color: #39bd95;
     background:
-      radial-gradient(ellipse at 100% 100%, rgb(46 200 151 / 43%), transparent 58%),
+      radial-gradient(
+        ellipse at 100% 100%,
+        rgb(46 200 151 / 43%),
+        transparent 58%
+      ),
       linear-gradient(145deg, #ecfff6, #c1f3df 72%, #9de7cb);
     color: #149f76;
   }
   :root:not([data-theme="dark"]) .stat-card:nth-child(3) {
     border-color: #e7a12d;
     background:
-      radial-gradient(ellipse at 100% 100%, rgb(255 164 40 / 50%), transparent 58%),
+      radial-gradient(
+        ellipse at 100% 100%,
+        rgb(255 164 40 / 50%),
+        transparent 58%
+      ),
       linear-gradient(145deg, #fff8df, #ffe2aa 72%, #ffd18b);
     color: #dc850e;
   }
@@ -4833,7 +5005,9 @@ body {
     border: 1px solid currentColor;
     border-radius: 50%;
     background: rgb(255 255 255 / 66%);
-    box-shadow: inset 0 0 5px rgb(255 255 255 / 75%), 0 0 5px currentColor;
+    box-shadow:
+      inset 0 0 5px rgb(255 255 255 / 75%),
+      0 0 5px currentColor;
   }
   :root:not([data-theme="dark"]) .stat-icon svg {
     position: static;
@@ -4904,7 +5078,9 @@ body {
     border-radius: 50%;
     background: linear-gradient(145deg, #fff, #dff2ff);
     color: #1762a9;
-    box-shadow: inset 0 1px #fff, 0 3px 7px rgb(51 118 172 / 20%);
+    box-shadow:
+      inset 0 1px #fff,
+      0 3px 7px rgb(51 118 172 / 20%);
   }
   :root:not([data-theme="dark"]) .period-controls .button-today {
     width: auto;
@@ -4940,7 +5116,9 @@ body {
     border: 1px solid #abcce3;
     border-radius: 18px;
     background: linear-gradient(180deg, #f8fcff, #e4f1fb);
-    box-shadow: inset 0 1px #fff, 0 2px 6px rgb(65 124 169 / 12%);
+    box-shadow:
+      inset 0 1px #fff,
+      0 2px 6px rgb(65 124 169 / 12%);
   }
   :root:not([data-theme="dark"]) .view-option {
     min-height: 29px;
@@ -4953,7 +5131,9 @@ body {
     border: 1px solid #0789e4;
     background: linear-gradient(180deg, #36b9f4, #0879d8);
     color: #fff;
-    box-shadow: inset 0 1px rgb(255 255 255 / 45%), 0 0 8px rgb(0 142 238 / 46%);
+    box-shadow:
+      inset 0 1px rgb(255 255 255 / 45%),
+      0 0 8px rgb(0 142 238 / 46%);
   }
 
   :root:not([data-theme="dark"]) .filters-row {
@@ -4987,7 +5167,9 @@ body {
     background: linear-gradient(180deg, #fff, #f0f8ff);
     color: #193756;
     font-size: 11px;
-    box-shadow: inset 0 1px #fff, 0 2px 5px rgb(62 111 150 / 10%);
+    box-shadow:
+      inset 0 1px #fff,
+      0 2px 5px rgb(62 111 150 / 10%);
   }
   :root:not([data-theme="dark"]) .calendar-legend {
     display: grid;
@@ -5025,9 +5207,15 @@ body {
     border-bottom: 0;
     border-radius: 14px 14px 0 0;
     background:
-      radial-gradient(ellipse at 18% 0%, rgb(142 221 255 / 50%), transparent 48%),
+      radial-gradient(
+        ellipse at 18% 0%,
+        rgb(142 221 255 / 50%),
+        transparent 48%
+      ),
       linear-gradient(105deg, #19a9ee 0%, #1186e2 52%, #0870ce 100%);
-    box-shadow: inset 0 1px #fff8, 0 0 10px rgb(22 133 208 / 18%);
+    box-shadow:
+      inset 0 1px #fff8,
+      0 0 10px rgb(22 133 208 / 18%);
   }
   :root:not([data-theme="dark"]) .calendar-month-heading::after {
     content: "";
@@ -5038,7 +5226,11 @@ body {
     height: 33px;
     border-bottom: 3px solid #37cbf4;
     border-radius: 0 0 48% 55%;
-    background: linear-gradient(115deg, transparent 10%, rgb(37 203 240 / 52%) 80%);
+    background: linear-gradient(
+      115deg,
+      transparent 10%,
+      rgb(37 203 240 / 52%) 80%
+    );
     filter: drop-shadow(0 2px 4px rgb(45 176 246 / 65%));
     transform: rotate(-5deg);
   }
@@ -5095,7 +5287,11 @@ body {
     height: calc(68px + env(safe-area-inset-bottom));
     padding: 8px 8px env(safe-area-inset-bottom);
     border: 0;
-    background: linear-gradient(90deg, rgb(255 255 255 / 97%), rgb(239 250 255 / 97%));
+    background: linear-gradient(
+      90deg,
+      rgb(255 255 255 / 97%),
+      rgb(239 250 255 / 97%)
+    );
   }
   :root:not([data-theme="dark"]) .mobile-nav-link {
     min-height: 54px;
@@ -5115,19 +5311,25 @@ body {
     border-color: #69bce9;
     background: #e8f7ff;
     color: #168de1;
-    box-shadow: inset 0 0 5px rgb(255 255 255 / 90%), 0 0 5px rgb(22 141 225 / 24%);
+    box-shadow:
+      inset 0 0 5px rgb(255 255 255 / 90%),
+      0 0 5px rgb(22 141 225 / 24%);
   }
   :root:not([data-theme="dark"]) .stat-card:nth-child(2) .stat-icon {
     border-color: #69cbb0;
     background: #e7fbf2;
     color: #149f76;
-    box-shadow: inset 0 0 5px rgb(255 255 255 / 90%), 0 0 5px rgb(20 159 118 / 22%);
+    box-shadow:
+      inset 0 0 5px rgb(255 255 255 / 90%),
+      0 0 5px rgb(20 159 118 / 22%);
   }
   :root:not([data-theme="dark"]) .stat-card:nth-child(3) .stat-icon {
     border-color: #e8b15d;
     background: #fff4d8;
     color: #dc850e;
-    box-shadow: inset 0 0 5px rgb(255 255 255 / 90%), 0 0 5px rgb(220 133 14 / 22%);
+    box-shadow:
+      inset 0 0 5px rgb(255 255 255 / 90%),
+      0 0 5px rgb(220 133 14 / 22%);
   }
   :root:not([data-theme="dark"]) .stat-card .stat-label {
     padding-right: 0;
@@ -5170,13 +5372,23 @@ body {
 
 :root:not([data-theme="dark"]) .app-header {
   background:
-    linear-gradient(90deg, rgb(232 248 253 / 38%) 0%, rgb(194 229 244 / 28%) 68%, rgb(133 200 229 / 18%) 100%),
+    linear-gradient(
+      90deg,
+      rgb(232 248 253 / 38%) 0%,
+      rgb(194 229 244 / 28%) 68%,
+      rgb(133 200 229 / 18%) 100%
+    ),
     url("/igasdia.png") center 55% / cover no-repeat;
 }
 
 :root[data-theme="dark"] .app-header {
   background:
-    linear-gradient(90deg, rgb(7 18 47 / 58%) 0%, rgb(9 38 82 / 38%) 68%, rgb(16 67 119 / 24%) 100%),
+    linear-gradient(
+      90deg,
+      rgb(7 18 47 / 58%) 0%,
+      rgb(9 38 82 / 38%) 68%,
+      rgb(16 67 119 / 24%) 100%
+    ),
     url("/noiteigas.png") center 55% / cover no-repeat;
   backdrop-filter: none;
 }
@@ -5184,13 +5396,23 @@ body {
 @media (max-width: 680px) {
   :root:not([data-theme="dark"]) .app-header {
     background:
-      linear-gradient(90deg, rgb(231 249 255 / 30%) 0%, rgb(204 239 251 / 22%) 52%, rgb(133 209 239 / 12%) 100%),
+      linear-gradient(
+        90deg,
+        rgb(231 249 255 / 30%) 0%,
+        rgb(204 239 251 / 22%) 52%,
+        rgb(133 209 239 / 12%) 100%
+      ),
       url("/igasdia.png") 68% 52% / cover no-repeat;
   }
 
   :root[data-theme="dark"] .app-header {
     background:
-      linear-gradient(90deg, rgb(7 18 47 / 48%) 0%, rgb(9 38 82 / 30%) 62%, rgb(16 67 119 / 18%) 100%),
+      linear-gradient(
+        90deg,
+        rgb(7 18 47 / 48%) 0%,
+        rgb(9 38 82 / 30%) 62%,
+        rgb(16 67 119 / 18%) 100%
+      ),
       url("/noiteigas.png") 68% 52% / cover no-repeat;
   }
 
@@ -5212,11 +5434,8 @@ body {
 
 :root:not([data-theme="dark"]) .app-header .brand-logo-light,
 :root[data-theme="dark"] .app-header .brand-logo-dark {
-  filter:
-    drop-shadow(1px 0 0 #111111)
-    drop-shadow(-1px 0 0 #111111)
-    drop-shadow(0 1px 0 #111111)
-    drop-shadow(0 -1px 0 #111111);
+  filter: drop-shadow(1px 0 0 #111111) drop-shadow(-1px 0 0 #111111)
+    drop-shadow(0 1px 0 #111111) drop-shadow(0 -1px 0 #111111);
 }
 
 :root:not([data-theme="dark"]) .app-header .brand-name {
@@ -5373,12 +5592,16 @@ body {
     radial-gradient(circle at 100% 0, rgb(99 157 211 / 10%), transparent 38%),
     #111e3b;
 }
-:root[data-theme="dark"] .report-detail-modal.report-detail-outstanding .modal-heading {
+:root[data-theme="dark"]
+  .report-detail-modal.report-detail-outstanding
+  .modal-heading {
   background:
     radial-gradient(circle at 100% 0, rgb(237 189 103 / 10%), transparent 38%),
     #111e3b;
 }
-:root[data-theme="dark"] .report-detail-modal.report-detail-cancelled .modal-heading {
+:root[data-theme="dark"]
+  .report-detail-modal.report-detail-cancelled
+  .modal-heading {
   background:
     radial-gradient(circle at 100% 0, rgb(240 138 126 / 10%), transparent 38%),
     #111e3b;
@@ -5389,7 +5612,9 @@ body {
   color: #72aaf1;
   box-shadow: 0 8px 18px rgb(0 0 0 / 24%);
 }
-:root[data-theme="dark"] .report-detail-outstanding .report-detail-heading-icon {
+:root[data-theme="dark"]
+  .report-detail-outstanding
+  .report-detail-heading-icon {
   border-color: rgb(237 189 103 / 36%);
   background: linear-gradient(135deg, #5a4324, #79562a);
   color: #edbd67;
@@ -5546,7 +5771,9 @@ body {
     border: 1px solid currentColor;
     border-radius: 50%;
     background: rgb(255 255 255 / 66%);
-    box-shadow: inset 0 0 5px rgb(255 255 255 / 75%), 0 0 5px currentColor;
+    box-shadow:
+      inset 0 0 5px rgb(255 255 255 / 75%),
+      0 0 5px currentColor;
   }
   :root:not([data-theme="dark"]) .reports-main .report-kpi .stat-icon svg,
   :root[data-theme="dark"] .reports-main .report-kpi .stat-icon svg {
@@ -5796,7 +6023,10 @@ body {
   min-height: 38px;
   border-radius: 9px;
   color: #657b8c;
-  transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease;
 }
 .reservation-form-modal .entry-kind-switch button.selected {
   background: #fff;
@@ -5819,7 +6049,10 @@ body {
   border-color: #d7e5ef;
   border-radius: 11px;
   background: #f9fcff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
 }
 .reservation-form-modal .field textarea {
   min-height: 82px;
@@ -6140,7 +6373,10 @@ body {
 :root[data-theme="dark"] .reservation-form-modal .entry-kind-switch button {
   color: #a4b3ce;
 }
-:root[data-theme="dark"] .reservation-form-modal .entry-kind-switch button.selected {
+:root[data-theme="dark"]
+  .reservation-form-modal
+  .entry-kind-switch
+  button.selected {
   background: #263d66;
   color: #dceaff;
   box-shadow: 0 2px 8px rgb(0 0 0 / 26%);
@@ -6409,15 +6645,28 @@ body {
   }
 }
 
-:root[data-theme="dark"] .reservation-details-modal .reservation-detail-grid > div {
+:root[data-theme="dark"]
+  .reservation-details-modal
+  .reservation-detail-grid
+  > div {
   border-color: #2d426b;
   background: #142442;
 }
-:root[data-theme="dark"] .reservation-details-modal .reservation-detail-grid strong {
+:root[data-theme="dark"]
+  .reservation-details-modal
+  .reservation-detail-grid
+  strong {
   color: #dfe9f7;
 }
-:root[data-theme="dark"] .reservation-details-modal .reservation-detail-grid small,
-:root[data-theme="dark"] .reservation-details-modal .reservation-detail-grid > div > span {
+:root[data-theme="dark"]
+  .reservation-details-modal
+  .reservation-detail-grid
+  small,
+:root[data-theme="dark"]
+  .reservation-details-modal
+  .reservation-detail-grid
+  > div
+  > span {
   color: #9fb2d2;
 }
 
@@ -6563,7 +6812,10 @@ body {
     0 5px 10px rgb(0 0 0 / 22%),
     inset 0 1px 0 rgb(255 255 255 / 8%);
 }
-:root[data-theme="dark"] .reports-main .report-period-navigation > .icon-button:active,
+:root[data-theme="dark"]
+  .reports-main
+  .report-period-navigation
+  > .icon-button:active,
 :root[data-theme="dark"] .reports-main .report-date-picker:active {
   box-shadow:
     0 1px 0 #0b1429,
@@ -6652,4 +6904,3 @@ body {
     display: none;
   }
 }
-

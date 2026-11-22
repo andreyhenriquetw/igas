@@ -444,8 +444,7 @@ export function ReportsDashboard() {
     <main className="app-main reports-main">
       <section className="page-intro reports-intro">
         <div>
-          <p className="eyebrow">VISÃO FINANCEIRA</p>
-          <h1>Relatórios</h1>
+          <h1 className="eyebrow reports-vision-title">VISÃO FINANCEIRA</h1>
         </div>
         <button
           className="button button-secondary report-export"
