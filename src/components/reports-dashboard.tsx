@@ -44,9 +44,11 @@ function formatCount(value: number) {
 function AnimatedReportValue({
   value,
   format,
+  precision = 0,
 }: {
   value: number;
   format: (value: number) => string;
+  precision?: number;
 }) {
   const [animatedValue, setAnimatedValue] = useState(0);
 
@@ -55,24 +57,33 @@ function AnimatedReportValue({
     const duration = 1200;
     let startTime: number | null = null;
     let frameId = 0;
+    let lastRenderedValue = 0;
+
     function animate(timestamp: number) {
       startTime ??= timestamp;
       const progress = prefersReducedMotion ? 1 : Math.min((timestamp - startTime) / duration, 1);
       const easedProgress = 1 - (1 - progress) ** 3;
-      setAnimatedValue(value * easedProgress);
+      const nextValue = progress === 1
+        ? value
+        : Number((value * easedProgress).toFixed(precision));
+
+      if (nextValue !== lastRenderedValue) {
+        lastRenderedValue = nextValue;
+        setAnimatedValue(nextValue);
+      }
 
       if (progress < 1) frameId = window.requestAnimationFrame(animate);
     }
 
     frameId = window.requestAnimationFrame(animate);
     return () => window.cancelAnimationFrame(frameId);
-  }, [value]);
+  }, [precision, value]);
 
   return (
-    <>
+    <span className="animated-report-value" aria-atomic="true">
       <span aria-hidden="true">{format(animatedValue)}</span>
       <span className="visually-hidden">{format(value)}</span>
-    </>
+    </span>
   );
 }
 
@@ -520,7 +531,7 @@ export function ReportsDashboard() {
               <span className="stat-content">
                 <span className="stat-label">Recebido</span>
                 <strong>
-                  <AnimatedReportValue key={`${requestKey}:received:${summary.totalReceived}`} value={summary.totalReceived} format={formatCurrency} />
+                  <AnimatedReportValue key={`${requestKey}:received:${summary.totalReceived}`} value={summary.totalReceived} format={formatCurrency} precision={2} />
                 </strong>
                 <span className="report-kpi-description">Valores pagos em reservas ativas</span>
               </span>
@@ -530,7 +541,7 @@ export function ReportsDashboard() {
               <span className="stat-content">
                 <span className="stat-label">Em aberto</span>
                 <strong>
-                  <AnimatedReportValue key={`${requestKey}:outstanding:${summary.totalOutstanding}`} value={summary.totalOutstanding} format={formatCurrency} />
+                  <AnimatedReportValue key={`${requestKey}:outstanding:${summary.totalOutstanding}`} value={summary.totalOutstanding} format={formatCurrency} precision={2} />
                 </strong>
                 <span className="report-kpi-description">Saldo restante das reservas ativas</span>
               </span>
@@ -540,7 +551,7 @@ export function ReportsDashboard() {
               <span className="stat-content">
                 <span className="stat-label">Reservas quitadas</span>
                 <strong>
-                  <AnimatedReportValue key={`${requestKey}:settled:${settledYearTotal}`} value={settledYearTotal} format={formatCurrency} />
+                  <AnimatedReportValue key={`${requestKey}:settled:${settledYearTotal}`} value={settledYearTotal} format={formatCurrency} precision={2} />
                 </strong>
                 <span className="report-kpi-description">
                   {settledYearEntries.length} {settledYearEntries.length === 1 ? "reserva quitada" : "reservas quitadas"} em {settledYearLabel}

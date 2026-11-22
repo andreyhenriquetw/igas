@@ -3862,6 +3862,14 @@ a {
   white-space: nowrap;
   border: 0;
 }
+.animated-report-value {
+  display: inline-block;
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
 
 @media (max-width: 840px) {
   .app-header {
