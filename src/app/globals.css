@@ -600,6 +600,7 @@
 .client-stars { display: flex; gap: 6px; }
 .client-stars button { border: 0; background: transparent; color: var(--client-border); font-size: 28px; }.client-stars button.active { color: var(--client-gold); }
 .client-review form > button { width: 100%; min-height: 48px; border: 0; border-radius: 8px; background: linear-gradient(135deg, #8a6320, var(--client-gold), var(--client-gold-light)); color: #fff; text-transform: uppercase; letter-spacing: .1em; }
+.client-review form > button:disabled { cursor: not-allowed; opacity: .55; filter: grayscale(.25); }
 .client-form-error { color: #e06060; font-size: 12px; }
 .client-footer { display: grid; place-items: center; gap: 10px; padding: 56px 16px 28px; border-top: 1px solid var(--client-border); background: var(--client-secondary); text-align: center; }
 .client-footer strong { color: var(--client-gold); font-family: "Playfair Display", Georgia, serif; font-size: 24px; letter-spacing: .16em; }.client-footer p, .client-footer small { color: var(--client-muted); }.client-footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; color: var(--client-muted); font-size: 12px; }

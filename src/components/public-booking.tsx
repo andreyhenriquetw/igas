@@ -523,7 +523,7 @@ export function PublicBooking() {
             <textarea value={reviewText} onChange={(event) => setReviewText(event.target.value)} rows={4} placeholder="Conte-nos sobre sua experiência no Ígas…" />
           </label>
           {error && <p className="client-form-error">{error}</p>}
-          <button type="submit">Enviar avaliação ✦</button>
+          <button type="submit" disabled>Enviar avaliação ✦</button>
         </form>
       </section>
 
