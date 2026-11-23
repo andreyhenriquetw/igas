@@ -18,7 +18,11 @@ import {
   downloadContractPdf,
   personalizeContractText,
 } from "@/lib/contract";
-import { formatLocalDateTime } from "@/lib/time";
+import {
+  formatLocalDateKey,
+  formatLocalDateTime,
+  getReservationDateKeys,
+} from "@/lib/time";
 import { toWhatsAppPhoneNumber } from "@/lib/whatsapp";
 import type { CalendarEntryDto } from "@/types/calendar";
 
@@ -386,7 +390,10 @@ export function ReportReservationDialog({ entryId, onClose, onSaved }: Props) {
             </button>
           </div>
           <p className="muted">
-            {entry.guestName} · {formatLocalDateTime(entry.startsAt, "dd/MM/yyyy 'às' HH:mm")}
+            {entry.guestName} · {formatLocalDateTime(entry.startsAt, "dd/MM/yyyy 'às' HH:mm")} – {formatLocalDateTime(entry.endsAt, "dd/MM/yyyy 'às' HH:mm")}
+            {getReservationDateKeys(entry.startsAt, entry.endsAt, entry.mode?.code).length > 1 && (
+              <> · {entry.mode?.code === "OVERNIGHT" ? `Noites (${getReservationDateKeys(entry.startsAt, entry.endsAt, entry.mode.code).length})` : "Dias"}: {getReservationDateKeys(entry.startsAt, entry.endsAt, entry.mode?.code).map(formatLocalDateKey).join(", ")}</>
+            )}
           </p>
           <form className="form-stack modal-form" onSubmit={savePayment}>
             <label className="field">

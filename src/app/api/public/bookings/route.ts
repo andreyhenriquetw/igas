@@ -3,6 +3,7 @@ import { z } from "zod";
 import { EntryKind, EntryStatus, UserRole } from "@/generated/prisma/client";
 import { activeStatuses } from "@/lib/entries";
 import { getPrisma } from "@/lib/prisma";
+import { getOvernightDurationMinutes } from "@/lib/overnight";
 import { localDateTimeToUtc, localDayBoundaryToUtc } from "@/lib/time";
 
 const publicBookingSchema = z.object({
@@ -19,6 +20,7 @@ const publicBookingSchema = z.object({
   guestAddress: z.string().trim().max(300).default(""),
   modeId: z.string().min(1, "Selecione uma modalidade."),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Informe uma data válida."),
+  durationDays: z.coerce.number().int().min(1, "Para pernoite, selecione pelo menos 1 noite.").max(7).optional(),
   notes: z.string().trim().max(2000).default(""),
 });
 
@@ -87,6 +89,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     modes: modes.map((mode) => ({
       id: mode.id,
+      code: mode.code,
       name: mode.name,
       defaultStart: mode.defaultStart,
       durationMinutes: mode.durationMinutes,
@@ -115,7 +118,19 @@ export async function POST(request: Request) {
   }
 
   const startsAt = localDateTimeToUtc(`${parsed.data.date}T${mode.defaultStart}`);
-  const endsAt = new Date(startsAt.getTime() + mode.durationMinutes * 60_000);
+  const durationDays = mode.code === "OVERNIGHT"
+    ? parsed.data.durationDays ?? 0
+    : 1;
+  if (mode.code === "OVERNIGHT" && durationDays < 1) {
+    return NextResponse.json(
+      { error: "Selecione pelo menos 1 noite para o pernoite." },
+      { status: 400 },
+    );
+  }
+  const durationMinutes = mode.code === "OVERNIGHT"
+    ? getOvernightDurationMinutes(durationDays)
+    : mode.durationMinutes;
+  const endsAt = new Date(startsAt.getTime() + durationMinutes * 60_000);
   if (startsAt <= new Date()) {
     return NextResponse.json({ error: "Escolha uma data e horário futuros." }, { status: 400 });
   }

@@ -44,7 +44,7 @@ export async function GET(request: Request) {
         guestContact: true,
         totalAmount: true,
         paidAmount: true,
-        mode: { select: { name: true } },
+        mode: { select: { name: true, code: true } },
       },
       orderBy: { startsAt: "asc" },
     });
@@ -60,6 +60,7 @@ export async function GET(request: Request) {
         totalAmount: entry.totalAmount ? Number(entry.totalAmount.toString()) : null,
         paidAmount: entry.paidAmount ? Number(entry.paidAmount.toString()) : null,
         modeName: entry.mode?.name ?? null,
+        modeCode: entry.mode?.code ?? null,
       })),
     });
   } catch (error) {

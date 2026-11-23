@@ -33,7 +33,13 @@ import {
   type FormEvent,
   type TouchEvent,
 } from "react";
-import { TIME_ZONE, formatLocalDateTime, localDayBoundaryToUtc } from "@/lib/time";
+import {
+  TIME_ZONE,
+  formatLocalDateKey,
+  formatLocalDateTime,
+  getReservationDateKeys,
+  localDayBoundaryToUtc,
+} from "@/lib/time";
 import {
   buildContractText,
   downloadAcceptedContractPdf,
@@ -790,21 +796,30 @@ export function Calendar({ initialEntries, modes }: Props) {
           <div className="entry-list">
             {visibleList.length === 0 ? (
               <div className="empty-state"><CalendarDays size={28} /><strong>Nenhuma entrada neste período</strong><span>Experimente ajustar os filtros ou criar uma reserva.</span></div>
-            ) : visibleList.map((entry) => (
-              <button className={`list-entry list-${entry.status.toLowerCase()}`} key={entry.id} type="button" onClick={() => openDetails(entry)}>
-                <span className="list-date">
-                  <strong>{formatLocalDateTime(entry.startsAt, "dd")}</strong>
-                  <small>{formatLocalDateTime(entry.startsAt, "MMM").replace(".", "")}</small>
-                </span>
-                <span className="list-entry-main">
-                  <strong>{entry.kind === "BLOCK" ? "Data bloqueada" : entry.guestName}</strong>
-                  <small>{formatLocalDateTime(entry.startsAt, "EEE, dd/MM · HH:mm")} – {formatLocalDateTime(entry.endsAt, "dd/MM · HH:mm")}</small>
-                  {entry.kind === "BOOKING" && <small className="mode-line">{entry.mode?.name} · {entryPaymentLabel(entry)}</small>}
-                </span>
-                <span className="list-entry-badges"><EntryBadges entry={entry} /></span>
-                <ArrowRight size={17} className="list-arrow" />
-              </button>
-            ))}
+            ) : visibleList.map((entry) => {
+              const reservationDays = getReservationDateKeys(entry.startsAt, entry.endsAt, entry.mode?.code)
+                .map(formatLocalDateKey);
+              return (
+                <button className={`list-entry list-${entry.status.toLowerCase()}`} key={entry.id} type="button" onClick={() => openDetails(entry)}>
+                  <span className="list-date">
+                    <strong>{formatLocalDateTime(entry.startsAt, "dd")}</strong>
+                    <small>{formatLocalDateTime(entry.startsAt, "MMM").replace(".", "")}</small>
+                  </span>
+                  <span className="list-entry-main">
+                    <strong>{entry.kind === "BLOCK" ? "Data bloqueada" : entry.guestName}</strong>
+                    <small>{formatLocalDateTime(entry.startsAt, "EEE, dd/MM/yyyy · HH:mm")} – {formatLocalDateTime(entry.endsAt, "dd/MM/yyyy · HH:mm")}</small>
+                    {entry.kind === "BOOKING" && reservationDays.length > 1 && (
+                      <small>
+                        {entry.mode?.code === "OVERNIGHT" ? `Noites incluídas (${reservationDays.length})` : "Dias incluídos"}: {reservationDays.join(", ")}
+                      </small>
+                    )}
+                    {entry.kind === "BOOKING" && <small className="mode-line">{entry.mode?.name} · {entryPaymentLabel(entry)}</small>}
+                  </span>
+                  <span className="list-entry-badges"><EntryBadges entry={entry} /></span>
+                  <ArrowRight size={17} className="list-arrow" />
+                </button>
+              );
+            })}
           </div>
         ) : (
           <div

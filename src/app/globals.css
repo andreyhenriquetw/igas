@@ -488,6 +488,12 @@
   font-weight: 750 !important;
   text-decoration: none !important;
 }
+.client-calendar-day.selected-stay {
+  border-color: rgba(232, 190, 114, .7);
+  background: rgba(196, 150, 58, .24);
+  color: var(--client-gold-light);
+  text-decoration: none;
+}
 .client-calendar-day.selected.available:hover:not(:disabled),
 .client-calendar-day.selected:active,
 .client-calendar-day.selected:focus-visible {
@@ -550,6 +556,23 @@
   text-transform: uppercase;
 }
 .client-date-selection strong { color: var(--client-text); font-size: 14px; }
+.client-overnight-example {
+  display: grid;
+  gap: 5px;
+  padding: 12px 13px;
+  border: 1px solid rgba(196, 150, 58, .45);
+  border-radius: 8px;
+  background: rgba(196, 150, 58, .08);
+  color: var(--client-text);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.client-overnight-example strong {
+  color: var(--client-gold);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
 .client-booking-options > button {
   min-height: 48px;
   border: 0;
@@ -621,10 +644,17 @@
 .client-modal .public-booking-form input, .client-modal .public-booking-form select, .client-modal .public-booking-form textarea { border-color: var(--client-border); background: var(--client-primary); color: var(--client-text); }
 .client-modal-submit { width: 100%; min-height: 48px; border: 0; border-radius: 8px; background: linear-gradient(135deg, #8a6320, var(--client-gold)); color: #fff; text-transform: uppercase; letter-spacing: .1em; }
 .client-success-overlay > div { width: min(390px, 100%); padding: 28px 24px; border: 1px solid var(--client-border); border-radius: 13px; background: var(--client-secondary); text-align: center; }
-.client-success-overlay span { display: block; margin-bottom: 8px; font-size: 36px; line-height: 1; }.client-success-overlay h2 { margin: 0 0 8px; color: var(--client-gold); }.client-success-overlay p { margin: 8px 0; color: var(--client-muted); line-height: 1.45; }
-.client-success-overlay .client-whatsapp-submit { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; margin-top: 16px; padding: 12px 16px; border: 0; border-radius: 8px; background: #25d366; color: #fff; font-size: 14px; font-weight: 700; line-height: 1.2; cursor: pointer; transition: background .15s ease; }
-.client-success-overlay .client-whatsapp-submit:hover { background: #1ebe5d; }
-.client-success-overlay .client-whatsapp-submit svg { display: block; flex: 0 0 24px; width: 24px; height: 24px; }
+.client-success-overlay > div > span { display: block; margin-bottom: 8px; font-size: 36px; line-height: 1; }.client-success-overlay h2 { margin: 0 0 8px; color: var(--client-gold); }.client-success-overlay p { margin: 8px 0; color: var(--client-muted); line-height: 1.45; }
+.client-whatsapp-contacts { display: grid; gap: 10px; margin-top: 18px; text-align: left; }
+.client-whatsapp-contact { display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 12px; border: 1px solid var(--client-border); border-radius: 11px; background: var(--client-primary); color: var(--client-text); text-decoration: none; transition: border-color .18s ease, background .18s ease, transform .18s ease; }
+.client-whatsapp-contact:hover { transform: translateY(-1px); border-color: #25d366; background: rgba(37, 211, 102, .08); }
+.client-whatsapp-contact:focus-visible { outline: 2px solid #25d366; outline-offset: 3px; }
+.client-whatsapp-contact-icon { display: grid; flex: 0 0 42px; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: rgba(37, 211, 102, .14); color: #25d366; }
+.client-whatsapp-contact-info { display: grid; gap: 4px; min-width: 0; }
+.client-whatsapp-contact-info strong { color: var(--client-text); font-size: 14px; }
+.client-whatsapp-contact-info small { color: var(--client-muted); font-size: 12px; }
+.client-whatsapp-contact-action { display: flex; align-items: center; gap: 5px; margin-left: auto; color: var(--client-gold); font-size: 11px; font-weight: 700; white-space: nowrap; }
+.client-whatsapp-contact-action > span { font-size: 15px; }
 
 @media (max-width: 768px) {
   .client-success-overlay > div { padding: 24px 20px; }

@@ -14,6 +14,7 @@ export type ReportEntry = {
   totalAmount: number | null;
   paidAmount: number | null;
   modeName: string | null;
+  modeCode?: string | null;
 };
 
 export type ReportDetailCategory = "received" | "outstanding" | "settled" | "cancelled";

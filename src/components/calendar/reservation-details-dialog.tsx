@@ -3,7 +3,11 @@
 import { CalendarDays, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { hasPaidAtLeastHalf } from "@/lib/payment";
-import { formatLocalDateTime } from "@/lib/time";
+import {
+  formatLocalDateKey,
+  formatLocalDateTime,
+  getReservationDateKeys,
+} from "@/lib/time";
 import type { CalendarEntryDto } from "@/types/calendar";
 
 type Props = {
@@ -42,6 +46,8 @@ export function ReservationDetailsDialog({ entry, error, onClose, children }: Pr
   const paid = entry.paidAmount ?? 0;
   const amountsDefined = entry.totalAmount !== null && entry.paidAmount !== null;
   const minimumPayment = !amountsDefined ? "A definir" : hasPaidAtLeastHalf(total, paid) ? "Sim" : "Ainda não";
+  const reservationDays = getReservationDateKeys(entry.startsAt, entry.endsAt, entry.mode?.code)
+    .map(formatLocalDateKey);
 
   return (
     <section
@@ -64,9 +70,14 @@ export function ReservationDetailsDialog({ entry, error, onClose, children }: Pr
         <div className="detail-datetime detail-datetime-card">
           <span className="detail-date-icon" aria-hidden="true"><CalendarDays size={19} /></span>
           <div>
-            <small>Data e horário</small>
-            <strong>{formatLocalDateTime(entry.startsAt, "EEEE, dd 'de' MMMM 'de' yyyy")}</strong>
-            <span>{formatLocalDateTime(entry.startsAt, "HH:mm")} – {formatLocalDateTime(entry.endsAt, "dd/MM 'às' HH:mm")}</span>
+            <small>
+              Período da reserva · {reservationDays.length} {entry.mode?.code === "OVERNIGHT"
+                ? reservationDays.length === 1 ? "noite" : "noites"
+                : reservationDays.length === 1 ? "dia" : "dias"}
+            </small>
+            <strong>Entrada: {formatLocalDateTime(entry.startsAt, "EEEE, dd 'de' MMMM 'de' yyyy 'às' HH:mm")}</strong>
+            <span>Saída: {formatLocalDateTime(entry.endsAt, "EEEE, dd 'de' MMMM 'de' yyyy 'às' HH:mm")}</span>
+            <span>{entry.mode?.code === "OVERNIGHT" ? "Noites incluídas" : "Dias incluídos"}: {reservationDays.join(", ")}</span>
           </div>
           <span className={`detail-status detail-status-${entry.status.toLowerCase()}`}>{statusLabel(entry.status)}</span>
         </div>

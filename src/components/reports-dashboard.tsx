@@ -25,7 +25,12 @@ import {
   type ReportPeriod,
   type ReportSummary,
 } from "@/lib/reports";
-import { formatLocalDateTime, localDayBoundaryToUtc } from "@/lib/time";
+import {
+  formatLocalDateKey,
+  formatLocalDateTime,
+  getReservationDateKeys,
+  localDayBoundaryToUtc,
+} from "@/lib/time";
 import type { CalendarEntryDto } from "@/types/calendar";
 
 const currency = new Intl.NumberFormat("pt-BR", {
@@ -216,6 +221,7 @@ async function exportReport(
   for (let column = 2; column <= 7; column += 1) {
     summarySheet.getColumn(column).width = 24;
   }
+  summarySheet.getColumn(8).width = 38;
   summarySheet.getRow(1).font = { bold: true, size: 14 };
   for (const rowNumber of [3, 14, 16 + summary.buckets.length]) {
     summarySheet.getRow(rowNumber).font = { bold: true };
@@ -245,7 +251,8 @@ async function exportReport(
     "Valor pago (R$)",
     "Início do agendamento",
     "Fim do agendamento",
-    "Dias reservados",
+    "Dias/noites reservados",
+    "Datas incluídas",
     "Situação",
     "Modalidade",
   ]);
@@ -264,12 +271,13 @@ async function exportReport(
       formatLocalDateTime(entry.startsAt, "dd/MM/yyyy HH:mm"),
       formatLocalDateTime(entry.endsAt, "dd/MM/yyyy HH:mm"),
       getReservationDurationDays(entry.startsAt, entry.endsAt),
+      getReservationDateKeys(entry.startsAt, entry.endsAt, entry.modeCode ?? undefined).map(formatLocalDateKey).join(", "),
       entry.status === "CONFIRMED" ? "Confirmada" : "Pendente",
       entry.modeName ?? "Não informada",
     ]);
     row.getCell(2).numFmt = '"R$" #,##0.00';
   });
-  summarySheet.autoFilter = `A${detailHeader.number}:G${detailHeader.number + paymentEntries.length}`;
+  summarySheet.autoFilter = `A${detailHeader.number}:H${detailHeader.number + paymentEntries.length}`;
 
   const content = await workbook.xlsx.writeBuffer();
   const url = URL.createObjectURL(
@@ -973,14 +981,22 @@ export function ReportsDashboard() {
                               <span>
                                 {formatLocalDateTime(
                                   entry.startsAt,
-                                  "dd/MM 'às' HH:mm",
+                                  "dd/MM/yyyy 'às' HH:mm",
                                 )}
                                 {" – "}
                                 {formatLocalDateTime(
                                   entry.endsAt,
-                                  "dd/MM 'às' HH:mm",
+                                  "dd/MM/yyyy 'às' HH:mm",
                                 )}
                               </span>
+                              {getReservationDateKeys(entry.startsAt, entry.endsAt, entry.modeCode ?? undefined).length > 1 && (
+                                <span>
+                                  {entry.modeCode === "OVERNIGHT"
+                                    ? `Noites incluídas (${getReservationDateKeys(entry.startsAt, entry.endsAt, entry.modeCode).length})`
+                                    : "Dias incluídos"}
+                                  : {getReservationDateKeys(entry.startsAt, entry.endsAt, entry.modeCode ?? undefined).map(formatLocalDateKey).join(", ")}
+                                </span>
+                              )}
                               <span>
                                 {entry.modeName?.trim() || "Sem modalidade"}
                               </span>

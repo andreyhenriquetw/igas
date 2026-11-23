@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { CalendarCheck2, Check, CircleX, Copy, RefreshCw } from "lucide-react";
-import { formatLocalDateTime } from "@/lib/time";
+import {
+  formatLocalDateKey,
+  formatLocalDateTime,
+  getReservationDateKeys,
+} from "@/lib/time";
 import type { CalendarEntryDto } from "@/types/calendar";
 
 type Props = {
@@ -99,8 +103,15 @@ export function BookingsDashboard({ initialEntries }: Props) {
               </div>
               <dl className="booking-card-details">
                 <div>
-                  <dt>Data e horário</dt>
-                  <dd>{formatLocalDateTime(entry.startsAt, "dd/MM/yyyy 'às' HH:mm")} – {formatLocalDateTime(entry.endsAt, "HH:mm")}</dd>
+                  <dt>Período da reserva</dt>
+                  <dd>{formatLocalDateTime(entry.startsAt, "dd/MM/yyyy 'às' HH:mm")} – {formatLocalDateTime(entry.endsAt, "dd/MM/yyyy 'às' HH:mm")}</dd>
+                </div>
+                <div>
+                  <dt>{entry.mode?.code === "OVERNIGHT"
+                    ? `Noites incluídas (${getReservationDateKeys(entry.startsAt, entry.endsAt, entry.mode?.code).length})`
+                    : "Dias incluídos"}
+                  </dt>
+                  <dd>{getReservationDateKeys(entry.startsAt, entry.endsAt, entry.mode?.code).map(formatLocalDateKey).join(", ")}</dd>
                 </div>
                 <div>
                   <dt>Contato</dt>

@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { changeKey, monthBounds } from "@/lib/calendar-dates";
+import { getOvernightDurationMinutes } from "@/lib/overnight";
 import { isDateAvailableForMode } from "@/lib/public-availability";
 
 type Mode = {
   id: string;
+  code: string;
   name: string;
   defaultStart: string;
   durationMinutes: number;
@@ -13,6 +15,10 @@ type Mode = {
 };
 
 const NO_OCCUPIED_PERIODS: Array<{ startsAt: string; endsAt: string }> = [];
+const WHATSAPP_CONTACTS = [
+  { name: "Junior", phone: "559399129300", displayPhone: "(93) 9912-9300" },
+  { name: "Denis", phone: "5593991606969", displayPhone: "(93) 99160-6969" },
+];
 
 function formatCpf(value: string) {
   return value
@@ -39,7 +45,14 @@ function addDays(value: string, days: number) {
   return date.toISOString().slice(0, 10);
 }
 
-function scheduleLabel(mode: Mode, date: string) {
+function scheduleLabel(mode: Mode, date: string, durationNights = 1) {
+  if (mode.code === "OVERNIGHT") {
+    const [hour, minute] = mode.defaultStart.split(":").map(Number);
+    const endMinutes = hour * 60 + minute + getOvernightDurationMinutes(durationNights);
+    const endTimeForStay = `${String(Math.floor(endMinutes / 60) % 24).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
+    if (!date) return `Entrada às ${mode.defaultStart} · saída às ${endTimeForStay} após ${durationNights} ${durationNights === 1 ? "noite" : "noites"}`;
+    return `${mode.defaultStart} de ${formatDateKey(date)} – ${endTimeForStay} de ${formatDateKey(addDays(date, durationNights))}`;
+  }
   const endTime = endTimeForMode(mode);
   if (mode.durationMinutes < 1440) return `${mode.defaultStart} – ${endTime}`;
   if (!date) return `${mode.defaultStart} – ${endTime} do dia seguinte`;
@@ -51,10 +64,19 @@ const money = new Intl.NumberFormat("pt-BR", {
   currency: "BRL",
 });
 
-function modePrice(mode: Mode) {
+function modePrice(mode: Mode, durationDays = 1) {
+  if (mode.code === "OVERNIGHT") {
+    return money.format(750 * durationDays);
+  }
   return mode.price !== null
     ? money.format(mode.price)
     : mode.durationMinutes >= 1440 ? "R$ 1.500" : "R$ 800";
+}
+
+function modeOptionLabel(mode: Mode) {
+  return mode.code === "OVERNIGHT"
+    ? mode.name
+    : `${mode.name} — ${modePrice(mode)}`;
 }
 
 export function PublicBooking() {
@@ -66,11 +88,12 @@ export function PublicBooking() {
   const [modes, setModes] = useState<Mode[]>([]);
   const [modeId, setModeId] = useState("");
   const [date, setDate] = useState("");
+  const [durationDays, setDurationDays] = useState("");
   const [calendarMonth, setCalendarMonth] = useState(`${today.slice(0, 7)}-01`);
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
-  const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [whatsappMessage, setWhatsappMessage] = useState("");
   const [availability, setAvailability] = useState<{
     period: string;
     occupied: Array<{ startsAt: string; endsAt: string }>;
@@ -214,6 +237,11 @@ export function PublicBooking() {
       setError("Selecione uma modalidade e uma data.");
       return;
     }
+    if (selectedMode.code === "OVERNIGHT" && Number(durationDays) < 1) {
+      setError("Selecione pelo menos 1 noite para o pernoite.");
+      return;
+    }
+    const overnightDays = durationDays ? Number(durationDays) : 1;
 
     setLoading(true);
     setError("");
@@ -222,7 +250,16 @@ export function PublicBooking() {
       const response = await fetch("/api/public/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ guestName, guestContact, guestCpf, guestAddress, modeId, date, notes }),
+        body: JSON.stringify({
+          guestName,
+          guestContact,
+          guestCpf,
+          guestAddress,
+          modeId,
+          date,
+          durationDays: selectedMode.code === "OVERNIGHT" ? overnightDays : undefined,
+          notes,
+        }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível solicitar o agendamento.");
@@ -235,15 +272,23 @@ export function PublicBooking() {
         `📞 Telefone: ${guestContact.trim()}`,
         `🪪 CPF: ${guestCpf.trim()}`,
         `🏡 Modalidade: ${selectedMode.name}`,
-        `💰 Valor: ${modePrice(selectedMode)}`,
-        `📅 Data: ${formatDateKey(date)}`,
-        `🕒 Horário: ${scheduleLabel(selectedMode, date)}`,
+        `💰 Valor: ${modePrice(selectedMode, overnightDays)}`,
+        ...(selectedMode.code === "OVERNIGHT"
+          ? [
+            `📅 Check-in: ${formatDateKey(date)} às ${selectedMode.defaultStart}`,
+            `🌙 Noites reservadas (${overnightDays}): ${Array.from({ length: overnightDays }, (_, index) => formatDateKey(addDays(date, index))).join(", ")}`,
+            `🕒 Check-out: ${formatDateKey(addDays(date, overnightDays))} às ${selectedMode.defaultStart}`,
+          ]
+          : [
+            `📅 Data: ${formatDateKey(date)}`,
+            `🕒 Horário: ${scheduleLabel(selectedMode, date, overnightDays)}`,
+          ]),
         ...(guestAddress.trim() ? [`📍 Endereço: ${guestAddress.trim()}`] : []),
         ...(notes.trim() ? [`📝 Observações: ${notes.trim()}`] : []),
         "",
         "Aguardo a confirmação. Obrigado(a)! 😊",
       ].join("\n");
-      setWhatsappUrl(`https://wa.me/5593999034526?text=${encodeURIComponent(message)}`);
+      setWhatsappMessage(message);
       setSuccess(result.message);
       setBookingOpen(false);
       setSuccessOpen(true);
@@ -306,9 +351,38 @@ export function PublicBooking() {
     setSuccessOpen(true);
   }
 
+  function returnToClientHome() {
+    setSuccessOpen(false);
+    setBookingOpen(false);
+    setModeId(modes[0]?.id ?? "");
+    setDate("");
+    setDurationDays("");
+    setGuestName("");
+    setGuestContact("");
+    setGuestCpf("");
+    setGuestAddress("");
+    setNotes("");
+    setError("");
+    setSuccess("");
+    setWhatsappMessage("");
+    setLoading(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   const conflict = useMemo(
-    () => Boolean(date && selectedMode && !isDateAvailableForMode(date, selectedMode, occupied)),
-    [date, occupied, selectedMode],
+    () => Boolean(
+      date
+      && selectedMode
+      && (!durationDays && selectedMode.code === "OVERNIGHT"
+        ? false
+        : !isDateAvailableForMode(
+          date,
+          selectedMode,
+          occupied,
+          selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1,
+        )),
+    ),
+    [date, durationDays, occupied, selectedMode],
   );
 
   return (
@@ -394,13 +468,24 @@ export function PublicBooking() {
                 {calendarDays.map((day) => {
                   const inMonth = day.slice(0, 7) === calendarMonth.slice(0, 7);
                   const past = day < today;
-                  const available = Boolean(selectedMode && !availabilityLoading && !availabilityError
-                    && isDateAvailableForMode(day, selectedMode, occupied));
+                  const selectedStayDays = selectedMode?.code === "OVERNIGHT" && durationDays
+                    ? Number(durationDays)
+                    : 1;
+                  const isSelectedStayDay = Boolean(
+                    date
+                    && day >= date
+                    && day <= addDays(date, selectedStayDays - 1),
+                  );
+                  const available = Boolean(selectedMode
+                    && !availabilityLoading
+                    && !availabilityError
+                    && isDateAvailableForMode(day, selectedMode, occupied, 1));
                   const dayClasses = [
                     "client-calendar-day",
                     !inMonth && "outside-month",
                     day === today && "today",
                     day === date && "selected",
+                    isSelectedStayDay && day !== date && "selected-stay",
                     past && "past",
                     inMonth && !past && !availabilityLoading && !availabilityError
                       ? available ? "available" : "unavailable"
@@ -410,13 +495,21 @@ export function PublicBooking() {
                     ? "Consultando disponibilidade"
                     : availabilityError ? "Disponibilidade indisponível"
                       : available ? "Disponível" : "Indisponível";
+                  const selectedStayOrdinal = date
+                    ? Math.floor(
+                      (new Date(`${day}T12:00:00.000Z`).getTime() - new Date(`${date}T12:00:00.000Z`).getTime()) / 86_400_000,
+                    ) + 1
+                    : 0;
+                  const dayLabel = isSelectedStayDay && day !== date
+                    ? `${selectedMode?.code === "OVERNIGHT" ? `Noite ${selectedStayOrdinal} incluída` : `Dia ${selectedStayOrdinal} do período selecionado`}; ${status.toLocaleLowerCase("pt-BR")} como data de início`
+                    : status;
                   return (
                     <button
                       className={dayClasses}
                       type="button"
                       key={day}
                       disabled={!inMonth || past || availabilityLoading || Boolean(availabilityError) || !available}
-                      aria-label={`${day.slice(-2)}: ${status}`}
+                      aria-label={`${day.slice(-2)}: ${dayLabel}`}
                       aria-pressed={day === date}
                       onClick={() => setDate(day)}
                       style={day === date ? {
@@ -433,33 +526,79 @@ export function PublicBooking() {
               <div className="client-calendar-legend">
                 <span><i className="legend-available" />Disponível</span>
                 <span><i className="legend-unavailable" />Indisponível</span>
-                <span><i className="legend-selected" />Selecionado</span>
+                <span><i className="legend-selected" />Período selecionado</span>
               </div>
               {availabilityLoading && <p className="client-calendar-message" role="status">Consultando datas...</p>}
               {availabilityError && <p className="client-calendar-error" role="alert">{availabilityError}</p>}
+              {conflict && date && selectedMode && (
+                <p className="client-calendar-error" role="alert">
+                  {selectedMode.code === "OVERNIGHT"
+                    ? `Não há disponibilidade para ${durationDays} ${Number(durationDays) === 1 ? "noite" : "noites"} a partir de ${formatDateKey(date)}. Escolha outra data ou reduza a quantidade de noites.`
+                    : "Esta data não está disponível para a modalidade escolhida. Escolha outra data."}
+                </p>
+              )}
             </div>
             <div className="client-booking-options">
               <label>Modalidade
-                <select value={modeId} onChange={(event) => setModeId(event.target.value)}>
-                  {modes.map((mode) => <option value={mode.id} key={mode.id}>{mode.name} — {modePrice(mode)}</option>)}
+                <select value={modeId} onChange={(event) => {
+                  setModeId(event.target.value);
+                  setDurationDays("");
+                  setDate("");
+                  setError("");
+                }}>
+                  {modes.map((mode) => <option value={mode.id} key={mode.id}>{modeOptionLabel(mode)}</option>)}
                 </select>
               </label>
+              {selectedMode?.code === "OVERNIGHT" && (
+                <>
+                  <label>Quantas noites deseja ficar
+                    <select value={durationDays} onChange={(event) => setDurationDays(event.target.value)} required>
+                      <option value="">Selecione a quantidade de noites</option>
+                      {Array.from({ length: 7 }, (_, index) => index + 1).map((days) => (
+                        <option key={days} value={days}>
+                          {days} {days === 1 ? "noite" : "noites"} — {money.format(750 * days)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <div className="client-overnight-example" role="note">
+                    <strong>Exemplo de pernoite</strong>
+                    <span>
+                      {durationDays && date
+                        ? `${durationDays} ${Number(durationDays) === 1 ? "noite" : "noites"}: entrada em ${formatDateKey(date)}; noites incluídas: ${Array.from({ length: Number(durationDays) }, (_, index) => formatDateKey(addDays(date, index))).join(", ")}; saída em ${formatDateKey(addDays(date, Number(durationDays)))} às ${selectedMode.defaultStart}.`
+                        : "Cada noite corresponde a uma data dormida. Exemplo: 3 noites a partir do dia 24 incluem as noites de 24, 25 e 26, com saída às 08:00 do dia 27."}
+                    </span>
+                  </div>
+                </>
+              )}
               <div className="client-date-selection">
                 <span>Valor da modalidade</span>
-                <strong>{selectedMode ? modePrice(selectedMode) : "Selecione uma modalidade"}</strong>
+                <strong>
+                  {selectedMode?.code === "OVERNIGHT" && !durationDays
+                    ? "Selecione quantas noites deseja ficar"
+                    : selectedMode
+                      ? modePrice(selectedMode, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1)
+                      : "Selecione uma modalidade"}
+                </strong>
               </div>
               <label>Horário previsto
-                <input value={selectedMode ? scheduleLabel(selectedMode, date) : "Carregando..."} readOnly />
+                <input
+                  value={selectedMode?.code === "OVERNIGHT" && !durationDays
+                    ? "Selecione quantas noites deseja ficar"
+                    : selectedMode
+                      ? scheduleLabel(selectedMode, date, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1)
+                      : "Carregando..."}
+                  readOnly
+                />
               </label>
               <div className="client-date-selection">
                 <span>Data escolhida</span>
                 <strong>{date ? `${date.slice(8, 10)}/${date.slice(5, 7)}/${date.slice(0, 4)}` : "Selecione uma data disponível"}</strong>
               </div>
-              {conflict && <p className="client-form-error">Esta data não está disponível para a modalidade escolhida.</p>}
               <button
                 type="button"
                 onClick={openBooking}
-                disabled={!date || modes.length === 0 || conflict || availabilityLoading || Boolean(availabilityError)}
+                disabled={!date || modes.length === 0 || conflict || availabilityLoading || Boolean(availabilityError) || (selectedMode?.code === "OVERNIGHT" && !durationDays)}
               >
                 Solicitar reserva
               </button>
@@ -503,10 +642,10 @@ export function PublicBooking() {
               <img src={mode.name.toLowerCase().includes("pernoite") ? "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=700&q=80" : "/IMG_8870.JPG.jpeg"} alt={mode.name} />
               <div>
                 <h3>{mode.name}</h3>
-                <p><strong>{modePrice(mode)}</strong></p>
+                <p><strong>{mode.code === "OVERNIGHT" ? `A partir de ${modePrice(mode, 2)}` : modePrice(mode)}</strong></p>
                 <div className="client-tags">
                   <span>À partir das {mode.defaultStart}</span>
-                  <span>{mode.durationMinutes >= 1440 ? `Saída às ${endTimeForMode(mode)} do dia seguinte` : `Saída às ${endTimeForMode(mode)}`}</span>
+                  <span>{mode.code === "OVERNIGHT" ? `Saída às ${mode.defaultStart} após a última noite` : mode.durationMinutes >= 1440 ? `Saída às ${endTimeForMode(mode)} do dia seguinte` : `Saída às ${endTimeForMode(mode)}`}</span>
                 </div>
                 <button type="button" onClick={() => { setModeId(mode.id); document.getElementById("reserva")?.scrollIntoView({ behavior: "smooth" }); }}>Reservar</button>
               </div>
@@ -596,7 +735,15 @@ export function PublicBooking() {
           <div className="client-modal">
             <button className="client-modal-close" type="button" onClick={() => setBookingOpen(false)} aria-label="Fechar">✕</button>
             <h2 id="booking-modal-title">Confirmar solicitação</h2>
-            <p>{selectedMode?.name} — {selectedMode ? modePrice(selectedMode) : ""} — {selectedMode ? scheduleLabel(selectedMode, date) : ""}</p>
+            <p>
+              {selectedMode?.name} — {selectedMode?.code === "OVERNIGHT" && !durationDays
+                ? "Selecione quantas noites deseja ficar"
+                : selectedMode ? modePrice(selectedMode, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1) : ""}
+              {" — "}
+              {selectedMode?.code === "OVERNIGHT" && !durationDays
+                ? "Selecione quantas noites deseja ficar"
+                : selectedMode ? scheduleLabel(selectedMode, date, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1) : ""}
+            </p>
             <form className="public-booking-form" onSubmit={submit}>
               <label>Nome completo
                 <input value={guestName} onChange={(event) => setGuestName(event.target.value)} required maxLength={120} />
@@ -609,11 +756,25 @@ export function PublicBooking() {
                   <input value={guestCpf} onChange={(event) => setGuestCpf(formatCpf(event.target.value))} placeholder="000.000.000-00" required inputMode="numeric" maxLength={14} />
                 </label>
                 <label>Modalidade
-                  <select value={modeId} onChange={(event) => setModeId(event.target.value)} required>
-                    {modes.map((mode) => <option value={mode.id} key={mode.id}>{mode.name} — {modePrice(mode)}</option>)}
+                  <select value={modeId} onChange={(event) => {
+                    setModeId(event.target.value);
+                    setDurationDays("");
+                    setError("");
+                  }} required>
+                    {modes.map((mode) => <option value={mode.id} key={mode.id}>{modeOptionLabel(mode)}</option>)}
                   </select>
                 </label>
               </div>
+              {selectedMode?.code === "OVERNIGHT" && (
+                <label>Quantas noites deseja ficar
+                  <select value={durationDays} onChange={(event) => setDurationDays(event.target.value)} required>
+                    <option value="">Selecione a quantidade de noites</option>
+                    {Array.from({ length: 7 }, (_, index) => index + 1).map((days) => (
+                      <option key={days} value={days}>{days} {days === 1 ? "noite" : "noites"} — {money.format(750 * days)}</option>
+                    ))}
+                  </select>
+                </label>
+              )}
               <div className="client-date-selection">
                 <span>Data escolhida</span>
                 <strong>{date ? `${date.slice(8, 10)}/${date.slice(5, 7)}/${date.slice(0, 4)}` : "Selecione uma data no calendário"}</strong>
@@ -625,8 +786,7 @@ export function PublicBooking() {
                 <textarea value={notes} onChange={(event) => setNotes(event.target.value)} maxLength={2000} rows={3} />
               </label>
               {error && <p className="client-form-error">{error}</p>}
-              {conflict && <p className="client-form-error">Esta data não está disponível para a modalidade escolhida.</p>}
-              <button className="client-modal-submit" type="submit" disabled={loading || modes.length === 0 || !date || conflict}>
+              <button className="client-modal-submit" type="submit" disabled={loading || modes.length === 0 || !date || conflict || (selectedMode?.code === "OVERNIGHT" && !durationDays)}>
                 {loading ? "Enviando..." : "Confirmar reserva ✦"}
               </button>
             </form>
@@ -639,14 +799,31 @@ export function PublicBooking() {
           <div>
             <span>✨</span>
             <h2>Solicitação enviada</h2>
-            <p>{success || "Seu pedido foi recebido e aguarda confirmação."}</p>
-            <p>Para finalizar sua reserva, envie uma mensagem no WhatsApp do ÍGAS.</p>
-            <button className="client-whatsapp-submit" type="button" onClick={() => window.location.assign(whatsappUrl)}>
-              <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.496.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.213-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.693.626.711.226 1.358.194 1.87.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.438-9.886 9.893-9.886 2.64.001 5.12 1.03 6.99 2.902a9.825 9.825 0 0 1 2.895 6.994c-.003 5.45-4.44 9.886-9.895 9.886m8.413-18.3A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c-.001 2.096.547 4.142 1.588 5.946L.057 24l6.304-1.654a11.882 11.882 0 0 0 5.684 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.398Z" />
-              </svg>
-              Enviar no WhatsApp
-            </button>
+            <p><strong>Obrigatório enviar mensagem!</strong></p>
+            <p>Para finalizar sua reserva, escolha com quem deseja enviar as últimas informações!</p>
+            <div className="client-whatsapp-contacts">
+              {WHATSAPP_CONTACTS.map((contact) => (
+                <a
+                  className="client-whatsapp-contact"
+                  href={`https://wa.me/${contact.phone}?text=${encodeURIComponent(whatsappMessage)}`}
+                  key={contact.name}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={returnToClientHome}
+                >
+                  <span className="client-whatsapp-contact-icon" aria-hidden="true">
+                    <svg width="23" height="23" viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.496.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.213-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.693.626.711.226 1.358.194 1.87.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.438-9.886 9.893-9.886 2.64.001 5.12 1.03 6.99 2.902a9.825 9.825 0 0 1 2.895 6.994c-.003 5.45-4.44 9.886-9.895 9.886m8.413-18.3A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c-.001 2.096.547 4.142 1.588 5.946L.057 24l6.304-1.654a11.882 11.882 0 0 0 5.684 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.398Z" />
+                    </svg>
+                  </span>
+                  <span className="client-whatsapp-contact-info">
+                    <strong>{contact.name}</strong>
+                    <small>{contact.displayPhone}</small>
+                  </span>
+                  <span className="client-whatsapp-contact-action">Conversar <span aria-hidden="true">↗</span></span>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       )}

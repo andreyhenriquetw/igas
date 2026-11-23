@@ -68,19 +68,20 @@ test("atualiza os dados variáveis em um contrato salvo e preserva as condiçõe
     guestName: "Maria Oliveira",
     guestCpf: "123.456.789-09",
     startsAt: "2026-12-25T11:00:00.000Z",
-    endsAt: "2026-12-26T23:00:00.000Z",
+    endsAt: "2026-12-28T11:00:00.000Z",
     totalAmount: 1500,
     paidAmount: 750,
     createdAt: "2026-12-01T12:00:00.000Z",
-    mode: entry.mode ? { ...entry.mode, name: "Pernoite" } : null,
+    mode: entry.mode ? { ...entry.mode, code: "OVERNIGHT", name: "Pernoite" } : null,
   };
 
   const personalized = personalizeContractText(savedText, updatedEntry);
   assert.match(personalized, /LOCATÁRIO: Maria Oliveira, CPF: 123\.456\.789-09/);
   assert.match(personalized, /MODALIDADE: PERNOITE/);
   assert.match(personalized, /Data da locação: 25\/12\/2026 \(sexta-feira\)/);
+  assert.match(personalized, /Noites incluídas \(3\): 25\/12\/2026, 26\/12\/2026, 27\/12\/2026\./);
   assert.match(personalized, /Check-in: a partir das 08h/);
-  assert.match(personalized, /Check-out: até as 20h do dia 26\/12\/2026 \(sábado\)/);
+  assert.match(personalized, /Check-out: até as 08h do dia 28\/12\/2026 \(segunda-feira\)/);
   assert.match(personalized, /R\$\u00a01\.500,00 \(mil e quinhentos reais\)/);
   assert.match(personalized, /Holdernes Carvalho Serrão\tMaria Oliveira/);
   assert.match(personalized, /É vedada a prática de atividades ilícitas/);

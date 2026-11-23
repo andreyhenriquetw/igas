@@ -1,5 +1,9 @@
 import { jsPDF } from "jspdf";
-import { formatLocalDateTime } from "@/lib/time";
+import {
+  formatLocalDateKey,
+  formatLocalDateTime,
+  getReservationDateKeys,
+} from "@/lib/time";
 import type { CalendarEntryDto } from "@/types/calendar";
 
 const money = new Intl.NumberFormat("pt-BR", {
@@ -78,6 +82,12 @@ function checkOutDate(entry: CalendarEntryDto): string {
   return `${formatLocalDateTime(entry.endsAt, "dd/MM/yyyy")} (${formatLocalDateTime(entry.endsAt, "EEEE")})`;
 }
 
+function reservationNights(entry: CalendarEntryDto): string {
+  const nights = getReservationDateKeys(entry.startsAt, entry.endsAt, entry.mode?.code)
+    .map(formatLocalDateKey);
+  return `Noites incluídas (${nights.length}): ${nights.join(", ")}.`;
+}
+
 function paymentClause(entry: CalendarEntryDto): string {
   const totalCents = Math.round((entry.totalAmount ?? 0) * 100);
   const paidCents = Math.round((entry.paidAmount ?? 0) * 100);
@@ -121,6 +131,7 @@ export function buildContractText(entry: CalendarEntryDto): string {
     "",
     "3. PERÍODO, CHECK-IN E CHECK-OUT",
     `Data da locação: ${reservationDate(entry)}.`,
+    ...(entry.mode?.code === "OVERNIGHT" ? [reservationNights(entry)] : []),
     `Check-in: a partir das ${checkInTime(entry)}.`,
     `Check-out: até as ${formatLocalDateTime(entry.endsAt, "HH'h'")} do dia ${checkOutDate(entry)}.`,
     "",
@@ -172,7 +183,7 @@ export function personalizeContractText(contractText: string, entry: CalendarEnt
   if (contractText.startsWith("CONTRATO DE RESERVA\n")) return buildContractText(entry);
 
   const signatures = signatureColumns(entry);
-  return contractText
+  const lines = contractText
     .replace(/\r\n/g, "\n")
     .split("\n")
     .map((line) => {
@@ -183,6 +194,9 @@ export function personalizeContractText(contractText: string, entry: CalendarEnt
         return `MODALIDADE: ${entry.mode?.name.toLocaleUpperCase("pt-BR") ?? "[MODALIDADE]"}.`;
       }
       if (line.startsWith("Data da locação:")) return `Data da locação: ${reservationDate(entry)}.`;
+      if (line.startsWith("Noites incluídas")) {
+        return entry.mode?.code === "OVERNIGHT" ? reservationNights(entry) : "";
+      }
       if (line.startsWith("Check-in:")) return `Check-in: a partir das ${checkInTime(entry)}.`;
       if (line.startsWith("Check-out:")) {
         return `Check-out: até as ${formatLocalDateTime(entry.endsAt, "HH'h'")} do dia ${checkOutDate(entry)}.`;
@@ -193,8 +207,12 @@ export function personalizeContractText(contractText: string, entry: CalendarEnt
       if (line.startsWith("LOCADOR\tLOCATÁRIO")) return signatures[1];
       if (line.startsWith(`CPF: ${landlordCpf}\t`)) return signatures[2];
       return line;
-    })
-    .join("\n");
+    });
+  if (entry.mode?.code === "OVERNIGHT" && !lines.some((line) => line.startsWith("Noites incluídas"))) {
+    const dateLineIndex = lines.findIndex((line) => line.startsWith("Data da locação:"));
+    if (dateLineIndex >= 0) lines.splice(dateLineIndex + 1, 0, reservationNights(entry));
+  }
+  return lines.join("\n");
 }
 
 export function createContractPdf(
