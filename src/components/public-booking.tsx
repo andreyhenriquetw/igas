@@ -62,6 +62,7 @@ export function PublicBooking() {
     .format(new Date())
     .replaceAll("/", "-");
   const heroBackgroundRef = useRef<HTMLDivElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [modes, setModes] = useState<Mode[]>([]);
   const [modeId, setModeId] = useState("");
   const [date, setDate] = useState("");
@@ -91,6 +92,41 @@ export function PublicBooking() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = "dark";
+  }, []);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    const mobileViewport = window.matchMedia("(max-width: 768px)");
+    let observer: IntersectionObserver | null = null;
+    let isVisible = false;
+
+    const syncPlayback = (isVisible: boolean) => {
+      if (mobileViewport.matches && isVisible) {
+        void video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    };
+
+    observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        syncPlayback(isVisible);
+      },
+      { threshold: 0 },
+    );
+    observer.observe(video);
+
+    const syncViewport = () => syncPlayback(isVisible);
+    mobileViewport.addEventListener("change", syncViewport);
+
+    return () => {
+      observer?.disconnect();
+      mobileViewport.removeEventListener("change", syncViewport);
+      video.pause();
+    };
   }, []);
 
   useEffect(() => {
@@ -313,6 +349,17 @@ export function PublicBooking() {
 
       <section className="client-hero" id="inicio">
         <div className="client-hero-bg" ref={heroBackgroundRef} />
+        <video
+          ref={heroVideoRef}
+          className="client-hero-mobile-video"
+          src="https://xd90tgazad.ufs.sh/f/r9YwIz1ulNCW754khGcXUqNfa4tPhKW12jnRZwBTS8mQIFGO"
+          muted
+          autoPlay
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+        />
         <div className="client-hero-content">
           <span className="client-hero-eyebrow">Seu lazer, nossa prioridade</span>
           <h1>Momentos de lazer<br />com o <em>melhor conforto</em></h1>
@@ -372,6 +419,11 @@ export function PublicBooking() {
                       aria-label={`${day.slice(-2)}: ${status}`}
                       aria-pressed={day === date}
                       onClick={() => setDate(day)}
+                      style={day === date ? {
+                        background: "#c4963a",
+                        borderColor: "#e8be72",
+                        color: "#fff",
+                      } : undefined}
                     >
                       {Number(day.slice(-2))}
                     </button>
@@ -474,13 +526,13 @@ export function PublicBooking() {
             ["🏊", "Área aquática"],
             ["🌿", "Contato com a natureza"],
             ["🛏️", "Duas Suítes"],
-            ["📺", "TV"],
+            ["📺🔊", "TV e som"],
             ["🎱", "Bilhar"],
             ["🏕️", "Ambiente para pernoite"],
-            ["👨‍👩‍👧", "Para toda a família"],
+            ["🔥", "Churrasqueira e Cozinha"],
             ["🪢", "Espaço para atar 10 redes"],
             ["🍽️", "Confraternizações"],
-            ["✨", "Experiências especiais"],
+            ["🍺", "Cervejeira"],
           ].map(([icon, label]) => (
             <div key={label}><b>{icon}</b><span>{label}</span></div>
           ))}
