@@ -10,7 +10,9 @@ export function monthBounds(key: string) {
   const last = new Date(Date.UTC(year, month, 0)).toISOString().slice(0, 10);
   const firstWeekday = new Date(`${first}T12:00:00.000Z`).getUTCDay();
   const gridStart = changeKey(first, -firstWeekday);
-  return { first, last, gridStart };
+  const daysInMonth = Number(last.slice(8, 10));
+  const gridDays = Math.ceil((firstWeekday + daysInMonth) / 7) * 7;
+  return { first, last, gridStart, gridDays };
 }
 
 export function getWeekStart(key: string) {

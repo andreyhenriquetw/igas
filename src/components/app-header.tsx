@@ -1,13 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarDays, ChartNoAxesColumnIncreasing, Settings2, UsersRound } from "lucide-react";
+import { CalendarDays, CalendarCheck2, ChartNoAxesColumnIncreasing, Settings2, UsersRound } from "lucide-react";
 import { UserRole } from "@/generated/prisma/enums";
+import { PendingBookingBadge } from "@/components/pending-booking-badge";
 import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 type Props = {
   user: { name?: string | null; role: UserRole };
-  current: "calendar" | "modes" | "reports" | "team";
+  current: "calendar" | "bookings" | "modes" | "reports" | "team";
 };
 
 export function AppHeader({ user, current }: Props) {
@@ -27,6 +28,10 @@ export function AppHeader({ user, current }: Props) {
         <nav className="desktop-nav" aria-label="Navegação principal">
           <Link className={current === "calendar" ? "nav-link active" : "nav-link"} href="/">
             Agenda
+          </Link>
+          <Link className={current === "bookings" ? "nav-link active" : "nav-link"} href="/agendamentos">
+            Agendamentos
+            <PendingBookingBadge />
           </Link>
           <Link className={current === "modes" ? "nav-link active" : "nav-link"} href="/modes">
             Modalidades
@@ -49,6 +54,10 @@ export function AppHeader({ user, current }: Props) {
       <nav className="mobile-nav" aria-label="Navegação principal">
         <Link className={current === "calendar" ? "mobile-nav-link active" : "mobile-nav-link"} href="/">
           <CalendarDays size={18} /><span>Agenda</span>
+        </Link>
+        <Link className={current === "bookings" ? "mobile-nav-link active" : "mobile-nav-link"} href="/agendamentos">
+          <CalendarCheck2 size={18} /><span>Agendamentos</span>
+          <PendingBookingBadge />
         </Link>
         <Link className={current === "modes" ? "mobile-nav-link active" : "mobile-nav-link"} href="/modes">
           <Settings2 size={18} /><span>Modalidades</span>

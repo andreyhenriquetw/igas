@@ -12,3 +12,8 @@ test("month grid begins on the Sunday before or on the first", () => {
   assert.equal(monthBounds("2026-11-18").gridStart, "2026-11-01");
   assert.equal(monthBounds("2026-04-18").gridStart, "2026-03-29");
 });
+
+test("month grid includes only the weeks needed to display the month", () => {
+  assert.equal(monthBounds("2026-11-18").gridDays, 35);
+  assert.equal(monthBounds("2026-08-18").gridDays, 42);
+});

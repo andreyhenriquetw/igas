@@ -40,6 +40,8 @@ function acceptanceLabel(entry: CalendarEntryDto) {
 export function ReservationDetailsDialog({ entry, error, onClose, children }: Props) {
   const total = entry.totalAmount ?? 0;
   const paid = entry.paidAmount ?? 0;
+  const amountsDefined = entry.totalAmount !== null && entry.paidAmount !== null;
+  const minimumPayment = !amountsDefined ? "A definir" : hasPaidAtLeastHalf(total, paid) ? "Sim" : "Ainda não";
 
   return (
     <section
@@ -75,10 +77,10 @@ export function ReservationDetailsDialog({ entry, error, onClose, children }: Pr
             <div><small>Contato</small><strong>{entry.guestContact || "Não informado"}</strong></div>
             <div><small>CPF</small><strong>{entry.guestCpf || "Não informado"}</strong></div>
             <div><small>Endereço</small><strong>{entry.guestAddress || "Não informado"}</strong></div>
-            <div><small>Valor total</small><strong>{money.format(total)}</strong></div>
-            <div><small>Valor pago</small><strong>{money.format(paid)}</strong></div>
-            <div><small>Saldo restante</small><strong>{money.format(total - paid)}</strong></div>
-            <div><small>Pagamento mínimo</small><strong>{hasPaidAtLeastHalf(total, paid) ? "Sim" : "Ainda não"}</strong></div>
+            <div><small>Valor total</small><strong>{amountsDefined ? money.format(total) : "A definir"}</strong></div>
+            <div><small>Valor pago</small><strong>{amountsDefined ? money.format(paid) : "—"}</strong></div>
+            <div><small>Saldo restante</small><strong>{amountsDefined ? money.format(total - paid) : "—"}</strong></div>
+            <div><small>Pagamento mínimo</small><strong>{minimumPayment}</strong></div>
             <div className="detail-full">
               <small>Aceite do contrato</small>
               <strong>{acceptanceLabel(entry)}</strong>

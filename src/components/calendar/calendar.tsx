@@ -137,6 +137,11 @@ function paymentLabel(total: number, paid: number) {
   return "Não pago";
 }
 
+function entryPaymentLabel(entry: CalendarEntryDto) {
+  if (entry.totalAmount === null || entry.paidAmount === null) return "Valor a definir";
+  return paymentLabel(entry.totalAmount, entry.paidAmount);
+}
+
 function statusLabel(status: EntryStatus) {
   return {
     CONFIRMED: "Confirmada",
@@ -150,13 +155,11 @@ function EntryBadges({ entry }: { entry: CalendarEntryDto }) {
   if (entry.kind === "BLOCK") {
     return <span className="badge badge-blocked">Bloqueio</span>;
   }
-  const total = entry.totalAmount ?? 0;
-  const paid = entry.paidAmount ?? 0;
   return (
     <div className="entry-badges">
       <span className={`badge badge-${entry.status.toLowerCase()}`}>{statusLabel(entry.status)}</span>
-      <span className={`badge ${hasPaidAtLeastHalf(total, paid) ? "badge-paid" : "badge-unpaid"}`}>
-        {paymentLabel(total, paid)}
+      <span className={`badge ${entry.totalAmount !== null && entry.paidAmount !== null && hasPaidAtLeastHalf(entry.totalAmount, entry.paidAmount) ? "badge-paid" : "badge-unpaid"}`}>
+        {entryPaymentLabel(entry)}
       </span>
       <span className={`badge ${entry.contractStatus === "GENERATED" ? "badge-contract-ready" : "badge-contract-pending"}`}>
         Contrato {entry.contractStatus === "GENERATED" ? "gerado" : "pendente"}
@@ -796,7 +799,7 @@ export function Calendar({ initialEntries, modes }: Props) {
                 <span className="list-entry-main">
                   <strong>{entry.kind === "BLOCK" ? "Data bloqueada" : entry.guestName}</strong>
                   <small>{formatLocalDateTime(entry.startsAt, "EEE, dd/MM · HH:mm")} – {formatLocalDateTime(entry.endsAt, "dd/MM · HH:mm")}</small>
-                  {entry.kind === "BOOKING" && <small className="mode-line">{entry.mode?.name} · {paymentLabel(entry.totalAmount ?? 0, entry.paidAmount ?? 0)}</small>}
+                  {entry.kind === "BOOKING" && <small className="mode-line">{entry.mode?.name} · {entryPaymentLabel(entry)}</small>}
                 </span>
                 <span className="list-entry-badges"><EntryBadges entry={entry} /></span>
                 <ArrowRight size={17} className="list-arrow" />
@@ -852,16 +855,19 @@ export function Calendar({ initialEntries, modes }: Props) {
                 )}
                 {selected.kind === "BOOKING" && (
                   <>
-                    <button className="button button-secondary" type="button" disabled={contractBusy || loading} onClick={() => void openContractEditor(selected)}>
+                      {(selected.totalAmount === null || selected.paidAmount === null) && (
+                        <p className="muted detail-full">Defina os valores da reserva antes de gerar o contrato.</p>
+                      )}
+                      <button className="button button-secondary" type="button" disabled={contractBusy || loading || selected.totalAmount === null || selected.paidAmount === null} onClick={() => void openContractEditor(selected)}>
                       <Pencil size={16} /> Editar contrato
                     </button>
-                    <button className="button button-primary" type="button" disabled={contractBusy || loading} onClick={() => void downloadContract(selected)}>
+                      <button className="button button-primary" type="button" disabled={contractBusy || loading || selected.totalAmount === null || selected.paidAmount === null} onClick={() => void downloadContract(selected)}>
                       <Download size={16} /> {contractBusy ? "Preparando…" : "Baixar contrato PDF"}
                     </button>
                     <button
                       className="button button-secondary"
                       type="button"
-                      disabled={acceptanceBusy || loading || selected.status === "CANCELLED" || !selected.guestCpf || selected.contractAcceptanceStatus === "ACCEPTED"}
+                      disabled={acceptanceBusy || loading || selected.status === "CANCELLED" || !selected.guestCpf || selected.contractAcceptanceStatus === "ACCEPTED" || selected.totalAmount === null || selected.paidAmount === null}
                       onClick={() => void generateAcceptanceLink(selected)}
                     >
                       <Link2 size={16} /> {acceptanceBusy ? "Gerando link…" : selected.contractAcceptanceStatus === "PENDING" ? "Gerar novo link" : "Gerar link de aceite"}
