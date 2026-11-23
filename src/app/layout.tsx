@@ -2,14 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 const themeInitializationScript = `
-  try {
-    const theme = localStorage.getItem("agenda-theme");
-    if (theme === "dark" || theme === "light") {
-      document.documentElement.dataset.theme = theme;
-    }
-  } catch (error) {
-    if (!(error instanceof DOMException)) throw error;
-  }
+  document.documentElement.dataset.theme = "dark";
 `;
 
 export const metadata: Metadata = {
@@ -28,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" className="h-full antialiased" suppressHydrationWarning>
+    <html lang="pt-BR" className="h-full antialiased" data-theme="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitializationScript }} />
       </head>

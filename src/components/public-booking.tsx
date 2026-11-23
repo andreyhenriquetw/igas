@@ -90,6 +90,10 @@ export function PublicBooking() {
   const [reviewType, setReviewType] = useState("Lazer");
 
   useEffect(() => {
+    document.documentElement.dataset.theme = "dark";
+  }, []);
+
+  useEffect(() => {
     const heroBackground = heroBackgroundRef.current;
     if (!heroBackground) return;
 
@@ -222,7 +226,6 @@ export function PublicBooking() {
   function toggleTheme() {
     const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
     document.documentElement.dataset.theme = next;
-    localStorage.setItem("agenda-theme", next);
   }
 
   function openBooking() {

@@ -16,7 +16,7 @@ function getThemeSnapshot(): Theme {
 }
 
 function getServerThemeSnapshot(): Theme {
-  return "light";
+  return "dark";
 }
 
 export function ThemeToggle() {
@@ -25,11 +25,6 @@ export function ThemeToggle() {
   function toggleTheme() {
     const nextTheme = theme === "light" ? "dark" : "light";
     document.documentElement.dataset.theme = nextTheme;
-    try {
-      window.localStorage.setItem("agenda-theme", nextTheme);
-    } catch (error) {
-      if (!(error instanceof DOMException)) throw error;
-    }
     window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
   }
 
