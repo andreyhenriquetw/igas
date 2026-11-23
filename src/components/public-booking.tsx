@@ -525,13 +525,13 @@ export function PublicBooking() {
           {[
             ["🏊", "Área aquática"],
             ["🌿", "Contato com a natureza"],
-            ["🛏️", "Duas Suítes"],
+            ["🛏️", "Dois quartos Climatizado"],
             ["📺🔊", "TV e som"],
             ["🎱", "Bilhar"],
             ["🏕️", "Ambiente para pernoite"],
             ["🔥", "Churrasqueira e Cozinha"],
             ["🪢", "Espaço para atar 10 redes"],
-            ["🍽️", "Confraternizações"],
+            ["📶", "Internet WIFI"],
             ["🍺", "Cervejeira"],
           ].map(([icon, label]) => (
             <div key={label}><b>{icon}</b><span>{label}</span></div>
