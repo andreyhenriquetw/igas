@@ -237,6 +237,20 @@ export function PublicBooking() {
       setError("Selecione uma modalidade e uma data.");
       return;
     }
+    if (conflict) {
+      setError(selectedMode.code === "OVERNIGHT"
+        ? `Não há disponibilidade para ${durationDays} ${Number(durationDays) === 1 ? "noite" : "noites"} a partir de ${formatDateKey(date)}. Escolha outra data ou reduza a quantidade de noites.`
+        : "Esta data não está disponível para a modalidade escolhida. Escolha outra data.");
+      return;
+    }
+    if (availabilityLoading) {
+      setError("Aguarde a confirmação da disponibilidade antes de continuar.");
+      return;
+    }
+    if (availabilityError) {
+      setError(availabilityError);
+      return;
+    }
     if (selectedMode.code === "OVERNIGHT" && Number(durationDays) < 1) {
       setError("Selecione pelo menos 1 noite para o pernoite.");
       return;
@@ -269,7 +283,7 @@ export function PublicBooking() {
         "Quero finalizar minha solicitação de reserva pelo site:",
         "",
         `👤 Nome: ${guestName.trim()}`,
-        `📞 Telefone: ${guestContact.trim()}`,
+        `📞 Telefone ou WhatsApp: ${guestContact.trim()}`,
         `🪪 CPF: ${guestCpf.trim()}`,
         `🏡 Modalidade: ${selectedMode.name}`,
         `💰 Valor: ${modePrice(selectedMode, overnightDays)}`,
@@ -384,6 +398,19 @@ export function PublicBooking() {
     ),
     [date, durationDays, occupied, selectedMode],
   );
+
+  useEffect(() => {
+    if (!bookingOpen || !conflict) return;
+
+    const timer = window.setTimeout(() => {
+      setBookingOpen(false);
+      setError("");
+      setDate("");
+      document.getElementById("reserva")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 10000);
+
+    return () => window.clearTimeout(timer);
+  }, [bookingOpen, conflict]);
 
   return (
     <main className="client-site">
@@ -748,7 +775,7 @@ export function PublicBooking() {
               <label>Nome completo
                 <input value={guestName} onChange={(event) => setGuestName(event.target.value)} required maxLength={120} />
               </label>
-              <label>Telefone ou contato
+              <label>Telefone ou WhatsApp
                 <input value={guestContact} onChange={(event) => setGuestContact(event.target.value)} required maxLength={160} />
               </label>
               <div className="public-form-grid">
@@ -779,6 +806,13 @@ export function PublicBooking() {
                 <span>Data escolhida</span>
                 <strong>{date ? `${date.slice(8, 10)}/${date.slice(5, 7)}/${date.slice(0, 4)}` : "Selecione uma data no calendário"}</strong>
               </div>
+              {conflict && date && selectedMode && (
+                <p className="client-form-error" role="alert">
+                  {selectedMode.code === "OVERNIGHT"
+                    ? `Não há disponibilidade para ${durationDays} ${Number(durationDays) === 1 ? "noite" : "noites"} a partir de ${formatDateKey(date)}. Escolha outra data ou reduza a quantidade de noites.`
+                    : "Esta data não está disponível para a modalidade escolhida. Escolha outra data."}
+                </p>
+              )}
               <label>Endereço <span>(opcional)</span>
                 <input value={guestAddress} onChange={(event) => setGuestAddress(event.target.value)} maxLength={300} />
               </label>
