@@ -16,8 +16,8 @@ type Mode = {
 
 const NO_OCCUPIED_PERIODS: Array<{ startsAt: string; endsAt: string }> = [];
 const WHATSAPP_CONTACTS = [
-  { name: "Junior", phone: "559399129300", displayPhone: "(93) 9912-9300" },
   { name: "Denis", phone: "5593991606969", displayPhone: "(93) 99160-6969" },
+  { name: "Junior", phone: "5593991293000", displayPhone: "(93) 99129-3000" },
 ];
 
 function formatCpf(value: string) {

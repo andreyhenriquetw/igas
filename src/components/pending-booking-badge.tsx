@@ -8,11 +8,17 @@ type Result = { count: number } | { error: true } | null;
 let cachedCount: { count: number; expiresAt: number } | null = null;
 let pendingCountRequest: Promise<number> | null = null;
 
+export const PENDING_BOOKINGS_CHANGED_EVENT = "pending-bookings-changed";
+
+export function notifyPendingBookingsChanged(delta = -1) {
+  window.dispatchEvent(new CustomEvent(PENDING_BOOKINGS_CHANGED_EVENT, { detail: { delta } }));
+}
+
 function fetchPendingCount(force = false) {
   if (!force && cachedCount && cachedCount.expiresAt > Date.now()) {
     return Promise.resolve(cachedCount.count);
   }
-  if (pendingCountRequest) return pendingCountRequest;
+  if (!force && pendingCountRequest) return pendingCountRequest;
 
   pendingCountRequest = (async () => {
     try {
@@ -57,10 +63,22 @@ export function PendingBookingBadge() {
       if (document.visibilityState === "visible") void refresh(true);
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
+    const onPendingBookingsChanged = (event: Event) => {
+      const delta = (event as CustomEvent<{ delta?: number }>).detail?.delta ?? -1;
+      setResult((current) => {
+        if (current === null || "error" in current) return current;
+        const nextCount = Math.max(0, current.count + delta);
+        cachedCount = { count: nextCount, expiresAt: Date.now() + 55_000 };
+        return { count: nextCount };
+      });
+      void refresh(true);
+    };
+    window.addEventListener(PENDING_BOOKINGS_CHANGED_EVENT, onPendingBookingsChanged);
     return () => {
       active = false;
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener(PENDING_BOOKINGS_CHANGED_EVENT, onPendingBookingsChanged);
     };
   }, []);
 

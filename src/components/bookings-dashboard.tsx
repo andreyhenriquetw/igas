@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CalendarCheck2, Check, CircleX, Copy, RefreshCw } from "lucide-react";
+import { notifyPendingBookingsChanged } from "@/components/pending-booking-badge";
 import {
   formatLocalDateKey,
   formatLocalDateTime,
@@ -37,6 +38,7 @@ export function BookingsDashboard({ initialEntries }: Props) {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível atualizar.");
       setEntries((current) => current.filter((entry) => entry.id !== entryId));
+      notifyPendingBookingsChanged(-1);
       setMessage(status === "CONFIRMED" ? "Agendamento confirmado." : "Solicitação cancelada.");
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : "Não foi possível atualizar.");
