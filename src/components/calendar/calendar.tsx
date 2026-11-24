@@ -24,6 +24,7 @@ import {
   ShieldAlert,
   X,
 } from "lucide-react";
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -182,6 +183,7 @@ export function Calendar({ initialEntries, modes }: Props) {
   const [periodStart, setPeriodStart] = useState(initialBounds.first);
   const [periodEnd, setPeriodEnd] = useState(initialBounds.last);
   const [entries, setEntries] = useState(initialEntries);
+  const [globalPendingCount, setGlobalPendingCount] = useState(0);
   const [view, setView] = useState<ViewMode>("month");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [modal, setModal] = useState<"details" | "form" | "contract" | null>(null);
@@ -616,7 +618,6 @@ export function Calendar({ initialEntries, modes }: Props) {
         ? `${formatInTimeZone(keyDate(periodStart), TIME_ZONE, "d 'de' MMM", { locale: ptBR })} – ${formatInTimeZone(keyDate(periodEnd), TIME_ZONE, "d 'de' MMM", { locale: ptBR })}`
         : "Selecione um período";
   const activeBookings = filtered.filter((entry) => entry.kind === "BOOKING" && entry.status !== "CANCELLED");
-  const pendingCount = activeBookings.filter((entry) => entry.status === "PENDING").length;
   const blockCount = filtered.filter((entry) => entry.kind === "BLOCK").length;
 
   function entriesForDay(day: string) {
@@ -640,10 +641,16 @@ export function Calendar({ initialEntries, modes }: Props) {
       && new Date(entry.startsAt) < dayEnd
       && new Date(entry.endsAt) > dayStart
     ));
+    const pastConfirmedOrBlocked = day < today && entries.some((entry) => (
+      entry.status !== "CANCELLED"
+      && (entry.kind === "BLOCK" || entry.status === "CONFIRMED")
+      && new Date(entry.startsAt) < dayEnd
+      && new Date(entry.endsAt) > dayStart
+    ));
     const availabilityVisible = day >= periodStart && day <= periodEnd && (view === "week" || inMonth);
     return (
       <div
-        className={`day-cell ${inMonth ? "" : "outside-month"} ${day === today ? "today" : ""} ${occupied ? "occupied" : ""}`}
+        className={`day-cell ${inMonth ? "" : "outside-month"} ${day === today ? "today" : ""} ${occupied ? "occupied" : ""} ${pastConfirmedOrBlocked ? "past-confirmed-or-blocked" : ""}`}
         key={day}
         onClick={(event) => {
           if (event.target instanceof Element && event.target.closest("button")) return;
@@ -673,28 +680,37 @@ export function Calendar({ initialEntries, modes }: Props) {
           )}
         </div>
         <div className="day-items">
-          {items.slice(0, view === "month" ? 3 : 8).map((entry) => (
-            <button
-              className={`calendar-entry entry-${entry.status.toLowerCase()}`}
-              key={entry.id}
-              type="button"
-              onClick={() => openDetails(entry)}
-              title={`${entry.guestName ?? "Bloqueio"} · ${formatLocalDateTime(entry.startsAt, "HH:mm")}`}
-            >
-              <span className="entry-dot" />
-              <span className="entry-time">{formatLocalDateTime(entry.startsAt, "HH:mm")}</span>
-              <span className="entry-name">{entry.kind === "BLOCK" ? "Bloqueio" : entry.guestName}</span>
-              {entry.kind === "BOOKING" && entry.status === "CONFIRMED" && entry.guestName?.trim() && (
-                <span className="entry-mobile-name">{entry.guestName.trim().split(/\s+/)[0]}</span>
-              )}
-              {entry.kind === "BOOKING" && hasPaidAtLeastHalf(entry.totalAmount ?? 0, entry.paidAmount ?? 0) && (
-                <Check size={11} className="entry-paid-icon" aria-label="Pagou pelo menos 50%" />
-              )}
-              {entry.kind === "BOOKING" && entry.contractStatus === "GENERATED" && (
-                <FileCheck2 size={11} aria-label="Contrato gerado" />
-              )}
-            </button>
-          ))}
+          {items.slice(0, view === "month" ? 3 : 8).map((entry) => {
+            const pastCompletedEntry = day < today
+              && (
+                entry.status === "BLOCKED"
+                || (entry.kind === "BOOKING" && entry.status === "CONFIRMED")
+              );
+            return (
+              <button
+                className={`calendar-entry entry-${entry.status.toLowerCase()}`}
+                key={entry.id}
+                type="button"
+                onClick={() => openDetails(entry)}
+                title={`${entry.guestName ?? "Bloqueio"} · ${formatLocalDateTime(entry.startsAt, "HH:mm")}`}
+              >
+                {pastCompletedEntry
+                  ? <span className="entry-dot entry-completed-mark" role="img" aria-label={entry.status === "BLOCKED" ? "Bloqueio em data passada" : "Reserva confirmada em data passada"}>✓</span>
+                  : <span className="entry-dot" />}
+                <span className="entry-time">{formatLocalDateTime(entry.startsAt, "HH:mm")}</span>
+                <span className="entry-name">{entry.kind === "BLOCK" ? "Bloqueio" : entry.guestName}</span>
+                {entry.kind === "BOOKING" && entry.status === "CONFIRMED" && entry.guestName?.trim() && (
+                  <span className="entry-mobile-name">{entry.guestName.trim().split(/\s+/)[0]}</span>
+                )}
+                {entry.kind === "BOOKING" && hasPaidAtLeastHalf(entry.totalAmount ?? 0, entry.paidAmount ?? 0) && (
+                  <Check size={11} className="entry-paid-icon" aria-label="Pagou pelo menos 50%" />
+                )}
+                {entry.kind === "BOOKING" && entry.contractStatus === "GENERATED" && (
+                  <FileCheck2 size={11} aria-label="Contrato gerado" />
+                )}
+              </button>
+            );
+          })}
           {items.length > (view === "month" ? 3 : 8) && (
             <span className="more-events">+{items.length - (view === "month" ? 3 : 8)} mais</span>
           )}
@@ -722,13 +738,13 @@ export function Calendar({ initialEntries, modes }: Props) {
           <span className="stat-icon"><BedDouble size={18} /></span>
           <span className="stat-content"><span className="stat-label">Reservas ativas</span><strong>{activeBookings.length}</strong></span>
         </div>
-        <div className="stat-card pending-stat-card">
+        <Link className="stat-card pending-stat-card pending-stat-card-link" href="/agendamentos" aria-label="Abrir agendamentos pendentes">
           <span className="pending-stat-notification">
-            <PendingBookingBadge />
+            <PendingBookingBadge onCountChange={setGlobalPendingCount} />
           </span>
           <span className="stat-icon"><Clock3 size={18} /></span>
-          <span className="stat-content"><span className="stat-label">Reservas pendentes</span><strong>{pendingCount}</strong></span>
-        </div>
+          <span className="stat-content"><span className="stat-label">Reservas pendentes</span><strong>{globalPendingCount}</strong></span>
+        </Link>
         <div className="stat-card">
           <span className="stat-icon"><ShieldAlert size={18} /></span>
           <span className="stat-content"><span className="stat-label">Datas bloqueadas</span><strong>{blockCount}</strong></span>

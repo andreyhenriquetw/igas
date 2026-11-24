@@ -2031,6 +2031,28 @@ a {
 .entry-paid-icon {
   color: #2e8053;
 }
+.entry-completed-mark {
+  display: inline-flex;
+  width: 12px;
+  height: 12px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: #3a9465;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  text-decoration: none;
+  transform: scale(0.9);
+}
+.entry-confirmed .entry-completed-mark,
+.entry-blocked .entry-completed-mark {
+  border-color: #fff;
+  background: #07864b;
+  color: #fff;
+  box-shadow: 0 0 0 1px #07864b;
+}
 .more-events {
   padding-left: 4px;
   color: #738078;
@@ -3120,6 +3142,11 @@ a {
   .entry-mobile-name,
   .calendar-entry svg {
     display: none;
+  }
+  .calendar-entry .entry-completed-mark {
+    width: 11px;
+    height: 11px;
+    font-size: 8px;
   }
   .entry-name {
     display: block;
@@ -9138,11 +9165,83 @@ body {
   border: 0;
 }
 
+:root:not([data-theme="dark"]) .app-main .day-cell.past-confirmed-or-blocked.occupied:not(.today) {
+  background: #d7d9dc !important;
+}
+
+:root[data-theme="dark"] .app-main .day-cell.past-confirmed-or-blocked.occupied:not(.today) {
+  background: #484d55 !important;
+}
+
 :root:not([data-theme="dark"]) .app-header .brand {
   height: 112px;
 }
 
+@media (min-width: 681px) {
+  .desktop-nav .nav-link {
+    height: 40px;
+  }
+
+  .pending-stat-card .pending-stat-notification {
+    top: 12px;
+    right: auto;
+    left: 12px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .pending-stat-card .pending-booking-notification {
+    animation: none;
+  }
+
+  .pending-stat-card .pending-booking-pulse {
+    display: none;
+  }
+}
+
+.pending-stat-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.pending-stat-card-link:focus-visible {
+  outline: 3px solid #70b7ff;
+  outline-offset: 3px;
+}
+
+.pending-stat-card .pending-stat-notification,
+.pending-stat-card .pending-booking-notification,
+.pending-stat-card .pending-booking-count {
+  min-height: 0;
+}
+
+.pending-stat-card .pending-booking-notification {
+  color: #b83e35;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.pending-stat-card .pending-booking-notification svg {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: 17px;
+  height: 17px;
+}
+
+.pending-stat-card .pending-booking-count {
+  color: #fff;
+  font-size: 8px;
+  line-height: 1;
+}
+
 @media (max-width: 680px) {
+  .pending-stat-card .pending-stat-notification {
+    top: -5px;
+    right: auto;
+    left: -5px;
+  }
+
   .entry-list {
     gap: 12px;
     padding: 12px 8px 18px;

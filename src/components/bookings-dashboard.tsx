@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarCheck2, Check, CircleX, Copy, RefreshCw } from "lucide-react";
+import { CalendarCheck2, Check, CircleX, Copy, Eye, RefreshCw } from "lucide-react";
+import { ReservationDetailsDialog } from "@/components/calendar/reservation-details-dialog";
 import { notifyPendingBookingsChanged } from "@/components/pending-booking-badge";
 import {
   formatLocalDateKey,
@@ -21,6 +22,7 @@ const money = new Intl.NumberFormat("pt-BR", {
 
 export function BookingsDashboard({ initialEntries }: Props) {
   const [entries, setEntries] = useState(initialEntries);
+  const [selectedEntry, setSelectedEntry] = useState<CalendarEntryDto | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -38,6 +40,7 @@ export function BookingsDashboard({ initialEntries }: Props) {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível atualizar.");
       setEntries((current) => current.filter((entry) => entry.id !== entryId));
+      setSelectedEntry((current) => current?.id === entryId ? null : current);
       notifyPendingBookingsChanged(-1);
       setMessage(status === "CONFIRMED" ? "Agendamento confirmado." : "Solicitação cancelada.");
     } catch (updateError) {
@@ -135,6 +138,14 @@ export function BookingsDashboard({ initialEntries }: Props) {
               {entry.notes && <p className="booking-notes"><strong>Observações:</strong> {entry.notes}</p>}
               <div className="booking-actions">
                 <button
+                  className="button button-secondary"
+                  type="button"
+                  disabled={loadingId !== null}
+                  onClick={() => { setError(""); setSelectedEntry(entry); }}
+                >
+                  <Eye size={16} /> Ver detalhes
+                </button>
+                <button
                   className="button button-primary"
                   type="button"
                   disabled={loadingId !== null}
@@ -153,6 +164,36 @@ export function BookingsDashboard({ initialEntries }: Props) {
               </div>
             </article>
           ))}
+        </div>
+      )}
+      {selectedEntry && (
+        <div className="modal-backdrop" onMouseDown={(event) => {
+          if (event.target === event.currentTarget && loadingId === null) setSelectedEntry(null);
+        }}>
+          <ReservationDetailsDialog
+            entry={selectedEntry}
+            error={error}
+            onClose={() => { if (loadingId === null) setSelectedEntry(null); }}
+          >
+            <div className="modal-actions detail-actions">
+              <button
+                className="button button-primary"
+                type="button"
+                disabled={loadingId !== null}
+                onClick={() => void updateStatus(selectedEntry.id, "CONFIRMED")}
+              >
+                <Check size={16} /> Confirmar reserva
+              </button>
+              <button
+                className="button button-secondary"
+                type="button"
+                disabled={loadingId !== null}
+                onClick={() => void updateStatus(selectedEntry.id, "CANCELLED")}
+              >
+                <CircleX size={16} /> Cancelar solicitação
+              </button>
+            </div>
+          </ReservationDetailsDialog>
         </div>
       )}
     </main>

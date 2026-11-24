@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 
 type Result = { count: number } | { error: true } | null;
+type Props = {
+  onCountChange?: (count: number) => void;
+};
 
 let cachedCount: { count: number; expiresAt: number } | null = null;
 let pendingCountRequest: Promise<number> | null = null;
@@ -41,7 +44,7 @@ function fetchPendingCount(force = false) {
   return pendingCountRequest;
 }
 
-export function PendingBookingBadge() {
+export function PendingBookingBadge({ onCountChange }: Props = {}) {
   const [result, setResult] = useState<Result>(null);
 
   useEffect(() => {
@@ -49,7 +52,10 @@ export function PendingBookingBadge() {
     const refresh = async (force = false) => {
       try {
         const count = await fetchPendingCount(force);
-        if (active) setResult({ count });
+        if (active) {
+          setResult({ count });
+          onCountChange?.(count);
+        }
       } catch {
         if (active) setResult({ error: true });
       }
@@ -65,12 +71,12 @@ export function PendingBookingBadge() {
     document.addEventListener("visibilitychange", onVisibilityChange);
     const onPendingBookingsChanged = (event: Event) => {
       const delta = (event as CustomEvent<{ delta?: number }>).detail?.delta ?? -1;
-      setResult((current) => {
-        if (current === null || "error" in current) return current;
-        const nextCount = Math.max(0, current.count + delta);
+      if (cachedCount) {
+        const nextCount = Math.max(0, cachedCount.count + delta);
         cachedCount = { count: nextCount, expiresAt: Date.now() + 55_000 };
-        return { count: nextCount };
-      });
+        setResult({ count: nextCount });
+        onCountChange?.(nextCount);
+      }
       void refresh(true);
     };
     window.addEventListener(PENDING_BOOKINGS_CHANGED_EVENT, onPendingBookingsChanged);
@@ -80,7 +86,7 @@ export function PendingBookingBadge() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener(PENDING_BOOKINGS_CHANGED_EVENT, onPendingBookingsChanged);
     };
-  }, []);
+  }, [onCountChange]);
 
   if (result === null) return null;
   if ("error" in result) {
