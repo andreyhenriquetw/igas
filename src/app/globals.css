@@ -1445,6 +1445,9 @@ a {
   border-radius: 50%;
   animation: pending-booking-pulse 1.25s ease-out infinite;
 }
+.pending-stat-notification {
+  display: none;
+}
 .pending-booking-count {
   position: absolute;
   z-index: 4;
@@ -1490,6 +1493,17 @@ a {
   .pending-booking-notification {
     top: -7px;
     left: 18%;
+  }
+  .pending-stat-card .pending-stat-notification {
+    position: absolute;
+    z-index: 8;
+    top: -5px;
+    left: -5px;
+    display: block;
+  }
+  .pending-stat-card .pending-stat-notification .pending-booking-notification {
+    top: 0;
+    left: 0;
   }
 }
 .account-area {
@@ -6688,11 +6702,15 @@ body {
   :root:not([data-theme="dark"]) .stat-card .stat-label {
     padding-right: 0;
     overflow: hidden;
-    font-size: 8px;
+    font-size: 10px;
     line-height: 1.15;
     text-overflow: clip;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.015em;
     white-space: nowrap;
+  }
+  :root:not([data-theme="dark"]) .stat-card .stat-content strong,
+  :root[data-theme="dark"] .stat-card .stat-content strong {
+    font-size: 24px;
   }
 }
 
@@ -7286,7 +7304,37 @@ body {
   }
   :root:not([data-theme="dark"]) .app-main .stats-row .stat-card,
   :root[data-theme="dark"] .app-main .stats-row .stat-card {
-    grid-template-columns: 25px minmax(0, 1fr);
+    grid-template-columns: 24px minmax(0, 1fr);
+  }
+  .app-main .stats-row .stat-card {
+    gap: 4px;
+    padding: 8px 6px;
+  }
+  .app-main .stats-row .pending-stat-card {
+    overflow: visible;
+  }
+  .app-main .stats-row .stat-card .stat-content {
+    display: flex;
+    min-height: 48px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .app-main .stats-row .stat-card .stat-label {
+    display: flex;
+    min-height: 24px;
+    align-items: center;
+    overflow: visible;
+    font-size: 9px;
+    line-height: 1.08;
+    text-align: left;
+    text-overflow: clip;
+    white-space: normal;
+  }
+  .app-main .stats-row .stat-card .stat-content strong {
+    display: block;
+    margin-top: 1px;
+    line-height: 1;
   }
 }
 
@@ -7350,10 +7398,10 @@ body {
 
   :root[data-theme="dark"] .app-main .stats-row .stat-card .stat-label {
     overflow: visible;
-    font-size: 8px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 800;
     line-height: 1.15;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.015em;
     text-overflow: clip;
   }
 }

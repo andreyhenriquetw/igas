@@ -47,6 +47,7 @@ import {
   personalizeContractText,
 } from "@/lib/contract";
 import { ReservationDetailsDialog } from "@/components/calendar/reservation-details-dialog";
+import { PendingBookingBadge } from "@/components/pending-booking-badge";
 import { changeKey, getWeekStart, monthBounds } from "@/lib/calendar-dates";
 import { capitalizeNameInitials } from "@/lib/name";
 import { getPaymentStatus, hasPaidAtLeastHalf } from "@/lib/payment";
@@ -199,6 +200,7 @@ export function Calendar({ initialEntries, modes }: Props) {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<-1 | 0 | 1>(0);
+  const hasMountedCalendarSync = useRef(false);
 
   const refresh = useCallback(async () => {
     if (!periodStart || !periodEnd || periodStart > periodEnd) return;
@@ -216,18 +218,24 @@ export function Calendar({ initialEntries, modes }: Props) {
 
   useEffect(() => {
     let active = true;
+    let inFlight = false;
     const update = async () => {
+      if (!active || inFlight || document.visibilityState !== "visible") return;
+      inFlight = true;
       try {
         await refresh();
       } catch (refreshError) {
         if (active) setSyncError(refreshError instanceof Error ? refreshError.message : "Falha na sincronização.");
+      } finally {
+        inFlight = false;
       }
     };
     const onVisibility = () => {
       if (document.visibilityState === "visible") void update();
     };
-    void update();
-    const interval = window.setInterval(update, 6000);
+    if (hasMountedCalendarSync.current) void update();
+    else hasMountedCalendarSync.current = true;
+    const interval = window.setInterval(update, 60_000);
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
       active = false;
@@ -714,7 +722,10 @@ export function Calendar({ initialEntries, modes }: Props) {
           <span className="stat-icon"><BedDouble size={18} /></span>
           <span className="stat-content"><span className="stat-label">Reservas ativas</span><strong>{activeBookings.length}</strong></span>
         </div>
-        <div className="stat-card">
+        <div className="stat-card pending-stat-card">
+          <span className="pending-stat-notification">
+            <PendingBookingBadge />
+          </span>
           <span className="stat-icon"><Clock3 size={18} /></span>
           <span className="stat-content"><span className="stat-label">Reservas pendentes</span><strong>{pendingCount}</strong></span>
         </div>

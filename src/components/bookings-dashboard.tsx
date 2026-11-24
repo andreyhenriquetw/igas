@@ -48,7 +48,7 @@ export function BookingsDashboard({ initialEntries }: Props) {
   async function refresh() {
     setError("");
     try {
-      const response = await fetch("/api/entries?from=2000-01-01&to=2100-01-01", { cache: "no-store" });
+      const response = await fetch("/api/entries?kind=BOOKING&status=PENDING", { cache: "no-store" });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error);
       setEntries((result.entries as CalendarEntryDto[]).filter((entry) => entry.kind === "BOOKING" && entry.status === "PENDING"));

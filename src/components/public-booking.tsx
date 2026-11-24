@@ -173,17 +173,6 @@ export function PublicBooking() {
     };
   }, []);
 
-  useEffect(() => {
-    void fetch("/api/public/bookings", { cache: "no-store" })
-      .then(async (response) => {
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error);
-        setModes(result.modes);
-        setModeId(result.modes[0]?.id ?? "");
-      })
-      .catch((loadError) => setError(loadError instanceof Error ? loadError.message : "Não foi possível carregar."));
-  }, []);
-
   const calendarBounds = monthBounds(calendarMonth);
   const calendarEnd = changeKey(calendarBounds.gridStart, calendarBounds.gridDays);
   const availabilityPeriod = `${calendarBounds.gridStart}:${calendarEnd}`;
@@ -196,6 +185,10 @@ export function PublicBooking() {
         const result = await response.json();
         if (!response.ok) throw new Error(result.error ?? "Não foi possível consultar a disponibilidade.");
         if (active) {
+          setModes(result.modes);
+          setModeId((current) => result.modes.some((mode: Mode) => mode.id === current)
+            ? current
+            : result.modes[0]?.id ?? "");
           setAvailability({
             period: availabilityPeriod,
             occupied: result.occupied ?? [],
@@ -383,20 +376,17 @@ export function PublicBooking() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  const conflict = useMemo(
-    () => Boolean(
-      date
-      && selectedMode
-      && (!durationDays && selectedMode.code === "OVERNIGHT"
-        ? false
-        : !isDateAvailableForMode(
-          date,
-          selectedMode,
-          occupied,
-          selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1,
-        )),
-    ),
-    [date, durationDays, occupied, selectedMode],
+  const conflict = Boolean(
+    date
+    && selectedMode
+    && (!durationDays && selectedMode.code === "OVERNIGHT"
+      ? false
+      : !isDateAvailableForMode(
+        date,
+        selectedMode,
+        occupied,
+        selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1,
+      )),
   );
 
   useEffect(() => {
@@ -570,7 +560,6 @@ export function PublicBooking() {
                 <select value={modeId} onChange={(event) => {
                   setModeId(event.target.value);
                   setDurationDays("");
-                  setDate("");
                   setError("");
                 }}>
                   {modes.map((mode) => <option value={mode.id} key={mode.id}>{modeOptionLabel(mode)}</option>)}

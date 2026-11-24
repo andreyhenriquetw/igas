@@ -13,6 +13,19 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const from = searchParams.get("from");
     const to = searchParams.get("to");
+    const kind = searchParams.get("kind");
+    const status = searchParams.get("status");
+    if (kind || status) {
+      if (from || to || kind !== "BOOKING" || status !== "PENDING") {
+        return validationError("Filtro de agendamentos inválido.");
+      }
+      const entries = await getPrisma().calendarEntry.findMany({
+        where: { kind: EntryKind.BOOKING, status: EntryStatus.PENDING },
+        include: { mode: true },
+        orderBy: { startsAt: "asc" },
+      });
+      return NextResponse.json({ entries: entries.map(serializeEntry) });
+    }
     if (!from || !to || !/^\d{4}-\d{2}-\d{2}$/.test(from) || !/^\d{4}-\d{2}-\d{2}$/.test(to)) {
       return validationError("Informe um período de consulta válido.");
     }

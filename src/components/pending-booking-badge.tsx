@@ -5,29 +5,56 @@ import { Bell } from "lucide-react";
 
 type Result = { count: number } | { error: true } | null;
 
+let cachedCount: { count: number; expiresAt: number } | null = null;
+let pendingCountRequest: Promise<number> | null = null;
+
+function fetchPendingCount(force = false) {
+  if (!force && cachedCount && cachedCount.expiresAt > Date.now()) {
+    return Promise.resolve(cachedCount.count);
+  }
+  if (pendingCountRequest) return pendingCountRequest;
+
+  pendingCountRequest = (async () => {
+    try {
+      const response = await fetch("/api/entries/pending-count", { cache: "no-store" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error ?? "Não foi possível consultar os agendamentos pendentes.");
+      if (typeof data.count !== "number" || !Number.isInteger(data.count) || data.count < 0) {
+        throw new Error("A resposta do contador de agendamentos é inválida.");
+      }
+      cachedCount = { count: data.count, expiresAt: Date.now() + 55_000 };
+      return data.count;
+    } catch (error) {
+      cachedCount = null;
+      throw error;
+    }
+  })().finally(() => {
+    pendingCountRequest = null;
+  });
+
+  return pendingCountRequest;
+}
+
 export function PendingBookingBadge() {
   const [result, setResult] = useState<Result>(null);
 
   useEffect(() => {
     let active = true;
-    const refresh = async () => {
+    const refresh = async (force = false) => {
       try {
-        const response = await fetch("/api/entries/pending-count", { cache: "no-store" });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error ?? "Não foi possível consultar os agendamentos pendentes.");
-        if (typeof data.count !== "number" || !Number.isInteger(data.count) || data.count < 0) {
-          throw new Error("A resposta do contador de agendamentos é inválida.");
-        }
-        if (active) setResult({ count: data.count });
+        const count = await fetchPendingCount(force);
+        if (active) setResult({ count });
       } catch {
         if (active) setResult({ error: true });
       }
     };
 
     void refresh();
-    const interval = window.setInterval(() => void refresh(), 6000);
-    const onVisibilityChange = () => {
+    const interval = window.setInterval(() => {
       if (document.visibilityState === "visible") void refresh();
+    }, 60_000);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") void refresh(true);
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
     return () => {
