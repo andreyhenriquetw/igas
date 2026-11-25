@@ -739,7 +739,7 @@ export function PublicBooking() {
         <form onSubmit={submitReview}>
           <div className="client-review-row">
             <label>Nome completo *
-              <input value={reviewName} onChange={(event) => setReviewName(uppercaseName(event.target.value))} placeholder="Seu nome" />
+              <input value={reviewName} onChange={(event) => setReviewName(event.target.value)} placeholder="Seu nome" />
             </label>
             <label>E-mail *
               <input type="email" value={reviewContact} onChange={(event) => setReviewContact(event.target.value)} placeholder="voce@exemplo.com" />

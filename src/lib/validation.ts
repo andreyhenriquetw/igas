@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { capitalizeNameInitials } from "./name";
 
 const localDateTime = z
   .string()
@@ -89,7 +90,7 @@ export const contractInputSchema = z.object({
 });
 
 export const contractAcceptanceInputSchema = z.object({
-  name: z.string().trim().min(1, "Informe seu nome completo.").max(120).transform((value) => value.toLocaleUpperCase("pt-BR")),
+  name: z.string().trim().min(1, "Informe seu nome completo.").max(120).transform(capitalizeNameInitials),
   cpf: z
     .string()
     .trim()

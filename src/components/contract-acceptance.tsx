@@ -2,7 +2,7 @@
 
 import { CheckCircle2, CircleAlert, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
-import { uppercaseName } from "@/lib/name";
+import { capitalizeNameInitials } from "@/lib/name";
 import { formatLocalDateTime } from "@/lib/time";
 
 type AcceptanceData = {
@@ -113,7 +113,7 @@ export function ContractAcceptance({ token }: { token: string }) {
               <form className="acceptance-form" onSubmit={submitAcceptance}>
                 <label className="field">
                   <span>Seu nome completo</span>
-                  <input value={name} onChange={(event) => setName(uppercaseName(event.target.value))} autoComplete="name" maxLength={120} required />
+                  <input value={name} onChange={(event) => setName(capitalizeNameInitials(event.target.value))} autoComplete="name" maxLength={120} required />
                 </label>
                 <label className="field">
                   <span>CPF do locatário</span>
