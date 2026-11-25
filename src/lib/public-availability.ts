@@ -20,7 +20,7 @@ export function isDateAvailableForMode(
 ): boolean {
   const startsAt = localDateTimeToUtc(`${date}T${mode.defaultStart}`);
   const durationMinutes = mode.code === "OVERNIGHT"
-    ? getOvernightDurationMinutes(durationDays)
+    ? getOvernightDurationMinutes(durationDays, mode.defaultStart)
     : mode.durationMinutes;
   const endsAt = new Date(startsAt.getTime() + durationMinutes * 60_000);
   return !occupied.some((period) => {

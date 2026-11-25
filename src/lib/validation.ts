@@ -16,7 +16,7 @@ const period = {
 const bookingSchema = z
   .object({
     kind: z.literal("BOOKING"),
-    guestName: z.string().trim().min(1, "Informe o nome do hóspede.").max(120),
+    guestName: z.string().trim().min(1, "Informe o nome do hóspede.").max(120).transform((value) => value.toLocaleUpperCase("pt-BR")),
     guestContact: z.string().trim().max(160).optional().default(""),
     guestCpf: z
       .string()
@@ -52,7 +52,7 @@ export const entryInputSchema = z.discriminatedUnion("kind", [
 ]);
 
 export const accountInputSchema = z.object({
-  name: z.string().trim().min(1, "Informe o nome.").max(120),
+  name: z.string().trim().min(1, "Informe o nome.").max(120).transform((value) => value.toLocaleUpperCase("pt-BR")),
   email: z.string().trim().email("Informe um e-mail válido.").max(254),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres.").max(128),
 });
@@ -89,7 +89,7 @@ export const contractInputSchema = z.object({
 });
 
 export const contractAcceptanceInputSchema = z.object({
-  name: z.string().trim().min(1, "Informe seu nome completo.").max(120),
+  name: z.string().trim().min(1, "Informe seu nome completo.").max(120).transform((value) => value.toLocaleUpperCase("pt-BR")),
   cpf: z
     .string()
     .trim()

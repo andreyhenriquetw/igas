@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { CircleAlert } from "lucide-react";
 import { changeKey, monthBounds } from "@/lib/calendar-dates";
-import { getOvernightDurationMinutes } from "@/lib/overnight";
+import { uppercaseName } from "@/lib/name";
+import {
+  getOvernightDurationMinutes,
+  getOvernightPrice,
+  OVERNIGHT_CHECKOUT_TIME,
+  OVERNIGHT_MAX_NIGHTS,
+} from "@/lib/overnight";
 import { isDateAvailableForMode } from "@/lib/public-availability";
 
 type Mode = {
@@ -39,24 +46,29 @@ function formatDateKey(value: string) {
   return `${value.slice(8, 10)}/${value.slice(5, 7)}/${value.slice(0, 4)}`;
 }
 
+function formatShortDateKey(value: string) {
+  return `${value.slice(8, 10)}/${value.slice(5, 7)}`;
+}
+
 function addDays(value: string, days: number) {
   const date = new Date(`${value}T12:00:00.000Z`);
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 }
 
-function scheduleLabel(mode: Mode, date: string, durationNights = 1) {
+function scheduleLabel(mode: Mode, date: string, durationNights = 1, shortDate = false) {
+  const formatDate = shortDate ? formatShortDateKey : formatDateKey;
   if (mode.code === "OVERNIGHT") {
     const [hour, minute] = mode.defaultStart.split(":").map(Number);
-    const endMinutes = hour * 60 + minute + getOvernightDurationMinutes(durationNights);
+    const endMinutes = hour * 60 + minute + getOvernightDurationMinutes(durationNights, mode.defaultStart);
     const endTimeForStay = `${String(Math.floor(endMinutes / 60) % 24).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
     if (!date) return `Entrada às ${mode.defaultStart} · saída às ${endTimeForStay} após ${durationNights} ${durationNights === 1 ? "noite" : "noites"}`;
-    return `${mode.defaultStart} de ${formatDateKey(date)} – ${endTimeForStay} de ${formatDateKey(addDays(date, durationNights))}`;
+    return `${mode.defaultStart} de ${formatDate(date)} – ${endTimeForStay} de ${formatDate(addDays(date, durationNights))}`;
   }
   const endTime = endTimeForMode(mode);
   if (mode.durationMinutes < 1440) return `${mode.defaultStart} – ${endTime}`;
   if (!date) return `${mode.defaultStart} – ${endTime} do dia seguinte`;
-  return `${mode.defaultStart} de ${formatDateKey(date)} – ${endTime} de ${formatDateKey(addDays(date, 1))}`;
+  return `${mode.defaultStart} de ${formatDate(date)} – ${endTime} de ${formatDate(addDays(date, 1))}`;
 }
 
 const money = new Intl.NumberFormat("pt-BR", {
@@ -66,7 +78,7 @@ const money = new Intl.NumberFormat("pt-BR", {
 
 function modePrice(mode: Mode, durationDays = 1) {
   if (mode.code === "OVERNIGHT") {
-    return money.format(750 * durationDays);
+    return money.format(getOvernightPrice(durationDays));
   }
   return mode.price !== null
     ? money.format(mode.price)
@@ -223,11 +235,19 @@ export function PublicBooking() {
   }).format(new Date(`${calendarMonth}T12:00:00.000Z`));
 
   const selectedMode = useMemo(() => modes.find((mode) => mode.id === modeId), [modes, modeId]);
+  const exampleStartDate = date || today;
+  const exampleNights = durationDays ? Number(durationDays) : 3;
+  const overnightTotal = durationDays ? getOvernightPrice(Number(durationDays)) : null;
+  const overnightDeposit = overnightTotal === null ? null : money.format(overnightTotal / 2);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selectedMode || !date) {
       setError("Selecione uma modalidade e uma data.");
+      return;
+    }
+    if (!guestAddress.trim()) {
+      setError("Informe seu endereço.");
       return;
     }
     if (conflict) {
@@ -284,13 +304,13 @@ export function PublicBooking() {
           ? [
             `📅 Check-in: ${formatDateKey(date)} às ${selectedMode.defaultStart}`,
             `🌙 Noites reservadas (${overnightDays}): ${Array.from({ length: overnightDays }, (_, index) => formatDateKey(addDays(date, index))).join(", ")}`,
-            `🕒 Check-out: ${formatDateKey(addDays(date, overnightDays))} às ${selectedMode.defaultStart}`,
+            `🕒 Check-out: ${formatDateKey(addDays(date, overnightDays))} até ${OVERNIGHT_CHECKOUT_TIME}`,
           ]
           : [
             `📅 Data: ${formatDateKey(date)}`,
             `🕒 Horário: ${scheduleLabel(selectedMode, date, overnightDays)}`,
           ]),
-        ...(guestAddress.trim() ? [`📍 Endereço: ${guestAddress.trim()}`] : []),
+        `📍 Endereço: ${guestAddress.trim()}`,
         ...(notes.trim() ? [`📝 Observações: ${notes.trim()}`] : []),
         "",
         "Aguardo a confirmação. Obrigado(a)! 😊",
@@ -488,36 +508,54 @@ export function PublicBooking() {
                   const selectedStayDays = selectedMode?.code === "OVERNIGHT" && durationDays
                     ? Number(durationDays)
                     : 1;
+                  const isSelectedCheckoutDay = Boolean(
+                    date
+                    && selectedMode?.code === "OVERNIGHT"
+                    && durationDays
+                    && day === addDays(date, selectedStayDays),
+                  );
                   const isSelectedStayDay = Boolean(
                     date
                     && day >= date
-                    && day <= addDays(date, selectedStayDays - 1),
+                    && day <= addDays(
+                      date,
+                      selectedMode?.code === "OVERNIGHT" && durationDays
+                        ? selectedStayDays
+                        : selectedStayDays - 1,
+                    ),
                   );
                   const available = Boolean(selectedMode
                     && !availabilityLoading
                     && !availabilityError
                     && isDateAvailableForMode(day, selectedMode, occupied, 1));
+                  const availableForStart = available && !isSelectedCheckoutDay;
                   const dayClasses = [
                     "client-calendar-day",
                     !inMonth && "outside-month",
                     day === today && "today",
                     day === date && "selected",
                     isSelectedStayDay && day !== date && "selected-stay",
+                    isSelectedCheckoutDay && "unavailable",
+                    isSelectedCheckoutDay && "checkout-unavailable",
                     past && "past",
                     inMonth && !past && !availabilityLoading && !availabilityError
-                      ? available ? "available" : "unavailable"
+                      ? availableForStart ? "available" : "unavailable"
                       : "",
                   ].filter(Boolean).join(" ");
-                  const status = past ? "Data passada" : availabilityLoading
+                  const status = isSelectedCheckoutDay
+                    ? `Data de check-out até ${OVERNIGHT_CHECKOUT_TIME}; indisponível para novo agendamento`
+                    : past ? "Data passada" : availabilityLoading
                     ? "Consultando disponibilidade"
                     : availabilityError ? "Disponibilidade indisponível"
-                      : available ? "Disponível" : "Indisponível";
+                      : availableForStart ? "Disponível" : "Indisponível";
                   const selectedStayOrdinal = date
                     ? Math.floor(
                       (new Date(`${day}T12:00:00.000Z`).getTime() - new Date(`${date}T12:00:00.000Z`).getTime()) / 86_400_000,
                     ) + 1
                     : 0;
-                  const dayLabel = isSelectedStayDay && day !== date
+                  const dayLabel = isSelectedCheckoutDay
+                    ? status
+                    : isSelectedStayDay && day !== date
                     ? `${selectedMode?.code === "OVERNIGHT" ? `Noite ${selectedStayOrdinal} incluída` : `Dia ${selectedStayOrdinal} do período selecionado`}; ${status.toLocaleLowerCase("pt-BR")} como data de início`
                     : status;
                   return (
@@ -525,7 +563,7 @@ export function PublicBooking() {
                       className={dayClasses}
                       type="button"
                       key={day}
-                      disabled={!inMonth || past || availabilityLoading || Boolean(availabilityError) || !available}
+                      disabled={!inMonth || past || availabilityLoading || Boolean(availabilityError) || !availableForStart}
                       aria-label={`${day.slice(-2)}: ${dayLabel}`}
                       aria-pressed={day === date}
                       onClick={() => setDate(day)}
@@ -570,9 +608,9 @@ export function PublicBooking() {
                   <label>Quantas noites deseja ficar
                     <select value={durationDays} onChange={(event) => setDurationDays(event.target.value)} required>
                       <option value="">Selecione a quantidade de noites</option>
-                      {Array.from({ length: 7 }, (_, index) => index + 1).map((days) => (
+                      {Array.from({ length: OVERNIGHT_MAX_NIGHTS }, (_, index) => index + 1).map((days) => (
                         <option key={days} value={days}>
-                          {days} {days === 1 ? "noite" : "noites"} — {money.format(750 * days)}
+                          {days} {days === 1 ? "noite" : "noites"} — {money.format(getOvernightPrice(days))}
                         </option>
                       ))}
                     </select>
@@ -580,9 +618,7 @@ export function PublicBooking() {
                   <div className="client-overnight-example" role="note">
                     <strong>Exemplo de pernoite</strong>
                     <span>
-                      {durationDays && date
-                        ? `${durationDays} ${Number(durationDays) === 1 ? "noite" : "noites"}: entrada em ${formatDateKey(date)}; noites incluídas: ${Array.from({ length: Number(durationDays) }, (_, index) => formatDateKey(addDays(date, index))).join(", ")}; saída em ${formatDateKey(addDays(date, Number(durationDays)))} às ${selectedMode.defaultStart}.`
-                        : "Cada noite corresponde a uma data dormida. Exemplo: 3 noites a partir do dia 24 incluem as noites de 24, 25 e 26, com saída às 08:00 do dia 27."}
+                      Cada noite corresponde a uma data dormida. Exemplo: {exampleNights} {exampleNights === 1 ? "noite" : "noites"} a partir de {formatShortDateKey(exampleStartDate)} incluem as noites de {Array.from({ length: exampleNights }, (_, index) => formatShortDateKey(addDays(exampleStartDate, index))).join(", ")}, com saída em {formatShortDateKey(addDays(exampleStartDate, exampleNights))} até {OVERNIGHT_CHECKOUT_TIME}.
                     </span>
                   </div>
                 </>
@@ -602,14 +638,14 @@ export function PublicBooking() {
                   value={selectedMode?.code === "OVERNIGHT" && !durationDays
                     ? "Selecione quantas noites deseja ficar"
                     : selectedMode
-                      ? scheduleLabel(selectedMode, date, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1)
+                      ? scheduleLabel(selectedMode, date, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1, true)
                       : "Carregando..."}
                   readOnly
                 />
               </label>
               <div className="client-date-selection">
                 <span>Data escolhida</span>
-                <strong>{date ? `${date.slice(8, 10)}/${date.slice(5, 7)}/${date.slice(0, 4)}` : "Selecione uma data disponível"}</strong>
+                <strong>{date ? formatDateKey(date) : "Selecione uma data disponível"}</strong>
               </div>
               <button
                 type="button"
@@ -661,7 +697,7 @@ export function PublicBooking() {
                 <p><strong>{mode.code === "OVERNIGHT" ? `A partir de ${modePrice(mode, 2)}` : modePrice(mode)}</strong></p>
                 <div className="client-tags">
                   <span>À partir das {mode.defaultStart}</span>
-                  <span>{mode.code === "OVERNIGHT" ? `Saída às ${mode.defaultStart} após a última noite` : mode.durationMinutes >= 1440 ? `Saída às ${endTimeForMode(mode)} do dia seguinte` : `Saída às ${endTimeForMode(mode)}`}</span>
+                  <span>{mode.code === "OVERNIGHT" ? `Saída até ${OVERNIGHT_CHECKOUT_TIME} após a última noite` : mode.durationMinutes >= 1440 ? `Saída às ${endTimeForMode(mode)} do dia seguinte` : `Saída às ${endTimeForMode(mode)}`}</span>
                 </div>
                 <button type="button" onClick={() => { setModeId(mode.id); document.getElementById("reserva")?.scrollIntoView({ behavior: "smooth" }); }}>Reservar</button>
               </div>
@@ -703,7 +739,7 @@ export function PublicBooking() {
         <form onSubmit={submitReview}>
           <div className="client-review-row">
             <label>Nome completo *
-              <input value={reviewName} onChange={(event) => setReviewName(event.target.value)} placeholder="Seu nome" />
+              <input value={reviewName} onChange={(event) => setReviewName(uppercaseName(event.target.value))} placeholder="Seu nome" />
             </label>
             <label>E-mail *
               <input type="email" value={reviewContact} onChange={(event) => setReviewContact(event.target.value)} placeholder="voce@exemplo.com" />
@@ -758,11 +794,11 @@ export function PublicBooking() {
               {" — "}
               {selectedMode?.code === "OVERNIGHT" && !durationDays
                 ? "Selecione quantas noites deseja ficar"
-                : selectedMode ? scheduleLabel(selectedMode, date, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1) : ""}
+                : selectedMode ? scheduleLabel(selectedMode, date, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1, true) : ""}
             </p>
             <form className="public-booking-form" onSubmit={submit}>
               <label>Nome completo
-                <input value={guestName} onChange={(event) => setGuestName(event.target.value)} required maxLength={120} />
+                <input value={guestName} onChange={(event) => setGuestName(uppercaseName(event.target.value))} required maxLength={120} />
               </label>
               <label>Telefone ou WhatsApp
                 <input value={guestContact} onChange={(event) => setGuestContact(event.target.value)} required maxLength={160} />
@@ -782,18 +818,25 @@ export function PublicBooking() {
                 </label>
               </div>
               {selectedMode?.code === "OVERNIGHT" && (
-                <label>Quantas noites deseja ficar
-                  <select value={durationDays} onChange={(event) => setDurationDays(event.target.value)} required>
-                    <option value="">Selecione a quantidade de noites</option>
-                    {Array.from({ length: 7 }, (_, index) => index + 1).map((days) => (
-                      <option key={days} value={days}>{days} {days === 1 ? "noite" : "noites"} — {money.format(750 * days)}</option>
-                    ))}
-                  </select>
-                </label>
+                <>
+                  <label>Quantas noites deseja ficar
+                    <select value={durationDays} onChange={(event) => setDurationDays(event.target.value)} required>
+                      <option value="">Selecione a quantidade de noites</option>
+                      {Array.from({ length: OVERNIGHT_MAX_NIGHTS }, (_, index) => index + 1).map((days) => (
+                        <option key={days} value={days}>{days} {days === 1 ? "noite" : "noites"} — {money.format(getOvernightPrice(days))}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <p className="client-deposit-note">
+                    {overnightTotal !== null && overnightDeposit
+                      ? <><CircleAlert className="client-deposit-alert" size={15} aria-hidden="true" /><span>Sinal (<strong>50%</strong>) para confirmar: <strong>{overnightDeposit}</strong>. Restante no check-in: <strong>{overnightDeposit}</strong>.</span></>
+                      : <><CircleAlert className="client-deposit-alert" size={15} aria-hidden="true" /><span>Sinal de <strong>50%</strong> para confirmar; restante no check-in.</span></>}
+                  </p>
+                </>
               )}
               <div className="client-date-selection">
                 <span>Data escolhida</span>
-                <strong>{date ? `${date.slice(8, 10)}/${date.slice(5, 7)}/${date.slice(0, 4)}` : "Selecione uma data no calendário"}</strong>
+                <strong>{date ? formatDateKey(date) : "Selecione uma data no calendário"}</strong>
               </div>
               {conflict && date && selectedMode && (
                 <p className="client-form-error" role="alert">
@@ -802,14 +845,14 @@ export function PublicBooking() {
                     : "Esta data não está disponível para a modalidade escolhida. Escolha outra data."}
                 </p>
               )}
-              <label>Endereço <span>(opcional)</span>
-                <input value={guestAddress} onChange={(event) => setGuestAddress(event.target.value)} maxLength={300} />
+              <label>Endereço
+                <input value={guestAddress} onChange={(event) => setGuestAddress(event.target.value)} required maxLength={300} />
               </label>
               <label>Observações <span>(opcional)</span>
                 <textarea value={notes} onChange={(event) => setNotes(event.target.value)} maxLength={2000} rows={3} />
               </label>
               {error && <p className="client-form-error">{error}</p>}
-              <button className="client-modal-submit" type="submit" disabled={loading || modes.length === 0 || !date || conflict || (selectedMode?.code === "OVERNIGHT" && !durationDays)}>
+              <button className="client-modal-submit" type="submit" disabled={loading || modes.length === 0 || !date || !guestAddress.trim() || conflict || (selectedMode?.code === "OVERNIGHT" && !durationDays)}>
                 {loading ? "Enviando..." : "Confirmar reserva ✦"}
               </button>
             </form>

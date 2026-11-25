@@ -585,6 +585,12 @@
   color: var(--client-gold-light);
   text-decoration: none;
 }
+.client-calendar-day.selected-stay.checkout-unavailable {
+  border-color: rgba(232, 190, 114, 0.7);
+  background: rgba(196, 150, 58, 0.24);
+  color: var(--client-gold-light);
+  text-decoration: none;
+}
 .client-calendar-day.selected.available:hover:not(:disabled),
 .client-calendar-day.selected:active,
 .client-calendar-day.selected:focus-visible {
@@ -686,6 +692,28 @@
 .client-date-selection strong {
   color: var(--client-text);
   font-size: 15px;
+}
+.client-deposit-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 4px 0;
+  color: var(--client-muted);
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 400;
+}
+.client-deposit-note span {
+  display: block;
+}
+.client-deposit-note strong {
+  color: var(--client-text);
+  font-weight: 700;
+}
+.client-deposit-note .client-deposit-alert {
+  flex: 0 0 15px;
+  margin-top: 1px;
+  color: #e5484d;
 }
 .client-overnight-example {
   display: grid;

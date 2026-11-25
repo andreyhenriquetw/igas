@@ -93,7 +93,7 @@ export function TeamSettings({ initialUsers }: { initialUsers: TeamMemberDto[] }
       <section className="settings-card">
         <div className="section-title"><UserPlus size={19} /><div><h2>Cadastrar pessoa</h2><p>Crie um acesso individual para Dendes ou outra pessoa.</p></div></div>
         <form className="form-stack" onSubmit={submit}>
-          <label className="field"><span>Nome</span><input name="name" autoComplete="name" maxLength={120} required /></label>
+          <label className="field"><span>Nome</span><input name="name" autoComplete="name" maxLength={120} onInput={(event) => { event.currentTarget.value = event.currentTarget.value.toLocaleUpperCase("pt-BR"); }} required /></label>
           <label className="field"><span>E-mail</span><input name="email" type="email" autoComplete="email" maxLength={254} required /></label>
           <label className="field"><span>Senha inicial</span><input name="password" type="password" autoComplete="new-password" minLength={6} maxLength={128} required /><small>Use pelo menos 6 caracteres e compartilhe por um canal seguro.</small></label>
           {error && <p className="form-error" role="alert">{error}</p>}

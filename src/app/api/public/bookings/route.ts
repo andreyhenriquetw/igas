@@ -3,11 +3,11 @@ import { z } from "zod";
 import { EntryKind, EntryStatus, UserRole } from "@/generated/prisma/client";
 import { activeStatuses } from "@/lib/entries";
 import { getPrisma } from "@/lib/prisma";
-import { getOvernightDurationMinutes } from "@/lib/overnight";
+import { getOvernightDurationMinutes, OVERNIGHT_MAX_NIGHTS } from "@/lib/overnight";
 import { localDateTimeToUtc, localDayBoundaryToUtc } from "@/lib/time";
 
 const publicBookingSchema = z.object({
-  guestName: z.string().trim().min(1, "Informe seu nome.").max(120),
+  guestName: z.string().trim().min(1, "Informe seu nome.").max(120).transform((value) => value.toLocaleUpperCase("pt-BR")),
   guestContact: z.string().trim().min(1, "Informe seu telefone ou contato.").max(160),
   guestCpf: z
     .string()
@@ -17,10 +17,10 @@ const publicBookingSchema = z.object({
     .refine((value) => /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(value), {
       message: "Informe o CPF no formato 000.000.000-00.",
     }),
-  guestAddress: z.string().trim().max(300).default(""),
+  guestAddress: z.string().trim().min(1, "Informe seu endereço.").max(300),
   modeId: z.string().min(1, "Selecione uma modalidade."),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Informe uma data válida."),
-  durationDays: z.coerce.number().int().min(1, "Para pernoite, selecione pelo menos 1 noite.").max(7).optional(),
+  durationDays: z.coerce.number().int().min(1, "Para pernoite, selecione pelo menos 1 noite.").max(OVERNIGHT_MAX_NIGHTS).optional(),
   notes: z.string().trim().max(2000).default(""),
 });
 
@@ -128,7 +128,7 @@ export async function POST(request: Request) {
     );
   }
   const durationMinutes = mode.code === "OVERNIGHT"
-    ? getOvernightDurationMinutes(durationDays)
+    ? getOvernightDurationMinutes(durationDays, mode.defaultStart)
     : mode.durationMinutes;
   const endsAt = new Date(startsAt.getTime() + durationMinutes * 60_000);
   if (startsAt <= new Date()) {
