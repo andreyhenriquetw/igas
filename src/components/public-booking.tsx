@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { CircleAlert } from "lucide-react";
+import Image from "next/image";
 import { changeKey, monthBounds } from "@/lib/calendar-dates";
 import { uppercaseName } from "@/lib/name";
 import {
@@ -26,6 +27,14 @@ const WHATSAPP_CONTACTS = [
   { name: "Denis", phone: "5593991606969", displayPhone: "(93) 99160-6969" },
   { name: "Junior", phone: "5593991293000", displayPhone: "(93) 99129-3000" },
 ];
+
+function WhatsAppIcon({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.496.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.213-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.693.626.711.226 1.358.194 1.87.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.438-9.886 9.893-9.886 2.64.001 5.12 1.03 6.99 2.902a9.825 9.825 0 0 1 2.895 6.994c-.003 5.45-4.44 9.886-9.895 9.886m8.413-18.3A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c-.001 2.096.547 4.142 1.588 5.946L.057 24l6.304-1.654a11.882 11.882 0 0 0 5.684 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.398Z" />
+    </svg>
+  );
+}
 
 function formatCpf(value: string) {
   return value
@@ -121,7 +130,6 @@ export function PublicBooking() {
   const [success, setSuccess] = useState("");
   const [rating, setRating] = useState(0);
   const [reviewName, setReviewName] = useState("");
-  const [reviewContact, setReviewContact] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [reviewType, setReviewType] = useState("Lazer");
 
@@ -355,14 +363,13 @@ export function PublicBooking() {
 
   function submitReview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (reviewName.trim().length < 2 || !/^[^@]+@[^@]+\.[^@]+$/.test(reviewContact) || reviewText.trim().length < 10 || rating === 0) {
-      setError("Preencha os dados, o comentário e selecione uma avaliação.");
+    if (reviewName.trim().length < 2 || reviewText.trim().length < 10 || rating === 0) {
+      setError("Informe seu nome, escreva um comentário de pelo menos 10 caracteres e selecione uma avaliação.");
       return;
     }
     const reviews = JSON.parse(localStorage.getItem("igas-reviews") || "[]");
     reviews.push({
       name: reviewName.trim(),
-      contact: reviewContact.trim(),
       rating,
       comment: reviewText.trim(),
       stayType: reviewType,
@@ -370,12 +377,18 @@ export function PublicBooking() {
     });
     localStorage.setItem("igas-reviews", JSON.stringify(reviews));
     setReviewName("");
-    setReviewContact("");
     setReviewText("");
     setReviewType("Lazer");
     setRating(0);
     setSuccess("Avaliação enviada. Obrigado por compartilhar sua experiência!");
     setSuccessOpen(true);
+  }
+
+  function shareIgasOnWhatsApp() {
+    const pageUrl = "https://igas-puce.vercel.app/cliente";
+    const message = `Conheça o Balneário Ígas! Confira os dias disponíveis e os preços e planeje sua visita: ${pageUrl}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   }
 
   function returnToClientHome() {
@@ -682,6 +695,34 @@ export function PublicBooking() {
         </div>
       </section>
 
+      <section className="client-section client-beach" id="ponta-de-pedra">
+        <div className="client-section-heading centered">
+          <span>Passeio próximo ao Ígas</span>
+          <h2>Praia de Ponta de Pedra</h2>
+          <i />
+          <p className="client-beach-description">
+            A poucos quilômetros do Balneário Ígas, a Praia de Ponta de Pedra é uma ótima opção para completar o passeio, apreciar a paisagem e aproveitar momentos de descanso à beira d’água.
+          </p>
+        </div>
+        <div className="client-beach-grid">
+          {[
+            ["/ponta1.jpeg", "Praia com guarda-sóis e mesas à beira d’água"],
+            ["/ponta2.jpg", "Palhoça e cadeiras junto à água"],
+            ["/ponta3.jpg", "Cadeiras e palhoças na praia"],
+            ["/ponta4.jpg", "Visitantes descansando sob palhoças"],
+            ["/ponta10.jpg", "Vista da praia e dos quiosques junto à água"],
+            ["/ponta6.jpg", "Vista aérea da praia e dos guarda-sóis"],
+            ["/ponta7.jpg", "Cadeiras e palhoças à beira d’água"],
+            ["/ponta9.jpg", "Fim de tarde na Praia de Ponta de Pedra"],
+          ].map(([src, label]) => (
+            <figure key={src}>
+              <Image src={src} alt={label} fill sizes="(max-width: 768px) 50vw, 33vw" />
+              <figcaption>{label}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
       <section className="client-section client-modes" id="modalidades">
         <div className="client-section-heading centered">
           <span>Opções de lazer</span>
@@ -714,14 +755,16 @@ export function PublicBooking() {
         </div>
         <div className="client-amenity-grid">
           {[
-            ["🏊", "Área aquática"],
+            ["🏊", "Área de banho no igarapé"],
             ["🌿", "Contato com a natureza"],
             ["🛏️", "Dois quartos Climatizado"],
             ["📺🔊", "TV e som"],
             ["🎱", "Bilhar"],
             ["🏕️", "Ambiente para pernoite"],
+            ["🏠", "Ambiente privativo"],
+            ["🚗", "Estacionamento"],
             ["🔥", "Churrasqueira e Cozinha"],
-            ["🪢", "Espaço para atar 10 redes"],
+            ["🪢", "Espaço para atar 16 redes"],
             ["📶", "Internet WIFI"],
             ["🍺", "Cervejeira"],
           ].map(([icon, label]) => (
@@ -737,24 +780,14 @@ export function PublicBooking() {
           <i />
         </div>
         <form onSubmit={submitReview}>
-          <div className="client-review-row">
-            <label>Nome completo *
-              <input value={reviewName} onChange={(event) => setReviewName(event.target.value)} placeholder="Seu nome" />
-            </label>
-            <label>E-mail *
-              <input type="email" value={reviewContact} onChange={(event) => setReviewContact(event.target.value)} placeholder="voce@exemplo.com" />
-            </label>
-          </div>
-          <div className="client-review-row">
-            <label>Idade
-              <input type="number" min="1" max="120" placeholder="30" />
-            </label>
-            <label>Tipo de visita
-              <select value={reviewType} onChange={(event) => setReviewType(event.target.value)}>
-                <option>Lazer</option><option>Família</option><option>Confraternização</option><option>Feriado</option>
-              </select>
-            </label>
-          </div>
+          <label>Nome completo *
+            <input value={reviewName} onChange={(event) => setReviewName(event.target.value)} placeholder="Seu nome" />
+          </label>
+          <label>Tipo de visita
+            <select value={reviewType} onChange={(event) => setReviewType(event.target.value)}>
+              <option>Lazer</option><option>Família</option><option>Confraternização</option><option>Feriado</option>
+            </select>
+          </label>
           <label>Avaliação geral *
             <div className="client-stars">
               {[1, 2, 3, 4, 5].map((value) => (
@@ -768,6 +801,12 @@ export function PublicBooking() {
           {error && <p className="client-form-error">{error}</p>}
           <button type="submit" disabled>Enviar avaliação ✦</button>
         </form>
+        <div className="client-review-share">
+          <button type="button" onClick={shareIgasOnWhatsApp}>
+            <WhatsAppIcon size={20} />
+            Compartilhar o app com amigos
+          </button>
+        </div>
       </section>
 
       <footer className="client-footer">
@@ -877,11 +916,7 @@ export function PublicBooking() {
                   rel="noreferrer"
                   onClick={returnToClientHome}
                 >
-                  <span className="client-whatsapp-contact-icon" aria-hidden="true">
-                    <svg width="23" height="23" viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.496.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.213-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.693.626.711.226 1.358.194 1.87.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.438-9.886 9.893-9.886 2.64.001 5.12 1.03 6.99 2.902a9.825 9.825 0 0 1 2.895 6.994c-.003 5.45-4.44 9.886-9.895 9.886m8.413-18.3A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c-.001 2.096.547 4.142 1.588 5.946L.057 24l6.304-1.654a11.882 11.882 0 0 0 5.684 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.398Z" />
-                    </svg>
-                  </span>
+                  <span className="client-whatsapp-contact-icon" aria-hidden="true"><WhatsAppIcon size={23} /></span>
                   <span className="client-whatsapp-contact-info">
                     <strong>{contact.name}</strong>
                     <small>{contact.displayPhone}</small>
