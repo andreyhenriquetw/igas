@@ -27,6 +27,58 @@ const WHATSAPP_CONTACTS = [
   { name: "Denis", phone: "5593991606969", displayPhone: "(93) 99160-6969" },
   { name: "Junior", phone: "5593991293000", displayPhone: "(93) 99129-3000" },
 ];
+const TESTIMONIALS = [
+  {
+    name: "Camila Oliveira",
+    image: "/igas01.png",
+    avatarScale: 1.5,
+    avatarOffsetX: 0,
+    avatarOffsetY: 20,
+    visitType: "Pernoite",
+    rating: 5,
+    text: "Um ambiente agradável para descansar e curtir momentos especiais.",
+  },
+  {
+    name: "Eduardo Martins",
+    image: "/igas02.png",
+    avatarScale: 2.2,
+    avatarOffsetX: 0,
+    avatarOffsetY: 15,
+    visitType: "Lazer",
+    rating: 5,
+    text: "Um lugar para curtir a natureza e aproveitar bons momentos com a família, amei, super indico.",
+  },
+  {
+    name: "Marcelo Ferreira",
+    image: "/igas03.png",
+    avatarScale: 2.2,
+    avatarOffsetX: 0,
+    avatarOffsetY: 12,
+    visitType: "Lazer",
+    rating: 5,
+    text: "A estrutura do balneário convida a relaxar e aproveitar o dia, lugar maravilhoso.",
+  },
+  {
+    name: "Juliana Costa",
+    image: "/igas04.png",
+    avatarScale: 1.5,
+    avatarOffsetX: 0,
+    avatarOffsetY: 15,
+    visitType: "Família",
+    rating: 5,
+    text: "Um ambiente agradável para descansar e curtir momentos especiais.",
+  },
+  {
+    name: "Ricardo Almeida",
+    image: "/igas05.png",
+    avatarScale: 1.4,
+    avatarOffsetX: 0,
+    avatarOffsetY: 18,
+    visitType: "Pernoite",
+    rating: 5,
+    text: "Natureza e lazer em um só lugar para aproveitar com quem a gente gosta, parabens aos Donos.",
+  },
+];
 
 function WhatsAppIcon({ size }: { size: number }) {
   return (
@@ -706,15 +758,15 @@ export function PublicBooking() {
         </div>
         <div className="client-beach-grid">
           {[
-            ["/ponta1.jpeg", "Praia com guarda-sóis e mesas à beira d’água"],
-            ["/ponta3.jpg", "Cadeiras e palhoças na praia"],
-            ["/ponta4.jpg", "Visitantes descansando sob palhoças"],
-            ["/ponta10.jpg", "Vista da praia e dos quiosques junto à água"],
-            ["/ponta6.jpg", "Vista aérea da praia e dos guarda-sóis"],
-            ["/ponta7.jpg", "Cadeiras e palhoças à beira d’água"],
-            ["/ponta9.jpg", "Fim de tarde na Praia de Ponta de Pedra"],
-          ].map(([src, label]) => (
-            <figure key={src}>
+            ["/ponta1.jpeg", "Praia com guarda-sóis e mesas à beira d’água", "beach-one"],
+            ["/ponta3.jpg", "Cadeiras e palhoças na praia", "beach-two"],
+            ["/ponta4.jpg", "Visitantes descansando sob palhoças", "beach-three"],
+            ["/ponta10.jpg", "Vista da praia e dos quiosques junto à água", "beach-four"],
+            ["/ponta6.jpg", "Vista aérea da praia e dos guarda-sóis", "beach-five"],
+            ["/ponta7.jpg", "Cadeiras e palhoças à beira d’água", "beach-six"],
+            ["/ponta9.jpg", "Fim de tarde na Praia de Ponta de Pedra", "beach-seven"],
+          ].map(([src, label, className]) => (
+            <figure className={className} key={src}>
               <Image src={src} alt={label} fill sizes="(max-width: 768px) calc(100vw - 32px), 1140px" />
               <figcaption>{label}</figcaption>
             </figure>
@@ -777,6 +829,44 @@ export function PublicBooking() {
           <span>Avaliações</span>
           <h2>Compartilhe sua experiência</h2>
           <i />
+        </div>
+        <div className="client-testimonials">
+          <p className="client-testimonials-note">
+            Experiências compartilhadas por visitantes do Balneário Ígas.
+          </p>
+          <div className="client-testimonials-viewport" role="region" aria-label="Depoimentos de clientes">
+            <div className="client-testimonials-track">
+              {[0, 1].map((group) => (
+                <div className="client-testimonial-group" key={group} aria-hidden={group === 1}>
+                  {TESTIMONIALS.map((testimonial, index) => (
+                    <article className="client-testimonial-card" key={`${group}-${index}`}>
+                      <div className="client-testimonial-author">
+                        <span className="client-testimonial-avatar">
+                          <Image
+                            src={testimonial.image}
+                            alt={`Foto de ${testimonial.name}`}
+                            fill
+                            sizes="42px"
+                            style={{ transform: `scale(${testimonial.avatarScale}) translate(${testimonial.avatarOffsetX}%, ${testimonial.avatarOffsetY}%)` }}
+                          />
+                        </span>
+                        <div>
+                          <strong>{testimonial.name}</strong>
+                          <small>{testimonial.visitType}</small>
+                        </div>
+                      </div>
+                      <div className="client-testimonial-stars" aria-label={`${testimonial.rating} de 5 estrelas`}>
+                        {Array.from({ length: 5 }, (_, star) => (
+                          <span className={star < testimonial.rating ? "active" : ""} key={star} aria-hidden="true">★</span>
+                        ))}
+                      </div>
+                      <p>“{testimonial.text}”</p>
+                    </article>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
         <form onSubmit={submitReview}>
           <label>Nome completo *
