@@ -707,7 +707,6 @@ export function PublicBooking() {
         <div className="client-beach-grid">
           {[
             ["/ponta1.jpeg", "Praia com guarda-sóis e mesas à beira d’água"],
-            ["/ponta2.jpg", "Palhoça e cadeiras junto à água"],
             ["/ponta3.jpg", "Cadeiras e palhoças na praia"],
             ["/ponta4.jpg", "Visitantes descansando sob palhoças"],
             ["/ponta10.jpg", "Vista da praia e dos quiosques junto à água"],
@@ -716,7 +715,7 @@ export function PublicBooking() {
             ["/ponta9.jpg", "Fim de tarde na Praia de Ponta de Pedra"],
           ].map(([src, label]) => (
             <figure key={src}>
-              <Image src={src} alt={label} fill sizes="(max-width: 768px) 50vw, 33vw" />
+              <Image src={src} alt={label} fill sizes="(max-width: 768px) calc(100vw - 32px), 1140px" />
               <figcaption>{label}</figcaption>
             </figure>
           ))}
@@ -735,7 +734,7 @@ export function PublicBooking() {
               <img src={mode.name.toLowerCase().includes("pernoite") ? "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=700&q=80" : "/IMG_8870.JPG.jpeg"} alt={mode.name} />
               <div>
                 <h3>{mode.name}</h3>
-                <p><strong>{mode.code === "OVERNIGHT" ? `A partir de ${modePrice(mode, 2)}` : modePrice(mode)}</strong></p>
+                <p><strong>{mode.code === "OVERNIGHT" ? `A partir de ${modePrice(mode)}` : modePrice(mode)}</strong></p>
                 <div className="client-tags">
                   <span>À partir das {mode.defaultStart}</span>
                   <span>{mode.code === "OVERNIGHT" ? `Saída até ${OVERNIGHT_CHECKOUT_TIME} após a última noite` : mode.durationMinutes >= 1440 ? `Saída às ${endTimeForMode(mode)} do dia seguinte` : `Saída às ${endTimeForMode(mode)}`}</span>
