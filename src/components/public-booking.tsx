@@ -36,7 +36,7 @@ const TESTIMONIALS = [
     avatarOffsetY: 20,
     visitType: "Pernoite",
     rating: 5,
-    text: "Um ambiente agradável para descansar e curtir momentos especiais.",
+    text: "Amei o lugar, amei a cachoeira, fica bem pertinho da Praia Ponta de Pedras.",
   },
   {
     name: "Eduardo Martins",
@@ -46,7 +46,7 @@ const TESTIMONIALS = [
     avatarOffsetY: 15,
     visitType: "Lazer",
     rating: 5,
-    text: "Um lugar para curtir a natureza e aproveitar bons momentos com a família, amei, super indico.",
+    text: "Tenho certeza que nao vao se arrepender, levei minha esposa e meus filhos, eles amaram, e vai ter outra em.",
   },
   {
     name: "Marcelo Ferreira",
@@ -66,7 +66,7 @@ const TESTIMONIALS = [
     avatarOffsetY: 15,
     visitType: "Família",
     rating: 5,
-    text: "Um ambiente agradável para descansar e curtir momentos especiais.",
+    text: "Ambiente maravilhoso, gostei muito. super indico.",
   },
   {
     name: "Ricardo Almeida",
