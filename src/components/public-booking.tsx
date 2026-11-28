@@ -939,7 +939,13 @@ export function PublicBooking() {
         <div className="client-mode-grid">
           {modes.map((mode) => (
             <article key={mode.id}>
-              <img src={mode.name.toLowerCase().includes("pernoite") ? "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=700&q=80" : "/IMG_8870.JPG.jpeg"} alt={mode.name} />
+              <Image
+                src={mode.code === "OVERNIGHT" ? "/igasdayusepernoite.jpeg" : "/igasdayusee.jpeg"}
+                alt={mode.name}
+                width={1280}
+                height={720}
+                sizes="(max-width: 768px) calc(100vw - 32px), 560px"
+              />
               <div>
                 <h3>{mode.name}</h3>
                 <p><strong>{mode.code === "OVERNIGHT" ? `A partir de ${modePrice(mode)}` : modePrice(mode)}</strong></p>

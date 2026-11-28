@@ -1028,9 +1028,11 @@
   background: var(--client-secondary);
 }
 .client-mode-grid article img {
+  display: block;
   width: 100%;
-  height: 215px;
-  object-fit: cover;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
 }
 .client-mode-grid article > div {
   display: flex;
