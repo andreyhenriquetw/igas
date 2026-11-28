@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { CircleAlert } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleAlert, X } from "lucide-react";
 import Image from "next/image";
 import { changeKey, monthBounds } from "@/lib/calendar-dates";
 import { uppercaseName } from "@/lib/name";
@@ -79,6 +79,15 @@ const TESTIMONIALS = [
     text: "Natureza e lazer em um só lugar para aproveitar com quem a gente gosta, parabens aos Donos.",
   },
 ];
+const GALLERY_ITEMS = [
+  { type: "video", src: "/igasvi.mp4", poster: "/igasimg3.jpg", label: "Igarapé", className: "gallery-one" },
+  { type: "video", src: "/igasvi2.mp4", poster: "/igasimg2.jpg", label: "Lazer no Ígas", className: "gallery-two" },
+  { type: "video", src: "/igasvi3.mp4", poster: "/igasimg1.jpg", label: "Ambiente do balneário", className: "gallery-three" },
+  { type: "image", src: "/igasimg1.jpg", label: "Quarto", className: "gallery-four" },
+  { type: "image", src: "/igasimg2.jpg", label: "Mesa de sinuca", className: "gallery-five" },
+  { type: "image", src: "/igasimg3.jpg", label: "TV", className: "gallery-six" },
+  { type: "image", src: "/igasimg4.jpg", label: "Banheiro", className: "gallery-seven" },
+] as const;
 
 function WhatsAppIcon({ size }: { size: number }) {
   return (
@@ -166,6 +175,9 @@ export function PublicBooking() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState<number | null>(null);
+  const isGalleryOpen = activeGalleryIndex !== null;
+  const galleryCloseButtonRef = useRef<HTMLButtonElement>(null);
   const [whatsappMessage, setWhatsappMessage] = useState("");
   const [availability, setAvailability] = useState<{
     period: string;
@@ -188,6 +200,38 @@ export function PublicBooking() {
   useEffect(() => {
     document.documentElement.dataset.theme = "dark";
   }, []);
+
+  useEffect(() => {
+    if (!isGalleryOpen) return;
+
+    const previousFocus = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    document.body.style.overflow = "hidden";
+    galleryCloseButtonRef.current?.focus();
+
+    return () => {
+      document.body.style.overflow = "";
+      previousFocus?.focus();
+    };
+  }, [isGalleryOpen]);
+
+  useEffect(() => {
+    if (activeGalleryIndex === null) return;
+
+    const handleGalleryKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActiveGalleryIndex(null);
+      if (event.key === "ArrowLeft") {
+        setActiveGalleryIndex((index) => index === null ? null : (index - 1 + GALLERY_ITEMS.length) % GALLERY_ITEMS.length);
+      }
+      if (event.key === "ArrowRight") {
+        setActiveGalleryIndex((index) => index === null ? null : (index + 1) % GALLERY_ITEMS.length);
+      }
+    };
+
+    window.addEventListener("keydown", handleGalleryKeyDown);
+    return () => window.removeEventListener("keydown", handleGalleryKeyDown);
+  }, [activeGalleryIndex]);
 
   useEffect(() => {
     const video = heroVideoRef.current;
@@ -223,6 +267,39 @@ export function PublicBooking() {
       video.pause();
     };
   }, []);
+
+  useEffect(() => {
+    const videos = document.querySelectorAll<HTMLVideoElement>(".client-gallery-preview");
+    if (isGalleryOpen) {
+      videos.forEach((video) => video.pause());
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!(entry.target instanceof HTMLVideoElement)) return;
+          const video = entry.target;
+
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            void video.play().catch((error: unknown) => {
+              if (error instanceof DOMException && ["AbortError", "NotAllowedError"].includes(error.name)) return;
+              console.error("Could not autoplay gallery video.", error);
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.5 },
+    );
+
+    videos.forEach((video) => observer.observe(video));
+    return () => {
+      observer.disconnect();
+      videos.forEach((video) => video.pause());
+    };
+  }, [isGalleryOpen]);
 
   useEffect(() => {
     const heroBackground = heroBackgroundRef.current;
@@ -731,21 +808,78 @@ export function PublicBooking() {
           <i />
         </div>
         <div className="client-gallery-grid">
-          {[
-            ["/IMG_8870.JPG.jpeg", "Áreas do balneário", "gallery-one"],
-            ["https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=700&q=80", "Piscina", "gallery-two"],
-            ["https://images.unsplash.com/photo-1540541338287-41700207dee6?w=700&q=80", "Descanso", "gallery-three"],
-            ["https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=80", "Encontros", "gallery-four"],
-            ["https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=700&q=80", "Conforto", "gallery-five"],
-            ["https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?w=700&q=80", "Natureza", "gallery-six"],
-          ].map(([src, label, className]) => (
-            <figure className={className} key={label}>
-              <img src={src} alt={label} loading="lazy" />
-              <figcaption>{label}</figcaption>
+          {GALLERY_ITEMS.map((item, index) => (
+            <figure className={item.className} key={item.src + item.className}>
+              <button
+                className="client-gallery-item"
+                type="button"
+                onClick={() => setActiveGalleryIndex(index)}
+                aria-label={`Abrir ${item.type === "video" ? "vídeo" : "imagem"}: ${item.label}`}
+              >
+                {item.type === "video" ? (
+                  <video className="client-gallery-preview" src={item.src} poster={item.poster} muted loop playsInline preload="none" />
+                ) : (
+                  <Image
+                    src={item.src}
+                    alt={item.label}
+                    fill
+                    sizes="(max-width: 540px) calc(100vw - 32px), (max-width: 768px) 50vw, 475px"
+                    loading="lazy"
+                  />
+                )}
+                <figcaption>{item.label}</figcaption>
+              </button>
             </figure>
           ))}
         </div>
       </section>
+
+      {activeGalleryIndex !== null && (() => {
+        const item = GALLERY_ITEMS[activeGalleryIndex];
+        const showPrevious = () => setActiveGalleryIndex((activeGalleryIndex - 1 + GALLERY_ITEMS.length) % GALLERY_ITEMS.length);
+        const showNext = () => setActiveGalleryIndex((activeGalleryIndex + 1) % GALLERY_ITEMS.length);
+
+        return (
+          <div
+            className="client-gallery-lightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="gallery-lightbox-label"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) setActiveGalleryIndex(null);
+            }}
+          >
+            <div className="client-gallery-lightbox-content">
+              <div className="client-gallery-lightbox-header">
+                <p id="gallery-lightbox-label">{item.label}</p>
+                <span>{activeGalleryIndex + 1} / {GALLERY_ITEMS.length}</span>
+                <button
+                  className="client-gallery-lightbox-close"
+                  type="button"
+                  onClick={() => setActiveGalleryIndex(null)}
+                  aria-label="Fechar visualização"
+                  ref={galleryCloseButtonRef}
+                >
+                  <X size={22} />
+                </button>
+              </div>
+              <div className="client-gallery-lightbox-media">
+                <button className="client-gallery-lightbox-nav" type="button" onClick={showPrevious} aria-label="Mídia anterior">
+                  <ChevronLeft size={28} />
+                </button>
+                {item.type === "video" ? (
+                  <video key={item.src} src={item.src} poster={item.poster} autoPlay muted loop playsInline aria-label={item.label} />
+                ) : (
+                  <Image src={item.src} alt={item.label} width={960} height={1280} sizes="(max-width: 768px) 85vw, 1000px" />
+                )}
+                <button className="client-gallery-lightbox-nav" type="button" onClick={showNext} aria-label="Próxima mídia">
+                  <ChevronRight size={28} />
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       <section className="client-section client-beach" id="ponta-de-pedra">
         <div className="client-section-heading centered">
