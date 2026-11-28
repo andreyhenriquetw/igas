@@ -36,7 +36,7 @@ const TESTIMONIALS = [
     avatarOffsetY: 20,
     visitType: "Pernoite",
     rating: 5,
-    text: "Amei o lugar, amei a cachoeira, fica bem pertinho da Praia Ponta de Pedras.",
+    text: "Amei o lugar, amei a cachoeira, fica bem pertinho da Praia Ponta de Pedra.",
   },
   {
     name: "Eduardo Martins",
@@ -80,19 +80,57 @@ const TESTIMONIALS = [
   },
 ];
 const GALLERY_ITEMS = [
-  { type: "video", src: "/igasvi.mp4", label: "Igarapé", className: "gallery-one" },
-  { type: "video", src: "/igasvi2.mp4", label: "Lazer no Ígas", className: "gallery-two" },
-  { type: "video", src: "/igasvi3.mp4", label: "Ambiente do balneário", className: "gallery-three" },
-  { type: "image", src: "/igasimg1.jpg", label: "Quarto", className: "gallery-four" },
-  { type: "image", src: "/igasimg2.jpg", label: "Mesa de sinuca", className: "gallery-five" },
-  { type: "image", src: "/igasimg3.jpg", label: "TV", className: "gallery-six" },
-  { type: "image", src: "/igasimg4.jpg", label: "Banheiro", className: "gallery-seven" },
+  {
+    type: "video",
+    src: "/igasvi.mp4",
+    label: "Igarapé",
+    className: "gallery-one",
+  },
+  {
+    type: "video",
+    src: "/igasvi2.mp4",
+    label: "Lazer no Ígas",
+    className: "gallery-two",
+  },
+  {
+    type: "video",
+    src: "/igasvi3.mp4",
+    label: "Ambiente do balneário",
+    className: "gallery-three",
+  },
+  {
+    type: "image",
+    src: "/igasimg1.jpg",
+    label: "Quarto",
+    className: "gallery-four",
+  },
+  {
+    type: "image",
+    src: "/igasimg2.jpg",
+    label: "Mesa de sinuca",
+    className: "gallery-five",
+  },
+  {
+    type: "image",
+    src: "/igasimg3.jpg",
+    label: "TV",
+    className: "gallery-six",
+  },
+  {
+    type: "image",
+    src: "/igasimg4.jpg",
+    label: "Banheiro",
+    className: "gallery-seven",
+  },
 ] as const;
 
 function WhatsAppIcon({ size }: { size: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.496.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.213-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.693.626.711.226 1.358.194 1.87.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.438-9.886 9.893-9.886 2.64.001 5.12 1.03 6.99 2.902a9.825 9.825 0 0 1 2.895 6.994c-.003 5.45-4.44 9.886-9.895 9.886m8.413-18.3A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c-.001 2.096.547 4.142 1.588 5.946L.057 24l6.304-1.654a11.882 11.882 0 0 0 5.684 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.398Z" />
+      <path
+        fill="currentColor"
+        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.198-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.496.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.213-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.693.626.711.226 1.358.194 1.87.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.123-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.002-5.45 4.438-9.886 9.893-9.886 2.64.001 5.12 1.03 6.99 2.902a9.825 9.825 0 0 1 2.895 6.994c-.003 5.45-4.44 9.886-9.895 9.886m8.413-18.3A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c-.001 2.096.547 4.142 1.588 5.946L.057 24l6.304-1.654a11.882 11.882 0 0 0 5.684 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.398Z"
+      />
     </svg>
   );
 }
@@ -126,13 +164,22 @@ function addDays(value: string, days: number) {
   return date.toISOString().slice(0, 10);
 }
 
-function scheduleLabel(mode: Mode, date: string, durationNights = 1, shortDate = false) {
+function scheduleLabel(
+  mode: Mode,
+  date: string,
+  durationNights = 1,
+  shortDate = false,
+) {
   const formatDate = shortDate ? formatShortDateKey : formatDateKey;
   if (mode.code === "OVERNIGHT") {
     const [hour, minute] = mode.defaultStart.split(":").map(Number);
-    const endMinutes = hour * 60 + minute + getOvernightDurationMinutes(durationNights, mode.defaultStart);
+    const endMinutes =
+      hour * 60 +
+      minute +
+      getOvernightDurationMinutes(durationNights, mode.defaultStart);
     const endTimeForStay = `${String(Math.floor(endMinutes / 60) % 24).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
-    if (!date) return `Entrada às ${mode.defaultStart} · saída às ${endTimeForStay} após ${durationNights} ${durationNights === 1 ? "noite" : "noites"}`;
+    if (!date)
+      return `Entrada às ${mode.defaultStart} · saída às ${endTimeForStay} após ${durationNights} ${durationNights === 1 ? "noite" : "noites"}`;
     return `${mode.defaultStart} de ${formatDate(date)} – ${endTimeForStay} de ${formatDate(addDays(date, durationNights))}`;
   }
   const endTime = endTimeForMode(mode);
@@ -152,7 +199,9 @@ function modePrice(mode: Mode, durationDays = 1) {
   }
   return mode.price !== null
     ? money.format(mode.price)
-    : mode.durationMinutes >= 1440 ? "R$ 1.500" : "R$ 800";
+    : mode.durationMinutes >= 1440
+      ? "R$ 1.500"
+      : "R$ 800";
 }
 
 function modeOptionLabel(mode: Mode) {
@@ -162,7 +211,9 @@ function modeOptionLabel(mode: Mode) {
 }
 
 export function PublicBooking() {
-  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" })
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+  })
     .format(new Date())
     .replaceAll("/", "-");
   const heroBackgroundRef = useRef<HTMLDivElement>(null);
@@ -175,7 +226,9 @@ export function PublicBooking() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
-  const [activeGalleryIndex, setActiveGalleryIndex] = useState<number | null>(null);
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState<number | null>(
+    null,
+  );
   const isGalleryOpen = activeGalleryIndex !== null;
   const galleryCloseButtonRef = useRef<HTMLButtonElement>(null);
   const [whatsappMessage, setWhatsappMessage] = useState("");
@@ -204,9 +257,10 @@ export function PublicBooking() {
   useEffect(() => {
     if (!isGalleryOpen) return;
 
-    const previousFocus = document.activeElement instanceof HTMLElement
-      ? document.activeElement
-      : null;
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     document.body.style.overflow = "hidden";
     galleryCloseButtonRef.current?.focus();
 
@@ -222,10 +276,16 @@ export function PublicBooking() {
     const handleGalleryKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setActiveGalleryIndex(null);
       if (event.key === "ArrowLeft") {
-        setActiveGalleryIndex((index) => index === null ? null : (index - 1 + GALLERY_ITEMS.length) % GALLERY_ITEMS.length);
+        setActiveGalleryIndex((index) =>
+          index === null
+            ? null
+            : (index - 1 + GALLERY_ITEMS.length) % GALLERY_ITEMS.length,
+        );
       }
       if (event.key === "ArrowRight") {
-        setActiveGalleryIndex((index) => index === null ? null : (index + 1) % GALLERY_ITEMS.length);
+        setActiveGalleryIndex((index) =>
+          index === null ? null : (index + 1) % GALLERY_ITEMS.length,
+        );
       }
     };
 
@@ -269,7 +329,9 @@ export function PublicBooking() {
   }, []);
 
   useEffect(() => {
-    const videos = document.querySelectorAll<HTMLVideoElement>(".client-gallery-preview");
+    const videos = document.querySelectorAll<HTMLVideoElement>(
+      ".client-gallery-preview",
+    );
     if (isGalleryOpen) {
       videos.forEach((video) => video.pause());
       return;
@@ -283,7 +345,11 @@ export function PublicBooking() {
 
           if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
             void video.play().catch((error: unknown) => {
-              if (error instanceof DOMException && ["AbortError", "NotAllowedError"].includes(error.name)) return;
+              if (
+                error instanceof DOMException &&
+                ["AbortError", "NotAllowedError"].includes(error.name)
+              )
+                return;
               console.error("Could not autoplay gallery video.", error);
             });
           } else {
@@ -323,21 +389,32 @@ export function PublicBooking() {
   }, []);
 
   const calendarBounds = monthBounds(calendarMonth);
-  const calendarEnd = changeKey(calendarBounds.gridStart, calendarBounds.gridDays);
+  const calendarEnd = changeKey(
+    calendarBounds.gridStart,
+    calendarBounds.gridDays,
+  );
   const availabilityPeriod = `${calendarBounds.gridStart}:${calendarEnd}`;
 
   useEffect(() => {
     let active = true;
-    const query = new URLSearchParams({ from: calendarBounds.gridStart, to: calendarEnd });
+    const query = new URLSearchParams({
+      from: calendarBounds.gridStart,
+      to: calendarEnd,
+    });
     void fetch(`/api/public/bookings?${query}`, { cache: "no-store" })
       .then(async (response) => {
         const result = await response.json();
-        if (!response.ok) throw new Error(result.error ?? "Não foi possível consultar a disponibilidade.");
+        if (!response.ok)
+          throw new Error(
+            result.error ?? "Não foi possível consultar a disponibilidade.",
+          );
         if (active) {
           setModes(result.modes);
-          setModeId((current) => result.modes.some((mode: Mode) => mode.id === current)
-            ? current
-            : result.modes[0]?.id ?? "");
+          setModeId((current) =>
+            result.modes.some((mode: Mode) => mode.id === current)
+              ? current
+              : (result.modes[0]?.id ?? ""),
+          );
           setAvailability({
             period: availabilityPeriod,
             occupied: result.occupied ?? [],
@@ -350,9 +427,10 @@ export function PublicBooking() {
           setAvailability({
             period: availabilityPeriod,
             occupied: [],
-            error: availabilityError instanceof Error
-              ? availabilityError.message
-              : "Não foi possível consultar a disponibilidade.",
+            error:
+              availabilityError instanceof Error
+                ? availabilityError.message
+                : "Não foi possível consultar a disponibilidade.",
           });
         }
       });
@@ -361,21 +439,34 @@ export function PublicBooking() {
     };
   }, [availabilityPeriod, calendarBounds.gridStart, calendarEnd]);
 
-  const calendarDays = Array.from({ length: calendarBounds.gridDays }, (_, index) => changeKey(calendarBounds.gridStart, index));
-  const occupied = availability.period === availabilityPeriod ? availability.occupied : NO_OCCUPIED_PERIODS;
+  const calendarDays = Array.from(
+    { length: calendarBounds.gridDays },
+    (_, index) => changeKey(calendarBounds.gridStart, index),
+  );
+  const occupied =
+    availability.period === availabilityPeriod
+      ? availability.occupied
+      : NO_OCCUPIED_PERIODS;
   const availabilityLoading = availability.period !== availabilityPeriod;
-  const availabilityError = availability.period === availabilityPeriod ? availability.error : "";
+  const availabilityError =
+    availability.period === availabilityPeriod ? availability.error : "";
   const calendarMonthLabel = new Intl.DateTimeFormat("pt-BR", {
     month: "long",
     year: "numeric",
     timeZone: "UTC",
   }).format(new Date(`${calendarMonth}T12:00:00.000Z`));
 
-  const selectedMode = useMemo(() => modes.find((mode) => mode.id === modeId), [modes, modeId]);
+  const selectedMode = useMemo(
+    () => modes.find((mode) => mode.id === modeId),
+    [modes, modeId],
+  );
   const exampleStartDate = date || today;
   const exampleNights = durationDays ? Number(durationDays) : 3;
-  const overnightTotal = durationDays ? getOvernightPrice(Number(durationDays)) : null;
-  const overnightDeposit = overnightTotal === null ? null : money.format(overnightTotal / 2);
+  const overnightTotal = durationDays
+    ? getOvernightPrice(Number(durationDays))
+    : null;
+  const overnightDeposit =
+    overnightTotal === null ? null : money.format(overnightTotal / 2);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -388,9 +479,11 @@ export function PublicBooking() {
       return;
     }
     if (conflict) {
-      setError(selectedMode.code === "OVERNIGHT"
-        ? `Não há disponibilidade para ${durationDays} ${Number(durationDays) === 1 ? "noite" : "noites"} a partir de ${formatDateKey(date)}. Escolha outra data ou reduza a quantidade de noites.`
-        : "Esta data não está disponível para a modalidade escolhida. Escolha outra data.");
+      setError(
+        selectedMode.code === "OVERNIGHT"
+          ? `Não há disponibilidade para ${durationDays} ${Number(durationDays) === 1 ? "noite" : "noites"} a partir de ${formatDateKey(date)}. Escolha outra data ou reduza a quantidade de noites.`
+          : "Esta data não está disponível para a modalidade escolhida. Escolha outra data.",
+      );
       return;
     }
     if (availabilityLoading) {
@@ -421,12 +514,16 @@ export function PublicBooking() {
           guestAddress,
           modeId,
           date,
-          durationDays: selectedMode.code === "OVERNIGHT" ? overnightDays : undefined,
+          durationDays:
+            selectedMode.code === "OVERNIGHT" ? overnightDays : undefined,
           notes,
         }),
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error ?? "Não foi possível solicitar o agendamento.");
+      if (!response.ok)
+        throw new Error(
+          result.error ?? "Não foi possível solicitar o agendamento.",
+        );
       const message = [
         "Olá, ÍGAS! 👋",
         "",
@@ -439,14 +536,14 @@ export function PublicBooking() {
         `💰 Valor: ${modePrice(selectedMode, overnightDays)}`,
         ...(selectedMode.code === "OVERNIGHT"
           ? [
-            `📅 Check-in: ${formatDateKey(date)} às ${selectedMode.defaultStart}`,
-            `🌙 Noites reservadas (${overnightDays}): ${Array.from({ length: overnightDays }, (_, index) => formatDateKey(addDays(date, index))).join(", ")}`,
-            `🕒 Check-out: ${formatDateKey(addDays(date, overnightDays))} até ${OVERNIGHT_CHECKOUT_TIME}`,
-          ]
+              `📅 Check-in: ${formatDateKey(date)} às ${selectedMode.defaultStart}`,
+              `🌙 Noites reservadas (${overnightDays}): ${Array.from({ length: overnightDays }, (_, index) => formatDateKey(addDays(date, index))).join(", ")}`,
+              `🕒 Check-out: ${formatDateKey(addDays(date, overnightDays))} até ${OVERNIGHT_CHECKOUT_TIME}`,
+            ]
           : [
-            `📅 Data: ${formatDateKey(date)}`,
-            `🕒 Horário: ${scheduleLabel(selectedMode, date, overnightDays)}`,
-          ]),
+              `📅 Data: ${formatDateKey(date)}`,
+              `🕒 Horário: ${scheduleLabel(selectedMode, date, overnightDays)}`,
+            ]),
         `📍 Endereço: ${guestAddress.trim()}`,
         ...(notes.trim() ? [`📝 Observações: ${notes.trim()}`] : []),
         "",
@@ -462,22 +559,35 @@ export function PublicBooking() {
       setGuestAddress("");
       setNotes("");
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Não foi possível solicitar o agendamento.");
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Não foi possível solicitar o agendamento.",
+      );
     } finally {
       setLoading(false);
     }
   }
 
   function toggleTheme() {
-    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    const next =
+      document.documentElement.dataset.theme === "light" ? "dark" : "light";
     document.documentElement.dataset.theme = next;
   }
 
   function openBooking() {
     setError("");
     setSuccess("");
-    if (!date || !selectedMode || availabilityLoading || availabilityError || !isDateAvailableForMode(date, selectedMode, occupied)) {
-      document.getElementById("reserva")?.scrollIntoView({ behavior: "smooth" });
+    if (
+      !date ||
+      !selectedMode ||
+      availabilityLoading ||
+      availabilityError ||
+      !isDateAvailableForMode(date, selectedMode, occupied)
+    ) {
+      document
+        .getElementById("reserva")
+        ?.scrollIntoView({ behavior: "smooth" });
       return;
     }
     setBookingOpen(true);
@@ -492,8 +602,14 @@ export function PublicBooking() {
 
   function submitReview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (reviewName.trim().length < 2 || reviewText.trim().length < 10 || rating === 0) {
-      setError("Informe seu nome, escreva um comentário de pelo menos 10 caracteres e selecione uma avaliação.");
+    if (
+      reviewName.trim().length < 2 ||
+      reviewText.trim().length < 10 ||
+      rating === 0
+    ) {
+      setError(
+        "Informe seu nome, escreva um comentário de pelo menos 10 caracteres e selecione uma avaliação.",
+      );
       return;
     }
     const reviews = JSON.parse(localStorage.getItem("igas-reviews") || "[]");
@@ -539,16 +655,16 @@ export function PublicBooking() {
   }
 
   const conflict = Boolean(
-    date
-    && selectedMode
-    && (!durationDays && selectedMode.code === "OVERNIGHT"
+    date &&
+    selectedMode &&
+    (!durationDays && selectedMode.code === "OVERNIGHT"
       ? false
       : !isDateAvailableForMode(
-        date,
-        selectedMode,
-        occupied,
-        selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1,
-      )),
+          date,
+          selectedMode,
+          occupied,
+          selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1,
+        )),
   );
 
   useEffect(() => {
@@ -558,7 +674,9 @@ export function PublicBooking() {
       setBookingOpen(false);
       setError("");
       setDate("");
-      document.getElementById("reserva")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document
+        .getElementById("reserva")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 10000);
 
     return () => window.clearTimeout(timer);
@@ -568,8 +686,16 @@ export function PublicBooking() {
     <main className="client-site">
       <nav className="client-nav">
         <div className="client-nav-inner">
-          <a className="client-brand" href="#inicio" aria-label="Balneário Ígas">
-            <img className="client-logo-dark" src="/igas-logo-transparent.png" alt="" />
+          <a
+            className="client-brand"
+            href="#inicio"
+            aria-label="Balneário Ígas"
+          >
+            <img
+              className="client-logo-dark"
+              src="/igas-logo-transparent.png"
+              alt=""
+            />
             <img className="client-logo-light" src="/igaspreto.png" alt="" />
           </a>
           <div className="client-nav-links">
@@ -579,12 +705,28 @@ export function PublicBooking() {
             <a href="#avaliacoes">Avaliações</a>
           </div>
           <div className="client-nav-actions">
-            <button className="client-theme" type="button" onClick={toggleTheme} aria-label="Alternar tema">
-              <span className="client-theme-sun" aria-hidden="true">☀️</span>
-              <span className="client-theme-moon" aria-hidden="true">🌙</span>
+            <button
+              className="client-theme"
+              type="button"
+              onClick={toggleTheme}
+              aria-label="Alternar tema"
+            >
+              <span className="client-theme-sun" aria-hidden="true">
+                ☀️
+              </span>
+              <span className="client-theme-moon" aria-hidden="true">
+                🌙
+              </span>
             </button>
-            <button className="client-menu" type="button" onClick={() => setMenuOpen(true)} aria-label="Abrir menu">
-              <span /><span /><span />
+            <button
+              className="client-menu"
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Abrir menu"
+            >
+              <span />
+              <span />
+              <span />
             </button>
           </div>
         </div>
@@ -592,11 +734,25 @@ export function PublicBooking() {
 
       {menuOpen && (
         <div className="client-mobile-menu">
-          <button type="button" onClick={() => setMenuOpen(false)} aria-label="Fechar menu">✕</button>
-          <a href="#inicio" onClick={() => setMenuOpen(false)}>Início</a>
-          <a href="#galeria" onClick={() => setMenuOpen(false)}>Galeria</a>
-          <a href="#modalidades" onClick={() => setMenuOpen(false)}>Modalidades</a>
-          <a href="#avaliacoes" onClick={() => setMenuOpen(false)}>Avaliações</a>
+          <button
+            type="button"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Fechar menu"
+          >
+            ✕
+          </button>
+          <a href="#inicio" onClick={() => setMenuOpen(false)}>
+            Início
+          </a>
+          <a href="#galeria" onClick={() => setMenuOpen(false)}>
+            Galeria
+          </a>
+          <a href="#modalidades" onClick={() => setMenuOpen(false)}>
+            Modalidades
+          </a>
+          <a href="#avaliacoes" onClick={() => setMenuOpen(false)}>
+            Avaliações
+          </a>
         </div>
       )}
 
@@ -614,19 +770,42 @@ export function PublicBooking() {
           aria-hidden="true"
         />
         <div className="client-hero-content">
-          <span className="client-hero-eyebrow">Seu lazer, nossa prioridade</span>
-          <h1>Momentos de lazer<br />com o <em>melhor conforto</em></h1>
-          <p>Descubra o Balneário Ígas e viva experiências inesquecíveis em um ambiente acolhedor e preparado para toda a família.</p>
+          <span className="client-hero-eyebrow">
+            Seu lazer, nossa prioridade
+          </span>
+          <h1>
+            Momentos de lazer
+            <br />
+            com o <em>melhor conforto</em>
+          </h1>
+          <p>
+            Descubra o Balneário Ígas e viva experiências inesquecíveis em um
+            ambiente acolhedor e preparado para toda a família.
+          </p>
           <div className="client-hero-actions">
-            <button type="button" onClick={openBooking}>Reservar agora</button>
+            <button type="button" onClick={openBooking}>
+              Reservar agora
+            </button>
             <a href="#galeria">Conhecer o balneário</a>
           </div>
         </div>
         <div className="client-hero-stats">
-          <div><strong>2</strong><span>Modalidades</span></div>
-          <div><strong>100%</strong><span>De lazer</span></div>
-          <div><strong>Todos</strong><span>Os públicos</span></div>
-          <div><strong>Ígas</strong><span>Balneário</span></div>
+          <div>
+            <strong>2</strong>
+            <span>Modalidades</span>
+          </div>
+          <div>
+            <strong>100%</strong>
+            <span>De lazer</span>
+          </div>
+          <div>
+            <strong>Todos</strong>
+            <span>Os públicos</span>
+          </div>
+          <div>
+            <strong>Ígas</strong>
+            <span>Balneário</span>
+          </div>
         </div>
       </section>
 
@@ -636,40 +815,60 @@ export function PublicBooking() {
           <div className="client-calendar-layout">
             <div className="client-calendar-panel">
               <div className="client-calendar-header">
-                <button type="button" onClick={() => navigateCalendar(-1)} aria-label="Mês anterior">‹</button>
+                <button
+                  type="button"
+                  onClick={() => navigateCalendar(-1)}
+                  aria-label="Mês anterior"
+                >
+                  ‹
+                </button>
                 <h3>{calendarMonthLabel}</h3>
-                <button type="button" onClick={() => navigateCalendar(1)} aria-label="Próximo mês">›</button>
+                <button
+                  type="button"
+                  onClick={() => navigateCalendar(1)}
+                  aria-label="Próximo mês"
+                >
+                  ›
+                </button>
               </div>
               <div className="client-calendar-weekdays" aria-hidden="true">
-                {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((weekday) => <span key={weekday}>{weekday}</span>)}
+                {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(
+                  (weekday) => (
+                    <span key={weekday}>{weekday}</span>
+                  ),
+                )}
               </div>
               <div className="client-calendar-days">
                 {calendarDays.map((day) => {
                   const inMonth = day.slice(0, 7) === calendarMonth.slice(0, 7);
                   const past = day < today;
-                  const selectedStayDays = selectedMode?.code === "OVERNIGHT" && durationDays
-                    ? Number(durationDays)
-                    : 1;
+                  const selectedStayDays =
+                    selectedMode?.code === "OVERNIGHT" && durationDays
+                      ? Number(durationDays)
+                      : 1;
                   const isSelectedCheckoutDay = Boolean(
-                    date
-                    && selectedMode?.code === "OVERNIGHT"
-                    && durationDays
-                    && day === addDays(date, selectedStayDays),
+                    date &&
+                    selectedMode?.code === "OVERNIGHT" &&
+                    durationDays &&
+                    day === addDays(date, selectedStayDays),
                   );
                   const isSelectedStayDay = Boolean(
-                    date
-                    && day >= date
-                    && day <= addDays(
-                      date,
-                      selectedMode?.code === "OVERNIGHT" && durationDays
-                        ? selectedStayDays
-                        : selectedStayDays - 1,
-                    ),
+                    date &&
+                    day >= date &&
+                    day <=
+                      addDays(
+                        date,
+                        selectedMode?.code === "OVERNIGHT" && durationDays
+                          ? selectedStayDays
+                          : selectedStayDays - 1,
+                      ),
                   );
-                  const available = Boolean(selectedMode
-                    && !availabilityLoading
-                    && !availabilityError
-                    && isDateAvailableForMode(day, selectedMode, occupied, 1));
+                  const available = Boolean(
+                    selectedMode &&
+                    !availabilityLoading &&
+                    !availabilityError &&
+                    isDateAvailableForMode(day, selectedMode, occupied, 1),
+                  );
                   const availableForStart = available && !isSelectedCheckoutDay;
                   const dayClasses = [
                     "client-calendar-day",
@@ -680,40 +879,64 @@ export function PublicBooking() {
                     isSelectedCheckoutDay && "unavailable",
                     isSelectedCheckoutDay && "checkout-unavailable",
                     past && "past",
-                    inMonth && !past && !availabilityLoading && !availabilityError
-                      ? availableForStart ? "available" : "unavailable"
+                    inMonth &&
+                    !past &&
+                    !availabilityLoading &&
+                    !availabilityError
+                      ? availableForStart
+                        ? "available"
+                        : "unavailable"
                       : "",
-                  ].filter(Boolean).join(" ");
+                  ]
+                    .filter(Boolean)
+                    .join(" ");
                   const status = isSelectedCheckoutDay
                     ? `Data de check-out até ${OVERNIGHT_CHECKOUT_TIME}; indisponível para novo agendamento`
-                    : past ? "Data passada" : availabilityLoading
-                    ? "Consultando disponibilidade"
-                    : availabilityError ? "Disponibilidade indisponível"
-                      : availableForStart ? "Disponível" : "Indisponível";
+                    : past
+                      ? "Data passada"
+                      : availabilityLoading
+                        ? "Consultando disponibilidade"
+                        : availabilityError
+                          ? "Disponibilidade indisponível"
+                          : availableForStart
+                            ? "Disponível"
+                            : "Indisponível";
                   const selectedStayOrdinal = date
                     ? Math.floor(
-                      (new Date(`${day}T12:00:00.000Z`).getTime() - new Date(`${date}T12:00:00.000Z`).getTime()) / 86_400_000,
-                    ) + 1
+                        (new Date(`${day}T12:00:00.000Z`).getTime() -
+                          new Date(`${date}T12:00:00.000Z`).getTime()) /
+                          86_400_000,
+                      ) + 1
                     : 0;
                   const dayLabel = isSelectedCheckoutDay
                     ? status
                     : isSelectedStayDay && day !== date
-                    ? `${selectedMode?.code === "OVERNIGHT" ? `Noite ${selectedStayOrdinal} incluída` : `Dia ${selectedStayOrdinal} do período selecionado`}; ${status.toLocaleLowerCase("pt-BR")} como data de início`
-                    : status;
+                      ? `${selectedMode?.code === "OVERNIGHT" ? `Noite ${selectedStayOrdinal} incluída` : `Dia ${selectedStayOrdinal} do período selecionado`}; ${status.toLocaleLowerCase("pt-BR")} como data de início`
+                      : status;
                   return (
                     <button
                       className={dayClasses}
                       type="button"
                       key={day}
-                      disabled={!inMonth || past || availabilityLoading || Boolean(availabilityError) || !availableForStart}
+                      disabled={
+                        !inMonth ||
+                        past ||
+                        availabilityLoading ||
+                        Boolean(availabilityError) ||
+                        !availableForStart
+                      }
                       aria-label={`${day.slice(-2)}: ${dayLabel}`}
                       aria-pressed={day === date}
                       onClick={() => setDate(day)}
-                      style={day === date ? {
-                        background: "#c4963a",
-                        borderColor: "#e8be72",
-                        color: "#fff",
-                      } : undefined}
+                      style={
+                        day === date
+                          ? {
+                              background: "#c4963a",
+                              borderColor: "#e8be72",
+                              color: "#fff",
+                            }
+                          : undefined
+                      }
                     >
                       {Number(day.slice(-2))}
                     </button>
@@ -721,12 +944,29 @@ export function PublicBooking() {
                 })}
               </div>
               <div className="client-calendar-legend">
-                <span><i className="legend-available" />Disponível</span>
-                <span><i className="legend-unavailable" />Indisponível</span>
-                <span><i className="legend-selected" />Período selecionado</span>
+                <span>
+                  <i className="legend-available" />
+                  Disponível
+                </span>
+                <span>
+                  <i className="legend-unavailable" />
+                  Indisponível
+                </span>
+                <span>
+                  <i className="legend-selected" />
+                  Período selecionado
+                </span>
               </div>
-              {availabilityLoading && <p className="client-calendar-message" role="status">Consultando datas...</p>}
-              {availabilityError && <p className="client-calendar-error" role="alert">{availabilityError}</p>}
+              {availabilityLoading && (
+                <p className="client-calendar-message" role="status">
+                  Consultando datas...
+                </p>
+              )}
+              {availabilityError && (
+                <p className="client-calendar-error" role="alert">
+                  {availabilityError}
+                </p>
+              )}
               {conflict && date && selectedMode && (
                 <p className="client-calendar-error" role="alert">
                   {selectedMode.code === "OVERNIGHT"
@@ -736,23 +976,40 @@ export function PublicBooking() {
               )}
             </div>
             <div className="client-booking-options">
-              <label>Modalidade
-                <select value={modeId} onChange={(event) => {
-                  setModeId(event.target.value);
-                  setDurationDays("");
-                  setError("");
-                }}>
-                  {modes.map((mode) => <option value={mode.id} key={mode.id}>{modeOptionLabel(mode)}</option>)}
+              <label>
+                Modalidade
+                <select
+                  value={modeId}
+                  onChange={(event) => {
+                    setModeId(event.target.value);
+                    setDurationDays("");
+                    setError("");
+                  }}
+                >
+                  {modes.map((mode) => (
+                    <option value={mode.id} key={mode.id}>
+                      {modeOptionLabel(mode)}
+                    </option>
+                  ))}
                 </select>
               </label>
               {selectedMode?.code === "OVERNIGHT" && (
                 <>
-                  <label>Quantas noites deseja ficar
-                    <select value={durationDays} onChange={(event) => setDurationDays(event.target.value)} required>
+                  <label>
+                    Quantas noites deseja ficar
+                    <select
+                      value={durationDays}
+                      onChange={(event) => setDurationDays(event.target.value)}
+                      required
+                    >
                       <option value="">Selecione a quantidade de noites</option>
-                      {Array.from({ length: OVERNIGHT_MAX_NIGHTS }, (_, index) => index + 1).map((days) => (
+                      {Array.from(
+                        { length: OVERNIGHT_MAX_NIGHTS },
+                        (_, index) => index + 1,
+                      ).map((days) => (
                         <option key={days} value={days}>
-                          {days} {days === 1 ? "noite" : "noites"} — {money.format(getOvernightPrice(days))}
+                          {days} {days === 1 ? "noite" : "noites"} —{" "}
+                          {money.format(getOvernightPrice(days))}
                         </option>
                       ))}
                     </select>
@@ -760,7 +1017,18 @@ export function PublicBooking() {
                   <div className="client-overnight-example" role="note">
                     <strong>Exemplo de pernoite</strong>
                     <span>
-                      Cada noite corresponde a uma data dormida. Exemplo: {exampleNights} {exampleNights === 1 ? "noite" : "noites"} a partir de {formatShortDateKey(exampleStartDate)} incluem as noites de {Array.from({ length: exampleNights }, (_, index) => formatShortDateKey(addDays(exampleStartDate, index))).join(", ")}, com saída em {formatShortDateKey(addDays(exampleStartDate, exampleNights))} até {OVERNIGHT_CHECKOUT_TIME}.
+                      Cada noite corresponde a uma data dormida. Exemplo:{" "}
+                      {exampleNights} {exampleNights === 1 ? "noite" : "noites"}{" "}
+                      a partir de {formatShortDateKey(exampleStartDate)} incluem
+                      as noites de{" "}
+                      {Array.from({ length: exampleNights }, (_, index) =>
+                        formatShortDateKey(addDays(exampleStartDate, index)),
+                      ).join(", ")}
+                      , com saída em{" "}
+                      {formatShortDateKey(
+                        addDays(exampleStartDate, exampleNights),
+                      )}{" "}
+                      até {OVERNIGHT_CHECKOUT_TIME}.
                     </span>
                   </div>
                 </>
@@ -771,28 +1039,52 @@ export function PublicBooking() {
                   {selectedMode?.code === "OVERNIGHT" && !durationDays
                     ? "Selecione quantas noites deseja ficar"
                     : selectedMode
-                      ? modePrice(selectedMode, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1)
+                      ? modePrice(
+                          selectedMode,
+                          selectedMode.code === "OVERNIGHT"
+                            ? Number(durationDays)
+                            : 1,
+                        )
                       : "Selecione uma modalidade"}
                 </strong>
               </div>
-              <label>Horário previsto
+              <label>
+                Horário previsto
                 <input
-                  value={selectedMode?.code === "OVERNIGHT" && !durationDays
-                    ? "Selecione quantas noites deseja ficar"
-                    : selectedMode
-                      ? scheduleLabel(selectedMode, date, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1, true)
-                      : "Carregando..."}
+                  value={
+                    selectedMode?.code === "OVERNIGHT" && !durationDays
+                      ? "Selecione quantas noites deseja ficar"
+                      : selectedMode
+                        ? scheduleLabel(
+                            selectedMode,
+                            date,
+                            selectedMode.code === "OVERNIGHT"
+                              ? Number(durationDays)
+                              : 1,
+                            true,
+                          )
+                        : "Carregando..."
+                  }
                   readOnly
                 />
               </label>
               <div className="client-date-selection">
                 <span>Data escolhida</span>
-                <strong>{date ? formatDateKey(date) : "Selecione uma data disponível"}</strong>
+                <strong>
+                  {date ? formatDateKey(date) : "Selecione uma data disponível"}
+                </strong>
               </div>
               <button
                 type="button"
                 onClick={openBooking}
-                disabled={!date || modes.length === 0 || conflict || availabilityLoading || Boolean(availabilityError) || (selectedMode?.code === "OVERNIGHT" && !durationDays)}
+                disabled={
+                  !date ||
+                  modes.length === 0 ||
+                  conflict ||
+                  availabilityLoading ||
+                  Boolean(availabilityError) ||
+                  (selectedMode?.code === "OVERNIGHT" && !durationDays)
+                }
               >
                 Solicitar reserva
               </button>
@@ -804,7 +1096,9 @@ export function PublicBooking() {
       <section className="client-section client-gallery" id="galeria">
         <div className="client-section-heading">
           <span>Passeio visual</span>
-          <h2>Um olhar pelo <em>Ígas</em></h2>
+          <h2>
+            Um olhar pelo <em>Ígas</em>
+          </h2>
           <i />
         </div>
         <div className="client-gallery-grid">
@@ -844,64 +1138,91 @@ export function PublicBooking() {
         </div>
       </section>
 
-      {activeGalleryIndex !== null && (() => {
-        const item = GALLERY_ITEMS[activeGalleryIndex];
-        const showPrevious = () => setActiveGalleryIndex((activeGalleryIndex - 1 + GALLERY_ITEMS.length) % GALLERY_ITEMS.length);
-        const showNext = () => setActiveGalleryIndex((activeGalleryIndex + 1) % GALLERY_ITEMS.length);
+      {activeGalleryIndex !== null &&
+        (() => {
+          const item = GALLERY_ITEMS[activeGalleryIndex];
+          const showPrevious = () =>
+            setActiveGalleryIndex(
+              (activeGalleryIndex - 1 + GALLERY_ITEMS.length) %
+                GALLERY_ITEMS.length,
+            );
+          const showNext = () =>
+            setActiveGalleryIndex(
+              (activeGalleryIndex + 1) % GALLERY_ITEMS.length,
+            );
 
-        return (
-          <div
-            className="client-gallery-lightbox"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="gallery-lightbox-label"
-            onClick={(event) => {
-              if (event.target === event.currentTarget) setActiveGalleryIndex(null);
-            }}
-          >
-            <div className="client-gallery-lightbox-content">
-              <div className="client-gallery-lightbox-header">
-                <p id="gallery-lightbox-label">{item.label}</p>
-                <span>{activeGalleryIndex + 1} / {GALLERY_ITEMS.length}</span>
-                <button
-                  className="client-gallery-lightbox-close"
-                  type="button"
-                  onClick={() => setActiveGalleryIndex(null)}
-                  aria-label="Fechar visualização"
-                  ref={galleryCloseButtonRef}
-                >
-                  <X size={22} />
-                </button>
-              </div>
-              <div className="client-gallery-lightbox-media">
-                <button className="client-gallery-lightbox-nav" type="button" onClick={showPrevious} aria-label="Mídia anterior">
-                  <ChevronLeft size={28} />
-                </button>
-                {item.type === "video" ? (
-                  <video
-                    key={item.src}
-                    src={item.src}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    onLoadedMetadata={(event) => {
-                      event.currentTarget.currentTime = 0;
-                    }}
-                    aria-label={item.label}
-                  />
-                ) : (
-                  <Image src={item.src} alt={item.label} width={960} height={1280} sizes="(max-width: 768px) 85vw, 1000px" />
-                )}
-                <button className="client-gallery-lightbox-nav" type="button" onClick={showNext} aria-label="Próxima mídia">
-                  <ChevronRight size={28} />
-                </button>
+          return (
+            <div
+              className="client-gallery-lightbox"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="gallery-lightbox-label"
+              onClick={(event) => {
+                if (event.target === event.currentTarget)
+                  setActiveGalleryIndex(null);
+              }}
+            >
+              <div className="client-gallery-lightbox-content">
+                <div className="client-gallery-lightbox-header">
+                  <p id="gallery-lightbox-label">{item.label}</p>
+                  <span>
+                    {activeGalleryIndex + 1} / {GALLERY_ITEMS.length}
+                  </span>
+                  <button
+                    className="client-gallery-lightbox-close"
+                    type="button"
+                    onClick={() => setActiveGalleryIndex(null)}
+                    aria-label="Fechar visualização"
+                    ref={galleryCloseButtonRef}
+                  >
+                    <X size={22} />
+                  </button>
+                </div>
+                <div className="client-gallery-lightbox-media">
+                  <button
+                    className="client-gallery-lightbox-nav"
+                    type="button"
+                    onClick={showPrevious}
+                    aria-label="Mídia anterior"
+                  >
+                    <ChevronLeft size={28} />
+                  </button>
+                  {item.type === "video" ? (
+                    <video
+                      key={item.src}
+                      src={item.src}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      onLoadedMetadata={(event) => {
+                        event.currentTarget.currentTime = 0;
+                      }}
+                      aria-label={item.label}
+                    />
+                  ) : (
+                    <Image
+                      src={item.src}
+                      alt={item.label}
+                      width={960}
+                      height={1280}
+                      sizes="(max-width: 768px) 85vw, 1000px"
+                    />
+                  )}
+                  <button
+                    className="client-gallery-lightbox-nav"
+                    type="button"
+                    onClick={showNext}
+                    aria-label="Próxima mídia"
+                  >
+                    <ChevronRight size={28} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
 
       <section className="client-section client-beach" id="ponta-de-pedra">
         <div className="client-section-heading centered">
@@ -909,21 +1230,48 @@ export function PublicBooking() {
           <h2>Praia de Ponta de Pedra</h2>
           <i />
           <p className="client-beach-description">
-            A poucos quilômetros do Balneário Ígas, a Praia de Ponta de Pedra é uma ótima opção para completar o passeio, apreciar a paisagem e aproveitar momentos de descanso à beira d’água.
+            A poucos quilômetros do Balneário Ígas, a Praia de Ponta de Pedra é
+            uma ótima opção para completar o passeio, apreciar a paisagem e
+            aproveitar momentos de descanso à beira d’água.
           </p>
         </div>
         <div className="client-beach-grid">
           {[
-            ["/ponta1.jpeg", "Praia com guarda-sóis e mesas à beira d’água", "beach-one"],
+            [
+              "/ponta1.jpeg",
+              "Praia com guarda-sóis e mesas à beira d’água",
+              "beach-one",
+            ],
             ["/ponta3.jpg", "Cadeiras e palhoças na praia", "beach-two"],
-            ["/ponta4.jpg", "Visitantes descansando sob palhoças", "beach-three"],
-            ["/ponta10.jpg", "Vista da praia e dos quiosques junto à água", "beach-four"],
-            ["/ponta6.jpg", "Vista aérea da praia e dos guarda-sóis", "beach-five"],
+            [
+              "/ponta4.jpg",
+              "Visitantes descansando sob palhoças",
+              "beach-three",
+            ],
+            [
+              "/ponta10.jpg",
+              "Vista da praia e dos quiosques junto à água",
+              "beach-four",
+            ],
+            [
+              "/ponta6.jpg",
+              "Vista aérea da praia e dos guarda-sóis",
+              "beach-five",
+            ],
             ["/ponta7.jpg", "Cadeiras e palhoças à beira d’água", "beach-six"],
-            ["/ponta9.jpg", "Fim de tarde na Praia de Ponta de Pedra", "beach-seven"],
+            [
+              "/ponta9.jpg",
+              "Fim de tarde na Praia de Ponta de Pedra",
+              "beach-seven",
+            ],
           ].map(([src, label, className]) => (
             <figure className={className} key={src}>
-              <Image src={src} alt={label} fill sizes="(max-width: 768px) calc(100vw - 32px), 1140px" />
+              <Image
+                src={src}
+                alt={label}
+                fill
+                sizes="(max-width: 768px) calc(100vw - 32px), 1140px"
+              />
               <figcaption>{label}</figcaption>
             </figure>
           ))}
@@ -940,7 +1288,11 @@ export function PublicBooking() {
           {modes.map((mode) => (
             <article key={mode.id}>
               <Image
-                src={mode.code === "OVERNIGHT" ? "/igasdayusepernoite.jpeg" : "/igasdayusee.jpeg"}
+                src={
+                  mode.code === "OVERNIGHT"
+                    ? "/igasdayusepernoite.jpeg"
+                    : "/igasdayusee.jpeg"
+                }
                 alt={mode.name}
                 width={1280}
                 height={720}
@@ -948,12 +1300,34 @@ export function PublicBooking() {
               />
               <div>
                 <h3>{mode.name}</h3>
-                <p><strong>{mode.code === "OVERNIGHT" ? `A partir de ${modePrice(mode)}` : modePrice(mode)}</strong></p>
+                <p>
+                  <strong>
+                    {mode.code === "OVERNIGHT"
+                      ? `A partir de ${modePrice(mode)}`
+                      : modePrice(mode)}
+                  </strong>
+                </p>
                 <div className="client-tags">
                   <span>À partir das {mode.defaultStart}</span>
-                  <span>{mode.code === "OVERNIGHT" ? `Saída até ${OVERNIGHT_CHECKOUT_TIME} após a última noite` : mode.durationMinutes >= 1440 ? `Saída às ${endTimeForMode(mode)} do dia seguinte` : `Saída às ${endTimeForMode(mode)}`}</span>
+                  <span>
+                    {mode.code === "OVERNIGHT"
+                      ? `Saída até ${OVERNIGHT_CHECKOUT_TIME} após a última noite`
+                      : mode.durationMinutes >= 1440
+                        ? `Saída às ${endTimeForMode(mode)} do dia seguinte`
+                        : `Saída às ${endTimeForMode(mode)}`}
+                  </span>
                 </div>
-                <button type="button" onClick={() => { setModeId(mode.id); document.getElementById("reserva")?.scrollIntoView({ behavior: "smooth" }); }}>Reservar</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModeId(mode.id);
+                    document
+                      .getElementById("reserva")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  Reservar
+                </button>
               </div>
             </article>
           ))}
@@ -981,7 +1355,10 @@ export function PublicBooking() {
             ["📶", "Internet WIFI"],
             ["🍺", "Cervejeira"],
           ].map(([icon, label]) => (
-            <div key={label}><b>{icon}</b><span>{label}</span></div>
+            <div key={label}>
+              <b>{icon}</b>
+              <span>{label}</span>
+            </div>
           ))}
         </div>
       </section>
@@ -996,12 +1373,23 @@ export function PublicBooking() {
           <p className="client-testimonials-note">
             Experiências compartilhadas por visitantes do Balneário Ígas.
           </p>
-          <div className="client-testimonials-viewport" role="region" aria-label="Depoimentos de clientes">
+          <div
+            className="client-testimonials-viewport"
+            role="region"
+            aria-label="Depoimentos de clientes"
+          >
             <div className="client-testimonials-track">
               {[0, 1].map((group) => (
-                <div className="client-testimonial-group" key={group} aria-hidden={group === 1}>
+                <div
+                  className="client-testimonial-group"
+                  key={group}
+                  aria-hidden={group === 1}
+                >
                   {TESTIMONIALS.map((testimonial, index) => (
-                    <article className="client-testimonial-card" key={`${group}-${index}`}>
+                    <article
+                      className="client-testimonial-card"
+                      key={`${group}-${index}`}
+                    >
                       <div className="client-testimonial-author">
                         <span className="client-testimonial-avatar">
                           <Image
@@ -1009,7 +1397,9 @@ export function PublicBooking() {
                             alt={`Foto de ${testimonial.name}`}
                             fill
                             sizes="42px"
-                            style={{ transform: `scale(${testimonial.avatarScale}) translate(${testimonial.avatarOffsetX}%, ${testimonial.avatarOffsetY}%)` }}
+                            style={{
+                              transform: `scale(${testimonial.avatarScale}) translate(${testimonial.avatarOffsetX}%, ${testimonial.avatarOffsetY}%)`,
+                            }}
                           />
                         </span>
                         <div>
@@ -1017,9 +1407,20 @@ export function PublicBooking() {
                           <small>{testimonial.visitType}</small>
                         </div>
                       </div>
-                      <div className="client-testimonial-stars" aria-label={`${testimonial.rating} de 5 estrelas`}>
+                      <div
+                        className="client-testimonial-stars"
+                        aria-label={`${testimonial.rating} de 5 estrelas`}
+                      >
                         {Array.from({ length: 5 }, (_, star) => (
-                          <span className={star < testimonial.rating ? "active" : ""} key={star} aria-hidden="true">★</span>
+                          <span
+                            className={
+                              star < testimonial.rating ? "active" : ""
+                            }
+                            key={star}
+                            aria-hidden="true"
+                          >
+                            ★
+                          </span>
                         ))}
                       </div>
                       <p>“{testimonial.text}”</p>
@@ -1031,26 +1432,54 @@ export function PublicBooking() {
           </div>
         </div>
         <form onSubmit={submitReview}>
-          <label>Nome completo *
-            <input value={reviewName} onChange={(event) => setReviewName(event.target.value)} placeholder="Seu nome" />
+          <label>
+            Nome completo *
+            <input
+              value={reviewName}
+              onChange={(event) => setReviewName(event.target.value)}
+              placeholder="Seu nome"
+            />
           </label>
-          <label>Tipo de visita
-            <select value={reviewType} onChange={(event) => setReviewType(event.target.value)}>
-              <option>Lazer</option><option>Família</option><option>Confraternização</option><option>Feriado</option>
+          <label>
+            Tipo de visita
+            <select
+              value={reviewType}
+              onChange={(event) => setReviewType(event.target.value)}
+            >
+              <option>Lazer</option>
+              <option>Família</option>
+              <option>Confraternização</option>
+              <option>Feriado</option>
             </select>
           </label>
-          <label>Avaliação geral *
+          <label>
+            Avaliação geral *
             <div className="client-stars">
               {[1, 2, 3, 4, 5].map((value) => (
-                <button type="button" className={value <= rating ? "active" : ""} onClick={() => setRating(value)} key={value}>★</button>
+                <button
+                  type="button"
+                  className={value <= rating ? "active" : ""}
+                  onClick={() => setRating(value)}
+                  key={value}
+                >
+                  ★
+                </button>
               ))}
             </div>
           </label>
-          <label>Seu comentário *
-            <textarea value={reviewText} onChange={(event) => setReviewText(event.target.value)} rows={4} placeholder="Conte-nos sobre sua experiência no Ígas…" />
+          <label>
+            Seu comentário *
+            <textarea
+              value={reviewText}
+              onChange={(event) => setReviewText(event.target.value)}
+              rows={4}
+              placeholder="Conte-nos sobre sua experiência no Ígas…"
+            />
           </label>
           {error && <p className="client-form-error">{error}</p>}
-          <button type="submit" disabled>Enviar avaliação ✦</button>
+          <button type="submit" disabled>
+            Enviar avaliação ✦
+          </button>
         </form>
         <div className="client-review-share">
           <button type="button" onClick={shareIgasOnWhatsApp}>
@@ -1069,64 +1498,167 @@ export function PublicBooking() {
           <a href="#modalidades">Modalidades</a>
           <a href="#avaliacoes">Avaliações</a>
         </nav>
-        <small>© {new Date().getFullYear()} Balneário Ígas. Todos os direitos reservados.</small>
+        <small>
+          © {new Date().getFullYear()} Balneário Ígas. Todos os direitos
+          reservados.
+        </small>
       </footer>
 
       {bookingOpen && (
-        <div className="client-overlay" role="dialog" aria-modal="true" aria-labelledby="booking-modal-title">
+        <div
+          className="client-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="booking-modal-title"
+        >
           <div className="client-modal">
-            <button className="client-modal-close" type="button" onClick={() => setBookingOpen(false)} aria-label="Fechar">✕</button>
+            <button
+              className="client-modal-close"
+              type="button"
+              onClick={() => setBookingOpen(false)}
+              aria-label="Fechar"
+            >
+              ✕
+            </button>
             <h2 id="booking-modal-title">Confirmar solicitação</h2>
             <p>
-              {selectedMode?.name} — {selectedMode?.code === "OVERNIGHT" && !durationDays
+              {selectedMode?.name} —{" "}
+              {selectedMode?.code === "OVERNIGHT" && !durationDays
                 ? "Selecione quantas noites deseja ficar"
-                : selectedMode ? modePrice(selectedMode, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1) : ""}
+                : selectedMode
+                  ? modePrice(
+                      selectedMode,
+                      selectedMode.code === "OVERNIGHT"
+                        ? Number(durationDays)
+                        : 1,
+                    )
+                  : ""}
               {" — "}
               {selectedMode?.code === "OVERNIGHT" && !durationDays
                 ? "Selecione quantas noites deseja ficar"
-                : selectedMode ? scheduleLabel(selectedMode, date, selectedMode.code === "OVERNIGHT" ? Number(durationDays) : 1, true) : ""}
+                : selectedMode
+                  ? scheduleLabel(
+                      selectedMode,
+                      date,
+                      selectedMode.code === "OVERNIGHT"
+                        ? Number(durationDays)
+                        : 1,
+                      true,
+                    )
+                  : ""}
             </p>
             <form className="public-booking-form" onSubmit={submit}>
-              <label>Nome completo
-                <input value={guestName} onChange={(event) => setGuestName(uppercaseName(event.target.value))} required maxLength={120} />
+              <label>
+                Nome completo
+                <input
+                  value={guestName}
+                  onChange={(event) =>
+                    setGuestName(uppercaseName(event.target.value))
+                  }
+                  required
+                  maxLength={120}
+                />
               </label>
-              <label>Telefone ou WhatsApp
-                <input value={guestContact} onChange={(event) => setGuestContact(event.target.value)} required maxLength={160} />
+              <label>
+                Telefone ou WhatsApp
+                <input
+                  value={guestContact}
+                  onChange={(event) => setGuestContact(event.target.value)}
+                  required
+                  maxLength={160}
+                />
               </label>
               <div className="public-form-grid">
-                <label>CPF
-                  <input value={guestCpf} onChange={(event) => setGuestCpf(formatCpf(event.target.value))} placeholder="000.000.000-00" required inputMode="numeric" maxLength={14} />
+                <label>
+                  CPF
+                  <input
+                    value={guestCpf}
+                    onChange={(event) =>
+                      setGuestCpf(formatCpf(event.target.value))
+                    }
+                    placeholder="000.000.000-00"
+                    required
+                    inputMode="numeric"
+                    maxLength={14}
+                  />
                 </label>
-                <label>Modalidade
-                  <select value={modeId} onChange={(event) => {
-                    setModeId(event.target.value);
-                    setDurationDays("");
-                    setError("");
-                  }} required>
-                    {modes.map((mode) => <option value={mode.id} key={mode.id}>{modeOptionLabel(mode)}</option>)}
+                <label>
+                  Modalidade
+                  <select
+                    value={modeId}
+                    onChange={(event) => {
+                      setModeId(event.target.value);
+                      setDurationDays("");
+                      setError("");
+                    }}
+                    required
+                  >
+                    {modes.map((mode) => (
+                      <option value={mode.id} key={mode.id}>
+                        {modeOptionLabel(mode)}
+                      </option>
+                    ))}
                   </select>
                 </label>
               </div>
               {selectedMode?.code === "OVERNIGHT" && (
                 <>
-                  <label>Quantas noites deseja ficar
-                    <select value={durationDays} onChange={(event) => setDurationDays(event.target.value)} required>
+                  <label>
+                    Quantas noites deseja ficar
+                    <select
+                      value={durationDays}
+                      onChange={(event) => setDurationDays(event.target.value)}
+                      required
+                    >
                       <option value="">Selecione a quantidade de noites</option>
-                      {Array.from({ length: OVERNIGHT_MAX_NIGHTS }, (_, index) => index + 1).map((days) => (
-                        <option key={days} value={days}>{days} {days === 1 ? "noite" : "noites"} — {money.format(getOvernightPrice(days))}</option>
+                      {Array.from(
+                        { length: OVERNIGHT_MAX_NIGHTS },
+                        (_, index) => index + 1,
+                      ).map((days) => (
+                        <option key={days} value={days}>
+                          {days} {days === 1 ? "noite" : "noites"} —{" "}
+                          {money.format(getOvernightPrice(days))}
+                        </option>
                       ))}
                     </select>
                   </label>
                   <p className="client-deposit-note">
-                    {overnightTotal !== null && overnightDeposit
-                      ? <><CircleAlert className="client-deposit-alert" size={15} aria-hidden="true" /><span>Sinal (<strong>50%</strong>) para confirmar: <strong>{overnightDeposit}</strong>. Restante no check-in: <strong>{overnightDeposit}</strong>.</span></>
-                      : <><CircleAlert className="client-deposit-alert" size={15} aria-hidden="true" /><span>Sinal de <strong>50%</strong> para confirmar; restante no check-in.</span></>}
+                    {overnightTotal !== null && overnightDeposit ? (
+                      <>
+                        <CircleAlert
+                          className="client-deposit-alert"
+                          size={15}
+                          aria-hidden="true"
+                        />
+                        <span>
+                          Sinal (<strong>50%</strong>) para confirmar:{" "}
+                          <strong>{overnightDeposit}</strong>. Restante no
+                          check-in: <strong>{overnightDeposit}</strong>.
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <CircleAlert
+                          className="client-deposit-alert"
+                          size={15}
+                          aria-hidden="true"
+                        />
+                        <span>
+                          Sinal de <strong>50%</strong> para confirmar; restante
+                          no check-in.
+                        </span>
+                      </>
+                    )}
                   </p>
                 </>
               )}
               <div className="client-date-selection">
                 <span>Data escolhida</span>
-                <strong>{date ? formatDateKey(date) : "Selecione uma data no calendário"}</strong>
+                <strong>
+                  {date
+                    ? formatDateKey(date)
+                    : "Selecione uma data no calendário"}
+                </strong>
               </div>
               {conflict && date && selectedMode && (
                 <p className="client-form-error" role="alert">
@@ -1135,14 +1667,37 @@ export function PublicBooking() {
                     : "Esta data não está disponível para a modalidade escolhida. Escolha outra data."}
                 </p>
               )}
-              <label>Endereço
-                <input value={guestAddress} onChange={(event) => setGuestAddress(event.target.value)} required maxLength={300} />
+              <label>
+                Endereço
+                <input
+                  value={guestAddress}
+                  onChange={(event) => setGuestAddress(event.target.value)}
+                  required
+                  maxLength={300}
+                />
               </label>
-              <label>Observações <span>(opcional)</span>
-                <textarea value={notes} onChange={(event) => setNotes(event.target.value)} maxLength={2000} rows={3} />
+              <label>
+                Observações <span>(opcional)</span>
+                <textarea
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  maxLength={2000}
+                  rows={3}
+                />
               </label>
               {error && <p className="client-form-error">{error}</p>}
-              <button className="client-modal-submit" type="submit" disabled={loading || modes.length === 0 || !date || !guestAddress.trim() || conflict || (selectedMode?.code === "OVERNIGHT" && !durationDays)}>
+              <button
+                className="client-modal-submit"
+                type="submit"
+                disabled={
+                  loading ||
+                  modes.length === 0 ||
+                  !date ||
+                  !guestAddress.trim() ||
+                  conflict ||
+                  (selectedMode?.code === "OVERNIGHT" && !durationDays)
+                }
+              >
                 {loading ? "Enviando..." : "Confirmar reserva ✦"}
               </button>
             </form>
@@ -1155,8 +1710,13 @@ export function PublicBooking() {
           <div>
             <span>✨</span>
             <h2>Solicitação enviada</h2>
-            <p><strong>Obrigatório enviar mensagem!</strong></p>
-            <p>Para finalizar sua reserva, escolha com quem deseja enviar as últimas informações!</p>
+            <p>
+              <strong>Obrigatório enviar mensagem!</strong>
+            </p>
+            <p>
+              Para finalizar sua reserva, escolha com quem deseja enviar as
+              últimas informações!
+            </p>
             <div className="client-whatsapp-contacts">
               {WHATSAPP_CONTACTS.map((contact) => (
                 <a
@@ -1167,12 +1727,19 @@ export function PublicBooking() {
                   rel="noreferrer"
                   onClick={returnToClientHome}
                 >
-                  <span className="client-whatsapp-contact-icon" aria-hidden="true"><WhatsAppIcon size={23} /></span>
+                  <span
+                    className="client-whatsapp-contact-icon"
+                    aria-hidden="true"
+                  >
+                    <WhatsAppIcon size={23} />
+                  </span>
                   <span className="client-whatsapp-contact-info">
                     <strong>{contact.name}</strong>
                     <small>{contact.displayPhone}</small>
                   </span>
-                  <span className="client-whatsapp-contact-action">Conversar <span aria-hidden="true">↗</span></span>
+                  <span className="client-whatsapp-contact-action">
+                    Conversar <span aria-hidden="true">↗</span>
+                  </span>
                 </a>
               ))}
             </div>
