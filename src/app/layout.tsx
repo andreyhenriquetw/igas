@@ -8,6 +8,7 @@ const themeInitializationScript = `
 export const metadata: Metadata = {
   title: "ÍGAS",
   description: "Agenda e reservas do espaço de hospedagem.",
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     title: "ÍGAS",

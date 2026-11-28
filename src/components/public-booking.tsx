@@ -80,9 +80,9 @@ const TESTIMONIALS = [
   },
 ];
 const GALLERY_ITEMS = [
-  { type: "video", src: "/igasvi.mp4", poster: "/igasimg3.jpg", label: "Igarapé", className: "gallery-one" },
-  { type: "video", src: "/igasvi2.mp4", poster: "/igasimg2.jpg", label: "Lazer no Ígas", className: "gallery-two" },
-  { type: "video", src: "/igasvi3.mp4", poster: "/igasimg1.jpg", label: "Ambiente do balneário", className: "gallery-three" },
+  { type: "video", src: "/igasvi.mp4", label: "Igarapé", className: "gallery-one" },
+  { type: "video", src: "/igasvi2.mp4", label: "Lazer no Ígas", className: "gallery-two" },
+  { type: "video", src: "/igasvi3.mp4", label: "Ambiente do balneário", className: "gallery-three" },
   { type: "image", src: "/igasimg1.jpg", label: "Quarto", className: "gallery-four" },
   { type: "image", src: "/igasimg2.jpg", label: "Mesa de sinuca", className: "gallery-five" },
   { type: "image", src: "/igasimg3.jpg", label: "TV", className: "gallery-six" },
@@ -817,7 +817,17 @@ export function PublicBooking() {
                 aria-label={`Abrir ${item.type === "video" ? "vídeo" : "imagem"}: ${item.label}`}
               >
                 {item.type === "video" ? (
-                  <video className="client-gallery-preview" src={item.src} poster={item.poster} muted loop playsInline preload="none" />
+                  <video
+                    className="client-gallery-preview"
+                    src={item.src}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    onLoadedMetadata={(event) => {
+                      event.currentTarget.currentTime = 0;
+                    }}
+                  />
                 ) : (
                   <Image
                     src={item.src}
@@ -868,7 +878,19 @@ export function PublicBooking() {
                   <ChevronLeft size={28} />
                 </button>
                 {item.type === "video" ? (
-                  <video key={item.src} src={item.src} poster={item.poster} autoPlay muted loop playsInline aria-label={item.label} />
+                  <video
+                    key={item.src}
+                    src={item.src}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    onLoadedMetadata={(event) => {
+                      event.currentTarget.currentTime = 0;
+                    }}
+                    aria-label={item.label}
+                  />
                 ) : (
                   <Image src={item.src} alt={item.label} width={960} height={1280} sizes="(max-width: 768px) 85vw, 1000px" />
                 )}
