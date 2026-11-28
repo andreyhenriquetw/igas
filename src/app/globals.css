@@ -444,6 +444,12 @@
   border: 1px solid rgba(255, 255, 255, 0.38);
   color: #fff;
 }
+.client-hero-actions .client-install-button {
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: rgba(14, 27, 42, 0.46);
+  color: #fff;
+  cursor: pointer;
+}
 .client-hero-stats {
   position: absolute;
   z-index: 2;
@@ -9672,5 +9678,87 @@ body {
 
   :root[data-theme="dark"] .entry-list .list-entry.list-cancelled {
     border-left-color: #f07b84;
+  }
+}
+
+.pwa-install-button {
+  display: inline-flex;
+  min-width: 38px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--green-dark);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pwa-install-backdrop {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.62);
+}
+.pwa-install-dialog {
+  position: relative;
+  width: min(100%, 440px);
+  padding: 28px;
+  border-radius: 18px;
+  background: #fff;
+  color: #17202a;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.32);
+  line-height: 1.55;
+}
+.pwa-install-dialog h2 {
+  margin: 0 36px 18px 0;
+  font-size: 20px;
+}
+.pwa-install-dialog p {
+  margin: 12px 0;
+}
+.pwa-install-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #edf1f4;
+  cursor: pointer;
+}
+.pwa-install-confirm {
+  min-height: 40px;
+  margin-top: 8px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px;
+  background: #176ed2;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+@media (max-width: 680px) {
+  .app-header .pwa-install-button {
+    width: 38px;
+    padding: 0;
+  }
+  .app-header .pwa-install-button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
 }

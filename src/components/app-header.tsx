@@ -3,6 +3,7 @@ import Image from "next/image";
 import { CalendarDays, CalendarCheck2, ChartNoAxesColumnIncreasing, Settings2, UsersRound } from "lucide-react";
 import { UserRole } from "@/generated/prisma/enums";
 import { PendingBookingBadge } from "@/components/pending-booking-badge";
+import { PwaInstallButton } from "@/components/pwa-install-button";
 import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -46,6 +47,7 @@ export function AppHeader({ user, current }: Props) {
           )}
         </nav>
         <div className="account-area">
+          <PwaInstallButton appName="ÍGAS Dashboard" />
           <ThemeToggle />
           <span className="account-name">{user.name}</span>
           <SignOutButton />

@@ -12,6 +12,7 @@ import {
   OVERNIGHT_MAX_NIGHTS,
 } from "@/lib/overnight";
 import { isDateAvailableForMode } from "@/lib/public-availability";
+import { PwaInstallButton } from "@/components/pwa-install-button";
 
 type Mode = {
   id: string;
@@ -787,6 +788,10 @@ export function PublicBooking() {
               Reservar agora
             </button>
             <a href="#galeria">Conhecer o balneário</a>
+            <PwaInstallButton
+              appName="ÍGAS Clientes"
+              className="client-install-button"
+            />
           </div>
         </div>
         <div className="client-hero-stats">
